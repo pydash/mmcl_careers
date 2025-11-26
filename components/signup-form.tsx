@@ -1,0 +1,59 @@
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { FcGoogle } from "react-icons/fc";
+
+export function SignupForm({
+  className,
+  ...props
+}: React.ComponentProps<"form">) {
+  return (
+    <form className={cn("flex flex-col gap-6", className)} {...props}>
+      <FieldGroup>
+        <div className="flex flex-col items-center gap-1 text-center">
+          <h1 className="text-2xl font-bold">Create an Account</h1>
+          <p className="text-muted-foreground text-sm text-balance">
+            Enter your email below to register your account
+          </p>
+        </div>
+        <Field>
+          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <Input id="email" type="email" placeholder="m@example.com" required />
+        </Field>
+        <div className="flex flex-col gap-2">
+          <Field>
+            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <Input id="password" type="password" required />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="reTypePassword">Confirm Password</FieldLabel>
+            <Input id="reTypePassword" type="password" required />
+          </Field>
+        </div>
+        <Field>
+          <Button type="submit">Sign up</Button>
+        </Field>
+        <FieldSeparator>Or continue with</FieldSeparator>
+        <Field>
+          <Button className="py-2" variant="outline" type="button">
+            <FcGoogle className="size-4" />
+            Sign up with Google
+          </Button>
+          <FieldDescription className="text-center">
+            Already have an account?{" "}
+            <a href="/login" className="underline underline-offset-4">
+              Log in
+            </a>
+          </FieldDescription>
+        </Field>
+      </FieldGroup>
+    </form>
+  );
+}
