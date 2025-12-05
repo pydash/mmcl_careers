@@ -1,6 +1,5 @@
 "use client";
 
-import { Separator } from "./ui/separator";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,13 +9,12 @@ import {
 } from "./ui/sidebar";
 
 import { usePathname } from "next/navigation";
-
 import { type LucideIcon } from "lucide-react";
 
 export function NavMain({
   items,
 }: {
-  mainItems: {
+  items: {
     title: string;
     url: string;
     icon: LucideIcon;

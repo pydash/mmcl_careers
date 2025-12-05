@@ -20,13 +20,11 @@ export default function JobsSort() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>Alphabetical</DropdownMenuLabel>
           <DropdownMenuItem>A to Z</DropdownMenuItem>
           <DropdownMenuItem>Z to A</DropdownMenuItem>
           <Separator />
-          <DropdownMenuLabel>By Date</DropdownMenuLabel>
-          <DropdownMenuItem>Newest First</DropdownMenuItem>
-          <DropdownMenuItem>Oldest First</DropdownMenuItem>
+          <DropdownMenuItem>Most Recent</DropdownMenuItem>
+          <DropdownMenuItem>Oldest</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </>
