@@ -8,7 +8,7 @@ type Props = {
   setView: (v: "grid" | "row") => void;
 };
 
-export default function JobsView({ view, setView }: Props) {
+export default function ViewButton({ view, setView }: Props) {
   return (
     <div className="flex gap-2">
       <Button

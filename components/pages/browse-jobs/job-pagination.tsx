@@ -10,7 +10,7 @@ import {
 
 export default function JobPagination() {
   return (
-    <Pagination>
+    <Pagination className="w-fit mx-0">
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious href="#" />

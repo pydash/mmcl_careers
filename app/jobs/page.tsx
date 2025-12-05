@@ -1,117 +1,136 @@
-import { AppSidebar } from "@/components/app-sidebar";
+"use client";
+
+import { useState } from "react";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
+  GridCard,
+  GridCardHeader,
+  GridCardTitle,
+  GridCardDescription,
+  GridCardContent,
+  GridCardFooter,
+  GridCardMedia,
+  GridCardAction,
+} from "@/components/grid-card";
+
 import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+  RowCard,
+  RowCardHeader,
+  RowCardTitle,
+  RowCardDescription,
+  RowCardContent,
+  RowCardAction,
+} from "@/components/row-card";
+
 import SearchBar from "@/components/search-bar";
-import JobsFilter from "@/components/pages/browse-jobs/jobs-filter";
-import JobsView from "@/components/pages/browse-jobs/jobs-view";
+import FilterButton from "@/components/filter-button";
+import ViewButton from "@/components/view-button";
 import JobsSort from "@/components/pages/browse-jobs/jobs-sort";
-import GridCard from "@/components/grid-card";
-import JobPagination from "@/components/pages/browse-jobs/job-pagination";
+
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Toggle } from "@/components/ui/toggle";
+import { BookmarkIcon } from "lucide-react";
+
+import { jobsData, menu } from "../sample-data";
 
 export default function Page() {
-  const jobsData = [
-    {
-      imgPath: "/placeholder.png",
-      badges: ["Full-time", "Remote"],
-      title: "Senior Software Engineer",
-      description: "Develop and maintain software applications.",
-      salaryRange: "₱50,000 - ₱70,000",
-    },
-    {
-      imgPath: "/placeholder.png",
-      badges: ["Part-time", "On-site"],
-      title: "Junior Developer",
-      description: "Assist in the development of software applications.",
-      salaryRange: "₱30,000 - ₱45,000",
-    },
-    {
-      imgPath: "/placeholder.png",
-      badges: ["Contract", "Hybrid"],
-      title: "UI/UX Designer",
-      description: "Design user interfaces and improve user experience.",
-      salaryRange: "₱40,000 - ₱60,000",
-    },
-    {
-      imgPath: "/placeholder.png",
-      badges: ["Full-time", "Remote"],
-      title: "Data Scientist",
-      description: "Analyze and interpret complex data sets.",
-      salaryRange: "₱60,000 - ₱80,000",
-    },
-    {
-      imgPath: "/placeholder.png",
-      badges: ["Full-time", "On-site"],
-      title: "DevOps Engineer",
-      description: "Manage and automate IT infrastructure.",
-      salaryRange: "₱55,000 - ₱75,000",
-    },
-    {
-      imgPath: "/placeholder.png",
-      badges: ["Part-time", "Hybrid"],
-      title: "Marketing Specialist",
-      description: "Develop and implement marketing strategies.",
-      salaryRange: "₱35,000 - ₱50,000",
-    },
-    {
-      imgPath: "/placeholder.png",
-      badges: ["Contract", "Remote"],
-      title: "Content Writer",
-      description: "Create engaging content for various platforms.",
-      salaryRange: "₱25,000 - ₱40,000",
-    },
-    {
-      imgPath: "/placeholder.png",
-      badges: ["Full-time", "On-site"],
-      title: "Project Manager",
-      description: "Oversee project planning and execution.",
-      salaryRange: "₱70,000 - ₱90,000",
-    },
-  ];
+  const [view, setView] = useState<"grid" | "row">("grid");
+
   return (
-    <>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbPage>Browse Jobs</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </header>
-          <main className="p-4">
-            <div className="flex flex-row gap-4">
-              <SearchBar />
-              <JobsFilter />
-              <JobsView />
-              <JobsSort />
-              <JobPagination />
-            </div>
-            <div className="grid grid-cols-4 gap-6 mt-4">
-              {jobsData.map((job, index) => (
-                <GridCard key={index} data={job} />
-              ))}
-            </div>
-          </main>
-        </SidebarInset>
-      </SidebarProvider>
-    </>
+    <div className="p-6">
+      <div className="flex flex-row gap-4 mb-6">
+        <SearchBar />
+        <FilterButton data={menu} />
+        <ViewButton view={view} setView={setView} />
+        <JobsSort />
+      </div>
+      {view === "grid" ? (
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          {jobsData.map((job) => (
+            <GridCard key={job.title} variant="outline">
+              <GridCardMedia src={job.imgPath} alt={job.title} />
+
+              <GridCardHeader>
+                <div className="flex flex-row gap-2 mb-2">
+                  {job.badges.map((badge, i) => (
+                    <Badge key={i} variant="secondary">
+                      {badge}
+                    </Badge>
+                  ))}
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <GridCardTitle>{job.title}</GridCardTitle>
+                  <GridCardDescription>{job.description}</GridCardDescription>
+                </div>
+              </GridCardHeader>
+
+              <GridCardContent></GridCardContent>
+
+              <div className="px-4">
+                <Separator className="my-2" />
+              </div>
+
+              <GridCardFooter className="flex gap-2 justify-between">
+                <GridCardDescription>{job.salaryRange}</GridCardDescription>
+                <div className="flex gap-2">
+                  <GridCardAction variant="default">
+                    View Details
+                  </GridCardAction>
+                  <Toggle
+                    aria-label="Toggle save"
+                    variant="outline"
+                    className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-amber-500 data-[state=on]:*:[svg]:stroke-amber-500"
+                  >
+                    <BookmarkIcon />
+                    Save
+                  </Toggle>
+                </div>
+              </GridCardFooter>
+            </GridCard>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {jobsData.map((job) => (
+            <RowCard key={job.title} variant="outline">
+              <RowCardHeader>
+                <div className="flex flex-row gap-2">
+                  {job.badges.map((badge, i) => (
+                    <Badge key={i} variant="secondary">
+                      {badge}
+                    </Badge>
+                  ))}
+                </div>
+              </RowCardHeader>
+
+              <RowCardContent>
+                <RowCardTitle>{job.title}</RowCardTitle>
+                <RowCardDescription>{job.description}</RowCardDescription>
+              </RowCardContent>
+
+              <Separator className="my-2" />
+
+              <div className="flex items-center justify-between px-4 pb-4">
+                <RowCardDescription>{job.salaryRange}</RowCardDescription>
+
+                <div className="flex gap-2">
+                  <RowCardAction>View Details</RowCardAction>
+
+                  <Toggle
+                    aria-label="Toggle save"
+                    variant="outline"
+                    className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-amber-500 data-[state=on]:*:[svg]:stroke-amber-500"
+                  >
+                    <BookmarkIcon />
+                    Save
+                  </Toggle>
+                </div>
+              </div>
+            </RowCard>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
