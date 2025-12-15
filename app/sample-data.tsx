@@ -240,6 +240,11 @@ const applicationsMenu = [
 export { applicationsData, applicationsMenu };
 
 const userData = {
+  account: {
+    email: "user@example.com",
+    password: "qwerty123",
+  },
+
   basic: {
     name: "User Name",
     email: "user@example.com",
