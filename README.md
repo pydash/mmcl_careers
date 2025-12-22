@@ -1,4 +1,5 @@
 Things to do:
+
 Change .env.template to .env
 ```bash
 cp .env.template .env
