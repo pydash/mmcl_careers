@@ -1,0 +1,190 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+
+import { signup } from "./action";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+} from "@/components/ui/field";
+import { Alert } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+
+import { FcGoogle } from "react-icons/fc";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+
+const initialState = { error: "" };
+
+export default function SignupPage() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [error, setError] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [state, formAction] = useActionState(signup, initialState);
+  const router = useRouter();
+
+  const showError = (message: string) => {
+    // Mount hidden first, then trigger show to animate in
+    setShowAlert(false);
+    setError(message);
+    setTimeout(() => setShowAlert(true), 0);
+
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 5000);
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (state?.error) {
+      showError(state.error);
+    } else if (state && state.error === null) {
+      router.push("/applicant/dashboard");
+    }
+  }, [state, router]);
+
+  return (
+    <>
+      {error && (
+        <div
+          className={`fixed inset-x-0 top-4 z-50 mx-auto w-full max-w-md transition-all duration-300 ease-in-out ${
+            showAlert && error
+              ? "translate-y-0 opacity-100"
+              : "-translate-y-full opacity-0"
+          }`}
+          aria-live="assertive"
+        >
+          <Alert variant="destructive">
+            <p>{error}</p>
+          </Alert>
+        </div>
+      )}
+
+      <main className="h-dvh flex flex-col items-center justify-center gap-4">
+        <form
+          className=" p-6 rounded-2xl shadow-md w-full max-w-md"
+          action={formAction}
+        >
+          <FieldGroup>
+            <FieldSet>
+              <FieldLegend>Sign Up</FieldLegend>
+              <FieldDescription>
+                Please enter your email to create an account
+              </FieldDescription>
+              <Field>
+                <FieldLabel>
+                  <Label htmlFor="email">Email</Label>
+                </FieldLabel>
+                <Input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                />
+              </Field>
+              <Field>
+                <FieldLabel>
+                  <Label htmlFor="password">Password</Label>
+                </FieldLabel>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    placeholder="Enter password"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleShowPassword}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <AiOutlineEye size={20} />
+                    ) : (
+                      <AiOutlineEyeInvisible size={20} />
+                    )}
+                  </button>
+                </div>
+              </Field>
+              <Field>
+                <FieldLabel>
+                  <Label htmlFor="confirm-password">Confirm Password</Label>
+                </FieldLabel>
+                <Input
+                  type="password"
+                  id="confirm-password"
+                  name="confirmPassword"
+                  placeholder="Enter password"
+                  value={formData.confirmPassword}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      confirmPassword: e.target.value,
+                    })
+                  }
+                />
+              </Field>
+              <FieldSeparator />
+              <div className="flex flex-col gap-2">
+                <Button
+                  type="submit"
+                  variant="default"
+                  size="lg"
+                  className="w-full"
+                >
+                  Create Account
+                </Button>
+                <p className="text-xs text-center">or</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  className="w-full"
+                >
+                  <FcGoogle />
+                  Sign up with Google
+                </Button>
+              </div>
+            </FieldSet>
+            <Separator />
+            <Field>
+              <FieldDescription className="text-center">
+                Already have an account?{" "}
+                <a href="/login" className="text-blue-600 hover:underline">
+                  Log in
+                </a>
+              </FieldDescription>
+            </Field>
+          </FieldGroup>
+        </form>
+      </main>
+    </>
+  );
+}
