@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { login } from "./action";
 
@@ -130,30 +131,23 @@ export default function LoginPage() {
                     )}
                   </button>
                 </div>
+                <Link
+                  href="./forgot-password"
+                  className="text-blue-600 hover:underline text-sm mt-2 block text-right"
+                >
+                  Forgot password?
+                </Link>
               </Field>
               <FieldSeparator />
-              <div className="flex flex-col gap-2">
-                <Button
-                  type="submit"
-                  variant="default"
-                  size="lg"
-                  className="w-full"
-                >
-                  Log in
-                </Button>
-                <p className="text-xs text-center">or</p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="lg"
-                  className="w-full"
-                >
-                  <FcGoogle />
-                  Sign in with Google
-                </Button>
-              </div>
+              <Button
+                type="submit"
+                variant="default"
+                size="lg"
+                className="w-full"
+              >
+                Log in
+              </Button>
             </FieldSet>
-            <Separator />
             <Field>
               <FieldDescription className="text-center">
                 Don't have an account?{" "}
