@@ -19,10 +19,9 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Alert } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
 
-import { FcGoogle } from "react-icons/fc";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import Image from "next/image";
 
 const initialState = { error: "" };
 
@@ -83,6 +82,14 @@ export default function SignupPage() {
           className=" p-6 rounded-2xl shadow-md w-full max-w-md"
           action={formAction}
         >
+          <div className="flex justify-center">
+            <Image
+              src="/MMCL_Logo_Horizontal.png"
+              alt="Signup Image"
+              width={150}
+              height={150}
+            />
+          </div>
           <FieldGroup>
             <FieldSet>
               <FieldLegend>Sign Up</FieldLegend>
@@ -97,7 +104,7 @@ export default function SignupPage() {
                   type="email"
                   id="email"
                   name="email"
-                  placeholder="you@example.com"
+                  placeholder="Enter email address"
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
