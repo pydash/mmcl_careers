@@ -152,26 +152,14 @@ export default function SignupPage() {
                 />
               </Field>
               <FieldSeparator />
-              <div className="flex flex-col gap-2">
-                <Button
-                  type="submit"
-                  variant="default"
-                  size="lg"
-                  className="w-full"
-                >
-                  Create Account
-                </Button>
-                <p className="text-xs text-center">or</p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="lg"
-                  className="w-full"
-                >
-                  <FcGoogle />
-                  Sign up with Google
-                </Button>
-              </div>
+              <Button
+                type="submit"
+                variant="default"
+                size="lg"
+                className="w-full"
+              >
+                Create Account
+              </Button>
             </FieldSet>
             <Separator />
             <Field>
