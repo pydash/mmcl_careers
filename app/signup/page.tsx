@@ -161,7 +161,6 @@ export default function SignupPage() {
                 Create Account
               </Button>
             </FieldSet>
-            <Separator />
             <Field>
               <FieldDescription className="text-center">
                 Already have an account?{" "}
