@@ -6,19 +6,16 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { SearchX } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function EmptyState({ message }: { message: string }) {
   return (
-    <Empty>
-      <EmptyMedia variant={"icon"}>
-        <SearchX className="h-12 w-12 text-muted-foreground" />
-      </EmptyMedia>
+    <Empty className="gap-2">
       <EmptyContent>
-        <EmptyHeader>
-          <EmptyTitle>No Data</EmptyTitle>
-        </EmptyHeader>
         <EmptyDescription>{message}</EmptyDescription>
+        <Button variant="default" size="default">
+          Upload Resume
+        </Button>
       </EmptyContent>
     </Empty>
   );
