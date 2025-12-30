@@ -1,7 +1,7 @@
 export default function IntextEmpty({ message }: { message: string }) {
   return (
     <div>
-      <p className="text-muted-foreground">{message}</p>
+      <p className="text-muted-foreground text-sm">{message}</p>
     </div>
   );
 }
