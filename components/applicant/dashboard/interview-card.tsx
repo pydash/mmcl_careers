@@ -11,7 +11,7 @@ import Interview from "@/models/Interview";
 export default function InterviewCard() {
   const [interviews, setInterviews] = useState<Interview[]>([]); // Placeholder for fetched interviews data
   return (
-    <div className="p-4 rounded-xl bg-gray-50">
+    <div className="p-4 rounded-xl bg-gray-50 self-start">
       <h2 className="text-xl font-semibold mb-4">Upcoming Interviews</h2>
       {interviews.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-8 text-center">
