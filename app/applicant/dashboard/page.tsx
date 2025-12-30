@@ -14,7 +14,11 @@ import Sidebar from "@/components/applicant/dashboard/sidebar";
 import { Bell } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
+import OverviewCard from "@/components/applicant/dashboard/overview-card";
 import Notifications from "@/components/applicant/dashboard/notifications";
+import RecentApplications from "@/components/applicant/dashboard/recent-applications";
+import ResumeCard from "@/components/applicant/dashboard/resume-card";
+import ExploreJobs from "@/components/applicant/dashboard/explore-jobs";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -78,9 +82,10 @@ export default function DashboardPage() {
         </header>
         <div className="grid grid-cols-[6fr_4fr] gap-4 p-4">
           <div className="flex flex-col gap-4">
-            <div className="aspect-video rounded-xl bg-muted/50">Col 1</div>
-            <div className="aspect-video rounded-xl bg-muted/50">Col 1</div>
-            <div className="aspect-video rounded-xl bg-muted/50">Col 1</div>
+            <OverviewCard />
+            <RecentApplications />
+            <ResumeCard />
+            <ExploreJobs />
           </div>
           <div className="aspect-video rounded-xl bg-muted/50">Col 2</div>
         </div>
