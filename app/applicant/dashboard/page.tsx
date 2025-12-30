@@ -19,6 +19,8 @@ import Notifications from "@/components/applicant/dashboard/notifications";
 import RecentApplications from "@/components/applicant/dashboard/recent-applications";
 import ResumeCard from "@/components/applicant/dashboard/resume-card";
 import ExploreJobs from "@/components/applicant/dashboard/explore-jobs";
+import Interviews from "@/components/applicant/dashboard/interview-card";
+import InterviewCard from "@/components/applicant/dashboard/interview-card";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -87,7 +89,7 @@ export default function DashboardPage() {
             <ResumeCard />
             <ExploreJobs />
           </div>
-          <div className="aspect-video rounded-xl bg-muted/50">Col 2</div>
+          <InterviewCard />
         </div>
       </main>
     </div>
