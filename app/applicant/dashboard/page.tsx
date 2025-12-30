@@ -3,6 +3,18 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetHeader,
+  SheetContent,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import Sidebar from "@/components/applicant/dashboard/sidebar";
+import { Bell } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+
+import Notifications from "@/components/applicant/dashboard/notifications";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -34,25 +46,45 @@ export default function DashboardPage() {
     };
 
     loadProfile();
-  }, []);
+  }, [router]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading profile: {error}</p>;
+  if (loading) return <p className="p-4">Loading...</p>;
+  if (error) return <p className="p-4">Error loading profile: {error}</p>;
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome, {profile?.email}</p>
-      <Button
-        variant="outline"
-        onClick={() => {
-          document.cookie = "session_token=; Max-Age=0; path=/";
-          document.cookie = "session_email=; Max-Age=0; path=/";
-          router.push("/login");
-        }}
-      >
-        Logout
-      </Button>
+    <div className="flex h-screen w-full">
+      <Sidebar />
+      <main className="flex-1 overflow-auto">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4">
+          <div className="flex flex-1 items-center justify-between gap-2">
+            <h1 className="text-lg font-semibold">Dashboard</h1>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Bell className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-96 p-0">
+                <SheetHeader className="p-4">
+                  <SheetTitle>Notifications</SheetTitle>
+                  <Separator />
+                </SheetHeader>
+                <div className="p-4">
+                  <Notifications />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </header>
+        <div className="grid grid-cols-[6fr_4fr] gap-4 p-4">
+          <div className="flex flex-col gap-4">
+            <div className="aspect-video rounded-xl bg-muted/50">Col 1</div>
+            <div className="aspect-video rounded-xl bg-muted/50">Col 1</div>
+            <div className="aspect-video rounded-xl bg-muted/50">Col 1</div>
+          </div>
+          <div className="aspect-video rounded-xl bg-muted/50">Col 2</div>
+        </div>
+      </main>
     </div>
   );
 }
