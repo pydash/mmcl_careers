@@ -5,6 +5,7 @@ import {
   ItemDescription,
 } from "@/components/ui/item";
 import { useNotifications } from "@/hooks/useNotifications";
+import { getDateTime } from "@/utils/formatDate";
 
 export default function Notifications() {
   const { notifications, loading, error } = useNotifications();
@@ -24,7 +25,7 @@ export default function Notifications() {
               <ItemTitle>{notification.title}</ItemTitle>
               <ItemDescription>{notification.message}</ItemDescription>
               <p className="text-sm text-muted-foreground">
-                {notification.date}
+                {getDateTime(notification.date)}
               </p>
             </ItemContent>
           </Item>
