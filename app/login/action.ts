@@ -47,7 +47,14 @@ export async function login(prevState: LoginState, formData: FormData) {
       maxAge,
     });
 
-    cookieStore.set("session_email", email, {
+    cookieStore.set("session_email", user.email, {
+      httpOnly: false,
+      sameSite: "lax",
+      path: "/",
+      maxAge,
+    });
+
+    cookieStore.set("session_user_id", user.id, {
       httpOnly: false,
       sameSite: "lax",
       path: "/",
