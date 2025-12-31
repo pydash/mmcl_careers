@@ -12,6 +12,7 @@ import { Ellipsis } from "lucide-react";
 import IntextEmpty from "@/components/intext-empty";
 import { useRecentApplications } from "@/hooks/applicant/dashboard/useRecentApplications";
 import { toTitleCase } from "@/utils/formatText";
+import { getDate } from "@/utils/formatDate";
 
 export default function RecentApplications() {
   const { applications, loading, error } = useRecentApplications();
@@ -41,7 +42,7 @@ export default function RecentApplications() {
               <TableRow key={index} className="[&>td]:py-3">
                 <TableCell>{application.position}</TableCell>
                 <TableCell>{toTitleCase(application.status)}</TableCell>
-                <TableCell>{application.dateApplied}</TableCell>
+                <TableCell>{getDate(application.dateapplied)}</TableCell>
                 <TableCell className="flex justify-center">
                   <Button variant="link" size="sm">
                     <Ellipsis />
