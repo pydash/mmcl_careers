@@ -1,7 +1,7 @@
 interface Application {
   id: string;
   position: string;
-  dateApplied: string;
+  dateapplied: string;
   status: "Pending" | "Interview Scheduled" | "Deffered" | "Accepted";
 }
 
