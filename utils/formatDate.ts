@@ -38,6 +38,6 @@ export function getDateTime(isoString: string): string {
     const hours = String(date.getUTCHours()).padStart(2, "0");
     const minutes = String(date.getUTCMinutes()).padStart(2, "0");
     const seconds = String(date.getUTCSeconds()).padStart(2, "0");
-    return `${month} ${day}, ${year} ${hours}-${minutes}-${seconds}`;
+    return `${month} ${day}, ${year} | ${hours}:${minutes}:${seconds}`;
   }
 }
