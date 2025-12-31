@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const interviews_query_result = await db
       .query(
-        "SELECT ja.id AS application_id, ja.job_title, ji.interview_date, ji.interview_time, ji.location, ji.instructions FROM job_interview ji JOIN job_applications ja ON ji.app_id = ja.id WHERE ja.acc_id = $1 AND ji.interview_date >= NOW() ORDER BY ji.interview_date ASC;",
+        "SELECT ji.title, ji.interview_mode as mode, ji.scheduled_at as schedule  FROM job_interviews as ji JOIN job_applications as ja ON ji.app_id = ja.id WHERE ja.acc_id = $1 AND ji.scheduled_at >= NOW() ORDER BY ji.scheduled_at ASC;",
         [userId]
       )
       .then((res: any) => res.rows);
