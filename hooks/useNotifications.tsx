@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchNotifications } from "@/services/notification.service";
+import { fetchNotifications } from "@/services/applicant/dashboard/notification.service";
 import Notification from "@/models/Notification";
 
 export function useNotifications() {
