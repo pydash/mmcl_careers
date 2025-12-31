@@ -11,12 +11,31 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const overview_query_result = await db
+    const total_applications = await db
+      .query("SELECT COUNT(*) FROM job_applications WHERE acc_id = $1;", [
+        userId,
+      ])
+      .then((res: any) => res.rows[0]);
+
+    const pending_applications = await db
       .query(
-        "SELECT COUNT(*) FILTER (WHERE ja.acc_id = $1) AS total_applications, COUNT(*) FILTER (WHERE ja.acc_id = $1 AND ja.status = 'pending') AS pending_applications, COUNT(*) FILTER (WHERE ja.acc_id = $1 AND ja.status = 'interview_scheduled') AS interviews_scheduled FROM job_applications ja;",
+        "SELECT COUNT(*) FROM job_applications WHERE acc_id = $1 AND status = 'pending';",
         [userId]
       )
       .then((res: any) => res.rows[0]);
+
+    const interview_count = await db
+      .query(
+        "SELECT COUNT(*) FROM job_interviews ji JOIN job_applications ja ON ji.app_id = ja.id WHERE ja.acc_id = $1 AND ji.scheduled_at >= NOW();",
+        [userId]
+      )
+      .then((res: any) => res.rows[0]);
+
+    const overview_query_result = {
+      total_applications: total_applications.count,
+      pending_applications: pending_applications.count,
+      upcoming_interviews: interview_count.count,
+    };
 
     return NextResponse.json(overview_query_result);
   } catch (error: any) {
