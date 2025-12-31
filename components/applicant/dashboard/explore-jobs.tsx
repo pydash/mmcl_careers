@@ -6,7 +6,7 @@ import IntextEmpty from "@/components/intext-empty";
 export default function ExploreJobs() {
   const [jobs, setJobs] = useState<Job[]>([]); // Placeholder for fetched jobs data
   return (
-    <div className="p-4 roundex-xl bg-gray-50">
+    <div className="p-4 rounded-xl bg-gray-50">
       <h1 className="text-xl font-semibold mb-4">Explore Jobs</h1>
       {jobs.length === 0 ? (
         <IntextEmpty message="No jobs available at the moment." />
