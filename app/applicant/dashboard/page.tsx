@@ -15,12 +15,11 @@ import { Bell } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 import OverviewCard from "@/components/applicant/dashboard/overview-card";
-import Notifications from "@/components/applicant/dashboard/notifications";
 import RecentApplications from "@/components/applicant/dashboard/recent-applications";
 import ResumeCard from "@/components/applicant/dashboard/resume-card";
 import ExploreJobs from "@/components/applicant/dashboard/explore-jobs";
-import Interviews from "@/components/applicant/dashboard/interview-card";
 import InterviewCard from "@/components/applicant/dashboard/interview-card";
+import Notifications from "@/components/applicant/dashboard/notifications";
 
 export default function DashboardPage() {
   const router = useRouter();
