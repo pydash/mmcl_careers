@@ -1,8 +1,8 @@
 interface Interview {
   id: string;
-  position: string;
-  date: string;
-  time: string;
+  title: string;
+  schedule: string;
+  mode: string;
   interviewer: string;
 }
 
