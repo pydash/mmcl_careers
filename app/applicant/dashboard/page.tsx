@@ -2,24 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetTrigger,
-  SheetHeader,
-  SheetContent,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import Sidebar from "@/components/applicant/dashboard/sidebar";
-import { Bell } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
 import OverviewCard from "@/components/applicant/dashboard/overview-card";
 import RecentApplications from "@/components/applicant/dashboard/recent-applications";
 import ResumeCard from "@/components/applicant/dashboard/resume-card";
 import ExploreJobs from "@/components/applicant/dashboard/explore-jobs";
 import InterviewCard from "@/components/applicant/dashboard/interview-card";
-import Notifications from "@/components/applicant/dashboard/notifications";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -57,40 +45,16 @@ export default function DashboardPage() {
   if (error) return <p className="p-4">Error loading profile: {error}</p>;
 
   return (
-    <div className="flex h-screen w-full">
-      <Sidebar />
-      <main className="flex-1 overflow-auto">
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4">
-          <div className="flex flex-1 items-center justify-between gap-2">
-            <h1 className="text-lg font-semibold">Dashboard</h1>
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Bell className="h-4 w-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-96 p-0">
-                <SheetHeader className="p-4">
-                  <SheetTitle>Notifications</SheetTitle>
-                  <Separator />
-                </SheetHeader>
-                <div className="p-4">
-                  <Notifications />
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </header>
-        <div className="grid grid-cols-[6fr_4fr] gap-4 p-4">
-          <div className="flex flex-col gap-4">
-            <OverviewCard />
-            <RecentApplications />
-            <ResumeCard />
-            <ExploreJobs />
-          </div>
-          <InterviewCard />
+    <main className="flex-1 overflow-auto">
+      <div className="grid grid-cols-[6fr_4fr] gap-4 p-4">
+        <div className="flex flex-col gap-4">
+          <OverviewCard />
+          <RecentApplications />
+          <ResumeCard />
+          <ExploreJobs />
         </div>
-      </main>
-    </div>
+        <InterviewCard />
+      </div>
+    </main>
   );
 }
