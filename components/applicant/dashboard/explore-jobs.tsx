@@ -1,10 +1,12 @@
-import { use, useState } from "react";
-
 import Job from "@/models/Job";
 import IntextEmpty from "@/components/intext-empty";
+import { useJobs } from "@/hooks/applicant/dashboard/useJobs";
+import { getDate } from "@/utils/formatDate";
 
 export default function ExploreJobs() {
-  const [jobs, setJobs] = useState<Job[]>([]); // Placeholder for fetched jobs data
+  const { jobs, loading, error } = useJobs();
+  if (loading) return <p className="p-4">Loading jobs...</p>;
+  if (error) return <p className="p-4">Error loading jobs: {error}</p>;
   return (
     <div className="p-4 rounded-xl bg-gray-50">
       <h1 className="text-xl font-semibold mb-4">Explore Jobs</h1>
@@ -18,7 +20,7 @@ export default function ExploreJobs() {
           >
             <h2 className="text-lg font-semibold">{job.title}</h2>
             <p className="text-sm text-muted-foreground">
-              Posted on {job.postedDate}
+              Valid until {getDate(job.expiry_date)}
             </p>
             <p className="mt-2">{job.description}</p>
           </div>
