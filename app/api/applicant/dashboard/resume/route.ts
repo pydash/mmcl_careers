@@ -13,10 +13,10 @@ export async function GET(request: NextRequest) {
 
     const resume_query_result = await db
       .query(
-        "SELECT id, file_name, file_size, file_url, updated_at as uploaded_at FROM user_attachments WHERE acc_id = $1 AND file_type = 'resume' ORDER BY uploaded_at DESC LIMIT 1;",
+        "SELECT id, file_name, file_size, file_url, updated_at as uploaded_at FROM user_attachments WHERE acc_id = $1 AND file_type = 'resume' ORDER BY updated_at DESC LIMIT 1;",
         [userId]
       )
-      .then((res: any) => res.rows[0]);
+      .then((res: any) => res.rows);
 
     return NextResponse.json(resume_query_result);
   } catch (error) {
