@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import { fetchNotifications } from "@/services/applicant/dashboard/notification.service";
 import Notification from "@/models/Notification";
