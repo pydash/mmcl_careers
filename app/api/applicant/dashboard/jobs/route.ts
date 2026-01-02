@@ -17,21 +17,11 @@ export async function GET(request: NextRequest) {
       )
       .then((res: any) => res.rows);
 
-    const interviews_query_result = await db
-      .query(
-        "SELECT ja.id, ja.job_title, ji.interview_date, ji.interview_time, ji.location FROM job_interview ji JOIN job_applications ja ON ji.app_id = ja.id WHERE ja.acc_id = $1 AND ji.interview_date >= NOW() ORDER BY ji.interview_date ASC;",
-        [userId]
-      )
-      .then((res: any) => res.rows);
-
-    return NextResponse.json({
-      jobs: jobs_query_result,
-      interviews: interviews_query_result,
-    });
+    return NextResponse.json(jobs_query_result);
   } catch (error) {
-    console.error("Error fetching dashboard jobs and interviews:", error);
+    console.error("Error fetching jobs", error);
     return NextResponse.json(
-      { error: "Failed to fetch dashboard jobs and interviews" },
+      { error: "Failed to fetch jobs" },
       { status: 500 }
     );
   }
