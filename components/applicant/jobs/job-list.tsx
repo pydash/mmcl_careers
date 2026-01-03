@@ -1,8 +1,8 @@
 import JobCard from "./job-card";
-import { useJobs } from "@/hooks/applicant/jobs/useJobs";
+import { useJobPostItemList } from "@/hooks/applicant/jobs/useJobPostItemList";
 
 export default function JobList() {
-  const { jobs, loading, error } = useJobs();
+  const { jobs, loading, error } = useJobPostItemList();
 
   if (loading) {
     return <div>Loading jobs...</div>;
