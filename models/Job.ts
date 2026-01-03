@@ -11,6 +11,7 @@ interface Job {
   is_active: boolean;
   expiry_date: string;
   posted_by: string;
+  created_at: string;
 }
 
 export default Job;
