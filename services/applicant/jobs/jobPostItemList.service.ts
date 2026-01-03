@@ -1,4 +1,4 @@
-export async function fetchJobs() {
+export async function fetchJobPostItemList() {
   const response = await fetch("/api/applicant/jobs", {
     method: "GET",
     cache: "no-store",
