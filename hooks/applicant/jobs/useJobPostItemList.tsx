@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { fetchJobs } from "@/services/applicant/jobs/jobs.service";
-import Job from "@/models/Job";
+import { fetchJobPostItemList } from "@/services/applicant/jobs/jobPostItemList.service";
+import { JobPostItemList } from "@/models/job-posts/job-post.list";
 
-export function useJobs() {
-  const [jobs, setJobs] = useState<Job[]>([]);
+export function useJobPostItemList() {
+  const [jobs, setJobs] = useState<JobPostItemList[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
-    fetchJobs()
+    fetchJobPostItemList()
       .then((data) => {
         setJobs(data);
         setLoading(false);
