@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import db from "@/lib/db";
+import { JOB_POST_ITEM_LIST_QUERY } from "@/lib/queries/applicant/jobs/job_post_list";
+import { JobPostItemList } from "@/models/job-posts/job-post.list";
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,9 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     const jobs_query_result = await db
-      .query(
-        "SELECT id, title, department, employment_type, salary_min, salary_max, is_active, expiry_date FROM job_posts WHERE is_active = true"
-      )
+      .query<JobPostItemList>(JOB_POST_ITEM_LIST_QUERY)
       .then((res: any) => res.rows);
 
     return NextResponse.json(jobs_query_result);
