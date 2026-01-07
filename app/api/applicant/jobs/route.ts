@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     const jobs_query_result = await db
-      .query<JobPostItemList>(JOB_POST_ITEM_LIST_QUERY)
+      .query<JobPostItemList>(JOB_POST_ITEM_LIST_QUERY, [userId])
       .then((res: any) => res.rows);
 
     return NextResponse.json(jobs_query_result);
