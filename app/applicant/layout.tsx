@@ -23,7 +23,12 @@ const menuItems = [
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const currentPage = menuItems.find((item) => item.href === pathname);
+  const segments = pathname.split("/").filter(Boolean);
+  const secondSegment = segments[1]; // Extract "dashboard", "jobs", "applications", etc.
+
+  const currentPage = menuItems.find((item) =>
+    item.href.includes(`/applicant/${secondSegment}`)
+  );
   const pageTitle = currentPage?.title || "Dashboard";
   return (
     <div className="flex h-screen w-full">
