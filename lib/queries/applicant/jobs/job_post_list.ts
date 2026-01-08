@@ -8,7 +8,15 @@ SELECT
   COALESCE(
     json_agg(jt.tag) FILTER (WHERE jt.tag IS NOT NULL),
     '[]'
-  ) AS tags
+  ) AS tags,
+  CASE
+    WHEN EXISTS (
+      SELECT 1
+      FROM job_applications ja
+      WHERE ja.job_id = jp.id AND ja.acc_id = $1
+    ) THEN true
+    ELSE false
+  END AS has_applied
 FROM job_posts jp
 LEFT JOIN job_tags jt ON jp.id = jt.job_id
 WHERE jp.is_active = true
