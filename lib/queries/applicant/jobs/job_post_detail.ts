@@ -9,7 +9,7 @@ SELECT
   jp.salary_max,
   jp.department,
   jp.expiry_date,
-  jp.posted_at,
+  jp.created_at AS posted_at,
   COALESCE(
     json_agg(jt.tag) FILTER (WHERE jt.tag IS NOT NULL),
     '[]'
