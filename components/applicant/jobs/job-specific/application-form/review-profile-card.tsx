@@ -15,7 +15,7 @@ export default function ReviewProfileCard() {
         </div>
         <Separator className="my-2" />
         <Button variant="default" className="self-start" asChild>
-          <Link href="#" className="flex items-center">
+          <Link href="/applicant/applications" className="flex items-center">
             Edit
           </Link>
         </Button>
