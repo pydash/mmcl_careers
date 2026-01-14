@@ -3,58 +3,60 @@
 import { useEffect, useState } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 
-import { signup } from "./action";
-import { useCreateNewAccount } from "@/hooks/applicant/signup/useCreateNewAccount";
+import { login } from "./action";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldLegend,
-  FieldSeparator,
   FieldSet,
+  FieldSeparator,
 } from "@/components/ui/field";
-import { Alert } from "@/components/ui/alert";
-
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import Image from "next/image";
+import { Alert } from "@/components/ui/alert";
 
 const initialState = { error: "" };
 
-export default function SignupPage() {
+export default function LoginPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    confirmPassword: "",
   });
-  const [showAlert, setShowAlert] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { createAccount, loading, error } = useCreateNewAccount();
-  const [state, formAction] = useActionState(signup, initialState);
-  const router = useRouter();
+  const [showAlert, setShowAlert] = useState(false);
+  const [error, setError] = useState("");
+  const [state, formAction] = useActionState(login, initialState);
 
-  useEffect(() => {
-    if (error) {
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-      }, 5000);
-    }
-  }, [error]);
+  const showError = (message: string) => {
+    // Mount hidden first, then trigger show to animate in
+    setShowAlert(false);
+    setError(message);
+    setTimeout(() => setShowAlert(true), 0);
+
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 5000);
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   useEffect(() => {
     if (state?.error) {
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-      }, 5000);
+      showError(state.error);
     } else if (state && state.error === null) {
-      router.push("/applicant/dashboard");
+      router.push("/hr/dashboard");
     }
   }, [state, router]);
 
@@ -76,20 +78,23 @@ export default function SignupPage() {
       )}
 
       <main className="h-dvh flex flex-col items-center justify-center gap-4">
-        <div className="flex justify-center">
-          <Image
-            src="/MMCL_Logo_Horizontal.png"
-            alt="Signup Image"
-            width={150}
-            height={150}
-          />
-        </div>
-        <form>
+        <form
+          className=" p-6 rounded-2xl shadow-md w-full max-w-md"
+          action={formAction}
+        >
+          <div className="flex justify-center">
+            <Image
+              src="/MMCL_Logo_Horizontal.png"
+              alt="Signup Image"
+              width={150}
+              height={150}
+            />
+          </div>
           <FieldGroup>
             <FieldSet>
-              <FieldLegend>Sign Up</FieldLegend>
+              <FieldLegend>Log in</FieldLegend>
               <FieldDescription>
-                Please enter your email to create an account
+                Please enter your email and password to log in
               </FieldDescription>
               <Field>
                 <FieldLabel>
@@ -99,7 +104,7 @@ export default function SignupPage() {
                   type="email"
                   id="email"
                   name="email"
-                  placeholder="Enter email address"
+                  placeholder="you@example.com"
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
@@ -123,7 +128,7 @@ export default function SignupPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
+                    onClick={toggleShowPassword}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                     tabIndex={-1}
                   >
@@ -135,24 +140,6 @@ export default function SignupPage() {
                   </button>
                 </div>
               </Field>
-              <Field>
-                <FieldLabel>
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
-                </FieldLabel>
-                <Input
-                  type="password"
-                  id="confirm-password"
-                  name="confirmPassword"
-                  placeholder="Enter password"
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                />
-              </Field>
               <FieldSeparator />
               <Button
                 type="submit"
@@ -160,17 +147,9 @@ export default function SignupPage() {
                 size="lg"
                 className="w-full"
               >
-                Create Account
+                Log in
               </Button>
             </FieldSet>
-            <Field>
-              <FieldDescription className="text-center">
-                Already have an account?{" "}
-                <a href="/login" className="text-blue-600 hover:underline">
-                  Log in
-                </a>
-              </FieldDescription>
-            </Field>
           </FieldGroup>
         </form>
       </main>
