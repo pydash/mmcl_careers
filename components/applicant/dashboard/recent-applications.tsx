@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -7,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import RecentApplicationsButtonGroup from "./recent-app-btn-group";
 
 import { Ellipsis } from "lucide-react";
 import IntextEmpty from "@/components/intext-empty";
@@ -43,10 +43,8 @@ export default function RecentApplications() {
                 <TableCell>{application.position}</TableCell>
                 <TableCell>{toTitleCase(application.status)}</TableCell>
                 <TableCell>{getDate(application.dateapplied)}</TableCell>
-                <TableCell className="flex justify-center">
-                  <Button variant="link" size="sm">
-                    <Ellipsis />
-                  </Button>
+                <TableCell className="flex items-center">
+                  <RecentApplicationsButtonGroup />
                 </TableCell>
               </TableRow>
             ))}

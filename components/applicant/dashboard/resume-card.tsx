@@ -9,7 +9,7 @@ import {
   ItemDescription,
 } from "@/components/ui/item";
 import { Button } from "@/components/ui/button";
-import EmptyState from "@/components/empty-state";
+import EmptyButtonState from "@/components/empty-button-state";
 
 import { FileUser } from "lucide-react";
 import Resume from "@/models/Resume";
@@ -37,7 +37,10 @@ export default function ResumeCard() {
           </ItemActions>
         </Item>
       ) : (
-        <EmptyState message="You have not uploaded a resume yet." />
+        <EmptyButtonState
+          message="You have not uploaded a resume yet."
+          goToLink="/applicant/profile"
+        />
       )}
     </div>
   );
