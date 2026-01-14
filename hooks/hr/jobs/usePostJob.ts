@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { postJob, type PostJobData } from "@/services/hr/jobs/postJob";
+import { postJob } from "@/services/hr/jobs/postJob";
+import { type PostJobData } from "@/models/PostJob";
 import { type JobFormData, initialJobFormData } from "@/models/JobForm";
 
 export function usePostJob() {
