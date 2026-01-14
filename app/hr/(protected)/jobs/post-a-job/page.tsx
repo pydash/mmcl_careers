@@ -142,6 +142,7 @@ export default function PostJobPage() {
                     <SelectValue placeholder="Select a department" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="-">-</SelectItem>
                     <SelectItem value="engineering">Engineering</SelectItem>
                     <SelectItem value="marketing">Marketing</SelectItem>
                     <SelectItem value="sales">Sales</SelectItem>
