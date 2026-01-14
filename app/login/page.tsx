@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 import { login } from "./action";
 
@@ -20,7 +21,6 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { FcGoogle } from "react-icons/fc";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Alert } from "@/components/ui/alert";
 
@@ -82,6 +82,14 @@ export default function LoginPage() {
           className=" p-6 rounded-2xl shadow-md w-full max-w-md"
           action={formAction}
         >
+          <div className="flex justify-center">
+            <Image
+              src="/MMCL_Logo_Horizontal.png"
+              alt="Signup Image"
+              width={150}
+              height={150}
+            />
+          </div>
           <FieldGroup>
             <FieldSet>
               <FieldLegend>Log in</FieldLegend>
@@ -131,12 +139,6 @@ export default function LoginPage() {
                     )}
                   </button>
                 </div>
-                <Link
-                  href="./forgot-password"
-                  className="text-blue-600 hover:underline text-sm mt-2 block text-right"
-                >
-                  Forgot password?
-                </Link>
               </Field>
               <FieldSeparator />
               <Button
