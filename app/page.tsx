@@ -54,13 +54,13 @@ export default function Home() {
             <div className="flex flex-col gap-3 pt-4">
               <Button
                 asChild
-                className="bg-red-600 hover:bg-red-500 text-white"
+                className="bg-red-600 hover:bg-red-500 text-white rounded-none"
               >
                 <Link href="/signup">Create Account</Link>
               </Button>
               <Button
                 asChild
-                className="bg-blue-900 hover:bg-blue-800 hover:text-white text-white"
+                className="bg-blue-900 hover:bg-blue-800 hover:text-white text-white rounded-none"
               >
                 <Link href="/login">Login</Link>
               </Button>
