@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import db from "@/lib/db";
-import { APPLICATION_LIST_DETAILS_QUERY } from "@/lib/queries/applicant/applications/application_list_details";
+import { getAllApplications } from "@/lib/queries/applicant/applications/applications_list";
+import { Application } from "@/models/Application";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     const jobs_query_result = await db
-      .query(APPLICATION_LIST_DETAILS_QUERY, [userId])
+      .query<Application[]>(getAllApplications, [userId])
       .then((res: any) => res.rows);
 
     return NextResponse.json(jobs_query_result);
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching jobs", error);
     return NextResponse.json(
       { error: "Failed to fetch jobs" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

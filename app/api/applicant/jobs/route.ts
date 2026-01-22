@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import db from "@/lib/db";
-import { JOB_POST_ITEM_LIST_QUERY } from "@/lib/queries/applicant/jobs/job_post_list";
-import { JobPostItemList } from "@/models/job-posts/job-post.list";
+import { getAllJobPost } from "@/lib/queries/applicant/jobs/job_post_list";
+import { Job } from "@/models/Job";
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     const jobs_query_result = await db
-      .query<JobPostItemList>(JOB_POST_ITEM_LIST_QUERY, [userId])
+      .query<Job>(getAllJobPost, [userId])
       .then((res: any) => res.rows);
 
     return NextResponse.json(jobs_query_result);
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching jobs", error);
     return NextResponse.json(
       { error: "Failed to fetch jobs" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
