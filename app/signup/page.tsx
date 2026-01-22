@@ -54,7 +54,7 @@ export default function SignupPage() {
         setShowAlert(false);
       }, 5000);
     } else if (state && state.error === null) {
-      router.push("/applicant/dashboard");
+      router.push("/applicant/jobs");
     }
   }, [state, router]);
 
