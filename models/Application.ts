@@ -1,8 +1,13 @@
-interface Application {
+export interface Application {
   id: string;
-  position: string;
-  dateapplied: string;
-  status: "Pending" | "For Interview" | "Deffered" | "Accepted";
+  acc_id: string;
+  job_id: string;
+  public_id: string;
+  title: string;
+  status: string;
+  applied_at: string;
+  notes: string;
+  pitch: string;
+  created_at: string;
+  updated_at: string;
 }
-
-export default Application;
