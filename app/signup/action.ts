@@ -1,6 +1,6 @@
 "use server";
 
-import pool from "@/lib/db";
+import db from "@/lib/db";
 import { hashPassword } from "@/utils/hashPass";
 import { cookies } from "next/headers";
 import { randomUUID } from "crypto";
@@ -23,31 +23,10 @@ export async function signup(prevState: SignupState, formData: FormData) {
   try {
     const hashedPassword = await hashPassword(password);
 
-    const result = await pool.query(
+    const result = await db.query(
       "INSERT INTO user_accounts (email, password_hash) VALUES ($1, $2)",
-      [email, hashedPassword]
+      [email, hashedPassword],
     );
-
-    console.log("User inserted successfully:", result.rowCount);
-
-    // issue a simple session token and email cookie
-    const token = randomUUID();
-    const cookieStore = await cookies();
-    const maxAge = 60 * 60 * 24 * 7; // 7 days
-
-    cookieStore.set("session_token", token, {
-      httpOnly: true,
-      sameSite: "lax",
-      path: "/",
-      maxAge,
-    });
-
-    cookieStore.set("session_email", email, {
-      httpOnly: false,
-      sameSite: "lax",
-      path: "/",
-      maxAge,
-    });
 
     return { error: null } as SignupState;
   } catch (error: any) {
