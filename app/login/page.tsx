@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 
 import { login } from "./action";
@@ -18,7 +17,6 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
@@ -37,8 +35,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [state, formAction] = useActionState(login, initialState);
 
+  // Function to show error with animation
   const showError = (message: string) => {
-    // Mount hidden first, then trigger show to animate in
     setShowAlert(false);
     setError(message);
     setTimeout(() => setShowAlert(true), 0);
@@ -48,15 +46,17 @@ export default function LoginPage() {
     }, 5000);
   };
 
+  // Function to toggle password visibility
   const toggleShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
 
+  // Handle state changes from the action
   useEffect(() => {
     if (state?.error) {
       showError(state.error);
     } else if (state && state.error === null) {
-      router.push("/applicant/dashboard");
+      router.push("/applicant/jobs");
     }
   }, [state, router]);
 
@@ -71,21 +71,21 @@ export default function LoginPage() {
           }`}
           aria-live="assertive"
         >
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="bg-white">
             <p>{error}</p>
           </Alert>
         </div>
       )}
 
-      <main className="h-dvh flex flex-col items-center justify-center gap-4">
+      <main className="h-dvh flex flex-col items-center justify-center bg-blue-950">
         <form
-          className=" p-6 rounded-2xl shadow-md w-full max-w-md"
+          className="p-8 shadow-md shadow-accent-foreground w-full max-w-md bg-white"
           action={formAction}
         >
           <div className="flex justify-center">
             <Image
               src="/MMCL_Logo_Horizontal.png"
-              alt="Signup Image"
+              alt="MMCL Logo"
               width={150}
               height={150}
             />
@@ -144,10 +144,9 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 variant="default"
-                size="lg"
-                className="w-full"
+                className="w-full bg-red-600 hover:bg-red-500"
               >
-                Log in
+                Log In
               </Button>
             </FieldSet>
             <Field>
