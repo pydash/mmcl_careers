@@ -1,5 +1,5 @@
-export async function fetchJobDetails(jobId: string) {
-  const response = await fetch(`/api/applicant/jobs/${jobId}`, {
+export async function fetchJobDetails(job_pub_id: string) {
+  const response = await fetch(`/api/applicant/jobs/${job_pub_id}`, {
     method: "GET",
     cache: "no-store",
   });
