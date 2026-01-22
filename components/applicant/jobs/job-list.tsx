@@ -1,23 +1,14 @@
+import Link from "next/link";
 import { useState, useMemo } from "react";
-import JobCard from "./job-card";
 import JobSearchbar from "./job-searchbar";
 import JobFilter from "./job-filter";
 import { useJobPostItemList } from "@/hooks/applicant/jobs/useJobPostItemList";
+import { Separator } from "@/components/ui/separator";
 
 export default function JobList() {
   const { jobs, loading, error } = useJobPostItemList();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [salaryRange, setSalaryRange] = useState({ min: 0, max: 1000000 });
-
-  // Get all unique tags from jobs (must be before conditional returns)
-  const availableTags = useMemo(() => {
-    const tagSet = new Set<string>();
-    jobs.forEach((job) => {
-      job.tags?.forEach((tag) => tagSet.add(tag));
-    });
-    return Array.from(tagSet);
-  }, [jobs]);
 
   // Filter jobs by title, tags, and salary range
   const filteredJobs = useMemo(() => {
@@ -32,14 +23,9 @@ export default function JobList() {
         selectedTags.length === 0 ||
         job.tags?.some((tag) => selectedTags.includes(tag));
 
-      // Filter by salary range
-      const jobSalaryMax = Number(job.salary_max);
-      const matchesSalary =
-        jobSalaryMax >= salaryRange.min && jobSalaryMax <= salaryRange.max;
-
-      return matchesSearch && matchesTags && matchesSalary;
+      return matchesSearch && matchesTags;
     });
-  }, [jobs, searchQuery, selectedTags, salaryRange]);
+  }, [jobs, searchQuery, selectedTags]);
 
   if (loading) {
     return <div>Loading jobs...</div>;
@@ -52,25 +38,76 @@ export default function JobList() {
   return (
     <div>
       <div className="flex gap-4 mb-6">
-        <div className="flex-1">
-          <JobSearchbar
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
-        </div>
-        <JobFilter
-          availableTags={availableTags}
-          selectedTags={selectedTags}
-          onTagsChange={setSelectedTags}
-          salaryRange={salaryRange}
-          onSalaryRangeChange={setSalaryRange}
+        <JobSearchbar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
         />
+        <JobFilter selectedTags={selectedTags} onTagsChange={setSelectedTags} />
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="flex flex-col gap-4">
         {filteredJobs.length === 0 ? (
           <div>No jobs available.</div>
         ) : (
-          filteredJobs.map((job) => <JobCard key={job.id} data={job} />)
+          filteredJobs.map((job) => {
+            const isActive = job.is_active === true;
+            const hasApplied = Array.isArray(job.tags)
+              ? job.tags.some((t) => typeof t === "boolean" && t)
+              : false;
+            const href = hasApplied
+              ? `/applicant/applications/${job.public_id}`
+              : `/applicant/jobs/${job.public_id}`;
+            return (
+              <Link
+                key={job.id}
+                href={href}
+                className={`w-full border border-gray-200 p-6 transition-colors block ${
+                  isActive
+                    ? "hover:border-gray-400 cursor-pointer"
+                    : "opacity-60 cursor-not-allowed pointer-events-none"
+                }`}
+                aria-disabled={!isActive}
+                tabIndex={isActive ? 0 : -1}
+                prefetch
+              >
+                <div className="flex mb-2 flex-wrap gap-2">
+                  {job.tags?.map((tag, index) => {
+                    // If tag is boolean (has_applied), only render if true
+                    if (typeof tag === "boolean") {
+                      return tag ? (
+                        <span
+                          key={`applied-${index}`}
+                          className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-700"
+                        >
+                          Applied
+                        </span>
+                      ) : null;
+                    }
+                    // For string tags (department, employment_type)
+                    return (
+                      <span
+                        key={tag}
+                        className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700"
+                      >
+                        {tag}
+                      </span>
+                    );
+                  })}
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {job.title}
+                </h3>
+                <Separator className="my-2" />
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <p>
+                    Apply until:{" "}
+                    {new Date(job.expiry_date).toLocaleDateString()}
+                  </p>
+                  <Separator orientation="vertical" className="h-4" />
+                  <p>{isActive ? "Open" : "Closed"}</p>
+                </div>
+              </Link>
+            );
+          })
         )}
       </div>
     </div>

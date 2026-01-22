@@ -10,13 +10,13 @@ export default function JobSearchbar({
   onSearchChange,
 }: JobSearchbarProps) {
   return (
-    <div className="w-full">
+    <div className="w-100">
       <Input
         type="text"
-        placeholder="Search jobs by title..."
+        placeholder="Search"
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
-        className="w-full"
+        className="w-full shadow-none rounded-none border focus:border-blue-500 focus:outline-none focus-visible:ring-0"
       />
     </div>
   );

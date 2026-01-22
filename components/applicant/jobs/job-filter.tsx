@@ -12,24 +12,32 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Filter } from "lucide-react";
 
 interface JobFilterProps {
-  availableTags: string[];
   selectedTags: string[];
   onTagsChange: (tags: string[]) => void;
-  salaryRange: { min: number; max: number };
-  onSalaryRangeChange: (range: { min: number; max: number }) => void;
 }
 
+const COLLEGES_TAGS = ["CCIS", "CAS", "MITL", "MIA", "ETYCB", "SHS"];
+const OFFICES_TAGS = ["Human Resources", "ITSO", "Registrar", "Clinic"];
+const TYPE_TAGS = ["Full-time", "Part-time"];
+const availableTags = [...COLLEGES_TAGS, ...OFFICES_TAGS, ...TYPE_TAGS];
+
 export default function JobFilter({
-  availableTags,
   selectedTags,
   onTagsChange,
-  salaryRange,
-  onSalaryRangeChange,
 }: JobFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const collegeTags = ["CCIS", "CAS", "MITL", "MIA", "ETYCB", "SHS"].filter(
+    (tag) => availableTags.includes(tag),
+  );
+  const officeTags = ["Human Resources", "ITSO", "Registrar", "Clinic"].filter(
+    (tag) => availableTags.includes(tag),
+  );
+  const typeTags = ["Full-time", "Part-time"].filter((tag) =>
+    availableTags.includes(tag),
+  );
 
   const toggleTag = (tag: string) => {
     if (selectedTags.includes(tag)) {
@@ -41,87 +49,85 @@ export default function JobFilter({
 
   const clearFilters = () => {
     onTagsChange([]);
-    onSalaryRangeChange({ min: 0, max: 1000000 });
   };
-
-  const salaryRanges = [
-    { label: "All", min: 0, max: 1000000 },
-    { label: "Under ₱20,000", min: 0, max: 20000 },
-    { label: "₱20,000 - ₱40,000", min: 20000, max: 40000 },
-    { label: "₱40,000 - ₱60,000", min: 40000, max: 60000 },
-    { label: "₱60,000 - ₱80,000", min: 60000, max: 80000 },
-    { label: "Above ₱80,000", min: 80000, max: 1000000 },
-  ];
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" className="gap-2">
-          <Filter className="h-4 w-4" />
+        <Button
+          variant="outline"
+          className="gap-2 shadow-none rounded-none font-light"
+        >
           Filter
-          {selectedTags.length > 0 && (
-            <Badge variant="secondary" className="ml-1">
-              {selectedTags.length}
-            </Badge>
-          )}
+          {selectedTags.length > 0 && <p>({selectedTags.length})</p>}
         </Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Filter Jobs</SheetTitle>
           <SheetDescription>
-            Refine your job search by category and salary range.
+            Refine your job search by category.
           </SheetDescription>
         </SheetHeader>
         <div className="mt-6 space-y-6">
           {/* Tags Filter */}
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-semibold text-sm">Job Categories</h3>
-              {selectedTags.length > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onTagsChange([])}
-                  className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
-                >
-                  Clear
-                </Button>
-              )}
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="font-semibold text-sm">Colleges</h3>
             </div>
             <div className="flex flex-wrap gap-2">
-              {availableTags.map((tag) => (
+              {collegeTags.map((tag) => (
                 <Badge
                   key={tag}
                   variant={selectedTags.includes(tag) ? "default" : "outline"}
-                  className="cursor-pointer"
+                  className={`cursor-pointer rounded-none ${
+                    selectedTags.includes(tag)
+                      ? "bg-red-500 border-red-500 text-white hover:bg-red-500"
+                      : ""
+                  }`}
                   onClick={() => toggleTag(tag)}
                 >
                   {tag}
                 </Badge>
               ))}
             </div>
-          </div>
 
-          <Separator />
-
-          {/* Salary Range Filter */}
-          <div>
-            <h3 className="font-semibold text-sm mb-3">Salary Range</h3>
-            <div className="space-y-2">
-              {salaryRanges.map((range) => (
-                <div
-                  key={range.label}
-                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                    salaryRange.min === range.min &&
-                    salaryRange.max === range.max
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:bg-accent"
+            <div className="flex justify-between items-center pt-2">
+              <h3 className="font-semibold text-sm">Offices</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {officeTags.map((tag) => (
+                <Badge
+                  key={tag}
+                  variant={selectedTags.includes(tag) ? "default" : "outline"}
+                  className={`cursor-pointer rounded-none ${
+                    selectedTags.includes(tag)
+                      ? "bg-red-500 border-red-500 text-white hover:bg-red-500"
+                      : ""
                   }`}
-                  onClick={() => onSalaryRangeChange(range)}
+                  onClick={() => toggleTag(tag)}
                 >
-                  <p className="text-sm font-medium">{range.label}</p>
-                </div>
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+            <div className="flex justify-between items-center pt-2">
+              <h3 className="font-semibold text-sm">Employment Type</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {typeTags.map((tag) => (
+                <Badge
+                  key={tag}
+                  variant={selectedTags.includes(tag) ? "default" : "outline"}
+                  className={`cursor-pointer rounded-none ${
+                    selectedTags.includes(tag)
+                      ? "bg-red-500 border-red-500 text-white hover:bg-red-500"
+                      : ""
+                  }`}
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag}
+                </Badge>
               ))}
             </div>
           </div>
@@ -133,7 +139,7 @@ export default function JobFilter({
             variant="outline"
             className="w-full"
             onClick={clearFilters}
-            disabled={selectedTags.length === 0 && salaryRange.max === 1000000}
+            disabled={selectedTags.length === 0}
           >
             Clear All Filters
           </Button>
