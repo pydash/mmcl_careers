@@ -1,6 +1,6 @@
 "use server";
 
-import pool from "@/lib/db";
+import db from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { randomUUID } from "crypto";
@@ -17,9 +17,9 @@ export async function login(prevState: LoginState, formData: FormData) {
 
   try {
     // Fetch user from database
-    const result = await pool.query(
+    const result = await db.query(
       "SELECT id, email, password_hash FROM user_accounts WHERE email = $1",
-      [email]
+      [email],
     );
 
     if (result.rows.length === 0) {
@@ -32,13 +32,13 @@ export async function login(prevState: LoginState, formData: FormData) {
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isPasswordValid) {
-      return { error: "Invalid email or password." } as LoginState;
+      return { error: "Incorrect password." } as LoginState;
     }
 
     // Create session cookies
     const token = randomUUID();
     const cookieStore = await cookies();
-    const maxAge = 60 * 60 * 24 * 7; // 7 days
+    const maxAge = 60 * 60 * 24 * 1; // 1 day
 
     cookieStore.set("session_token", token, {
       httpOnly: true,

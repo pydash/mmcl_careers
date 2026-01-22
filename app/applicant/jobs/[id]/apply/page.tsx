@@ -6,9 +6,9 @@ import { redirect, useParams } from "next/navigation";
 import useSubmitApplication from "@/hooks/applicant/jobs/useSubmitApplication";
 
 import { AppBreadcrumbs } from "@/components/applicant/breadcrumb";
-import PitchCard from "@/components/applicant/jobs/job-specific/application-form/pitch-card";
-import ReviewProfileCard from "@/components/applicant/jobs/job-specific/application-form/review-profile-card";
-import ReviewConfirmation from "@/components/applicant/jobs/job-specific/application-form/review-confirmation";
+import PitchCard from "@/components/applicant/jobs/job/application-form/pitch-card";
+import ReviewProfileCard from "@/components/applicant/jobs/job/application-form/review-profile-card";
+import ReviewConfirmation from "@/components/applicant/jobs/job/application-form/review-confirmation";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
