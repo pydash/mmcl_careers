@@ -27,9 +27,14 @@ export function Sidebar({ title, items }: SidebarProps) {
 
   const router = useRouter();
   const handleLogout = async () => {
-    document.cookie = "session_token=; Max-Age=0; path=/";
-    document.cookie = "session_email=; Max-Age=0; path=/";
-    router.push("/login");
+    try {
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      if (response.ok) {
+        router.push("/login");
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
@@ -58,7 +63,7 @@ export function Sidebar({ title, items }: SidebarProps) {
                 className={cn(
                   buttonVariants({ variant: isActive ? "secondary" : "ghost" }),
                   isActive && "shadow-none",
-                  "w-full justify-start gap-2"
+                  "w-full justify-start gap-2",
                 )}
               >
                 <item.icon className="h-6 w-6" />
@@ -74,7 +79,7 @@ export function Sidebar({ title, items }: SidebarProps) {
         <button
           className={cn(
             buttonVariants({ variant: "ghost" }),
-            "w-full justify-start gap-2 text-red-500"
+            "w-full justify-start gap-2 text-red-500",
           )}
           onClick={handleLogout}
         >
