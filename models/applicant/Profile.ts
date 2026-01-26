@@ -8,9 +8,12 @@ export interface Profile {
   personal: Personal;
   education: Education;
   employment: Employment[];
+  gov_ids: GovID[];
   license: License[];
-  extras: Extras;
   attachments: Attachment[];
+  extras: Extras;
+  socials: Social[];
+  has_profile: boolean;
 }
 
 // ---------- Personal ----------
@@ -27,8 +30,6 @@ export interface Personal {
   physical_address: string;
   honorifics: string[];
   about: string | null;
-  photo_url: string | null;
-  resume_url: string | null;
   created_at: string; // ISO datetime
   updated_at: string; // ISO datetime
 }
@@ -58,6 +59,19 @@ export interface Employment {
   monthly_salary: number;
   date_started: string; // ISO date
   date_ended: string; // ISO date
+  created_at: string; // ISO datetime
+  updated_at: string; // ISO datetime
+}
+
+// ---------- Government IDs ----------
+export interface GovID {
+  id: number;
+  acc_id: string;
+  id_type: string;
+  id_number: string;
+  issued_by: string;
+  issued_date: string; // ISO date
+  expiry_date: string; // ISO date
   created_at: string; // ISO datetime
   updated_at: string; // ISO datetime
 }
@@ -98,4 +112,10 @@ export interface Attachment {
   file_size: number;
   created_at: string; // ISO datetime
   updated_at: string; // ISO datetime
+}
+
+// ---------- Socials ----------
+export interface Social {
+  platform: string;
+  url: string;
 }
