@@ -26,7 +26,7 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-2">
+    <div className="flex flex-col gap-4">
       <ApplicationsSearchbar value={searchQuery} onChange={setSearchQuery} />
 
       {filteredApplications && filteredApplications.length > 0 ? (
