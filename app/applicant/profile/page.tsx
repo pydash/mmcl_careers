@@ -1,3 +1,10 @@
+import { Button } from "@/components/ui/button";
+import { SquarePen } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+
 export default function ProfilePage() {
-  return <div>Applicant Profile Page</div>;
+  <div>
+    
+  </div>
+  return <div>under construction</div>;
 }
