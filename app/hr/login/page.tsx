@@ -71,7 +71,7 @@ export default function LoginPage() {
           }`}
           aria-live="assertive"
         >
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="bg-white">
             <p>{error}</p>
           </Alert>
         </div>
