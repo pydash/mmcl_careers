@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components/ui/tabs";
+import { getDate } from "@/utils/formatDate";
+import { useAllApplications } from "@/hooks/hr/applicants/useAllApplications";
+import { InterviewsTable } from "@/components/hr/applicants/interviews-table";
+import { useEffect, useState } from "react";
+import { OffersTable } from "@/components/hr/applicants/offers-table";
+import { ApplicationDetailsButton } from "@/components/hr/applicants/application-details-button";
 
 const applicants = [
   {
@@ -42,6 +51,163 @@ const applicants = [
 ];
 
 export default function ApplicantsPage() {
+  const [mounted, setMounted] = useState(false);
+  const {
+    applications: allApplications,
+    loading,
+    error,
+  } = useAllApplications();
+  const [applications, setApplications] = useState<any>(allApplications);
+
+  useEffect(() => {
+    setMounted(true);
+    setApplications(allApplications);
+  }, [allApplications]);
+
+  if (!mounted) {
+    return null;
+  }
+
+  const setStatus = (id: string | number, status: string) => {
+    setApplications((old: any) =>
+      old.map((app: any) => (app.id === id ? { ...app, status } : app)),
+    );
+  };
+
+  const pendingApplications = applications.filter(
+    (app: any) => app.status === "Pending",
+  );
+  const forInterviewApplications = applications.filter(
+    (app: any) => app.status === "For interview",
+  );
+  const deferredApplications = applications.filter(
+    (app: any) => app.status === "Cancelled",
+  );
+
+  const appsFilterLabels = ["all", "pending", "for_interview", "deferred"];
+  const appsFilters = [
+    applications,
+    pendingApplications,
+    forInterviewApplications,
+    deferredApplications,
+  ];
+
+  const ApplicationsTable = ({
+    applicationsList,
+  }: {
+    applicationsList: any[];
+  }) => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Application No.</TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Job Title</TableHead>
+          <TableHead>Application Date</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Action</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {applicationsList.length === 0 ? (
+          <TableRow>
+            <TableCell
+              colSpan={6}
+              className="text-center text-muted-foreground"
+            >
+              No applications found
+            </TableCell>
+          </TableRow>
+        ) : (
+          applicationsList.map((application: any) => (
+            <TableRow key={application.id}>
+              <TableCell>{application.id}</TableCell>
+              <TableCell>
+                {application.first_name} {application.last_name}
+              </TableCell>
+              <TableCell>{application.title.trim()}</TableCell>
+              <TableCell>{getDate(application.applied_at)}</TableCell>
+              <TableCell>{application.status}</TableCell>
+              <TableCell>
+                <ApplicationDetailsButton
+                  application={application}
+                  setStatus={setStatus}
+                />
+              </TableCell>
+            </TableRow>
+          ))
+        )}
+      </TableBody>
+    </Table>
+  );
+
+  return (
+    <Tabs defaultValue="applications">
+      <div className="flex border-b-2 border-b-muted pb-4">
+        <div>
+          <TabsList className="bg-0">
+            <TabsTrigger value="applications" className="shadow-none!">
+              Applications
+            </TabsTrigger>
+            <TabsTrigger value="interviews" className="shadow-none!">
+              Interviews
+            </TabsTrigger>
+            <TabsTrigger value="hire_offers" className="shadow-none!">
+              Hire & Offers
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        {/* <div className="ml-auto">asd</div> */}
+      </div>
+      <TabsContent value="applications">
+        <Tabs defaultValue="all">
+          <div className="flex border-b-2 border-b-muted pb-4">
+            <div>
+              <TabsList className="bg-0">
+                <TabsTrigger value="all" className="shadow-none!">
+                  All
+                </TabsTrigger>
+                <TabsTrigger value="pending" className="shadow-none!">
+                  Pending
+                </TabsTrigger>
+                <TabsTrigger value="for_interview" className="shadow-none!">
+                  For Interview
+                </TabsTrigger>
+                <TabsTrigger value="deferred" className="shadow-none!">
+                  Deferred
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            {/* <div className="ml-auto">asd</div> */}
+          </div>
+          {appsFilterLabels.map((label, i) => {
+            return (
+              <TabsContent value={label} key={i}>
+                {loading && (
+                  <div className="mt-4 text-muted-foreground">
+                    Loading applications...
+                  </div>
+                )}
+                {error && (
+                  <div className="mt-4 text-destructive">Error: {error}</div>
+                )}
+                {!loading && !error && (
+                  <ApplicationsTable applicationsList={appsFilters[i]} />
+                )}
+              </TabsContent>
+            );
+          })}
+        </Tabs>
+      </TabsContent>
+      <TabsContent value="interviews">
+        <InterviewsTable />
+      </TabsContent>
+      <TabsContent value="hire_offers">
+        <OffersTable />
+      </TabsContent>
+    </Tabs>
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -78,8 +244,8 @@ export default function ApplicantsPage() {
                     applicant.status === "Offer"
                       ? "default"
                       : applicant.status === "Active"
-                      ? "secondary"
-                      : "outline"
+                        ? "secondary"
+                        : "outline"
                   }
                 >
                   {applicant.status}
