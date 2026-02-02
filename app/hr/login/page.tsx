@@ -77,9 +77,9 @@ export default function LoginPage() {
         </div>
       )}
 
-      <main className="h-dvh flex flex-col items-center justify-center gap-4">
+      <main className="h-dvh flex flex-col items-center justify-center bg-blue-950">
         <form
-          className=" p-6 rounded-2xl shadow-md w-full max-w-md"
+          className="p-8 shadow-md shadow-accent-foreground w-full max-w-md bg-white"
           action={formAction}
         >
           <div className="flex justify-center">
@@ -144,8 +144,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 variant="default"
-                size="lg"
-                className="w-full"
+                className="w-full bg-red-600 hover:bg-red-500"
               >
                 Log in
               </Button>
