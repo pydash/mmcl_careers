@@ -52,24 +52,36 @@ const applicants = [
 
 export default function ApplicantsPage() {
   const [mounted, setMounted] = useState(false);
-  const { applications, loading, error } = useAllApplications();
+  const {
+    applications: allApplications,
+    loading,
+    error,
+  } = useAllApplications();
+  const [applications, setApplications] = useState<any>(allApplications);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    setApplications(allApplications);
+  }, [allApplications]);
 
   if (!mounted) {
     return null;
   }
 
+  const setStatus = (id: string | number, status: string) => {
+    setApplications((old: any) =>
+      old.map((app: any) => (app.id === id ? { ...app, status } : app)),
+    );
+  };
+
   const pendingApplications = applications.filter(
     (app: any) => app.status === "Pending",
   );
   const forInterviewApplications = applications.filter(
-    (app: any) => app.status === "Interview",
+    (app: any) => app.status === "For interview",
   );
   const deferredApplications = applications.filter(
-    (app: any) => app.status === "Deferred",
+    (app: any) => app.status === "Cancelled",
   );
 
   const appsFilterLabels = ["all", "pending", "for_interview", "deferred"];
@@ -117,7 +129,10 @@ export default function ApplicantsPage() {
               <TableCell>{getDate(application.applied_at)}</TableCell>
               <TableCell>{application.status}</TableCell>
               <TableCell>
-                <ApplicationDetailsButton appId={application.id} />
+                <ApplicationDetailsButton
+                  application={application}
+                  setStatus={setStatus}
+                />
               </TableCell>
             </TableRow>
           ))

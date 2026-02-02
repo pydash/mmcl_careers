@@ -15,34 +15,34 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { getDateTime } from "@/utils/formatDate";
+import ApplicantDetailsTab from "./applicant-details-tabs";
+import { useRouter } from "next/navigation";
 
 export function ApplicationDetailsButton({
-  appId,
+  application,
+  setStatus,
 }: {
-  appId: number | string;
+  application: any;
+  setStatus: any;
 }) {
-  // const { jobDetails, loading, error, saving, save } = useJobDetails(jobId);
   const [open, setOpen] = useState(false);
-  // const [form, setForm] = useState({
-  //   title: "",
-  //   description: "",
-  //   is_active: true,
-  // });
 
-  // useEffect(() => {
-  //   if (jobDetails) {
-  //     setForm({
-  //       title: jobDetails.title ?? "",
-  //       description: jobDetails.description ?? "",
-  //       is_active: jobDetails.is_active,
-  //     });
-  //   }
-  // }, [jobDetails, open]);
+  const router = useRouter();
 
-  // const onSave = async () => {
-  //   await save(form);
-  //   setOpen(false);
-  // };
+  const refreshData = () => {
+    router.refresh();
+  };
+
+  // console.log(application);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -52,13 +52,19 @@ export function ApplicationDetailsButton({
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl sm:max-w-3xl lg:max-w-4xl">
-        {/* <DialogHeader>
-          <DialogTitle>Job Details</DialogTitle>
-          <DialogDescription>
+        <DialogHeader>
+          <DialogTitle>Application Information</DialogTitle>
+          {/* <DialogDescription>
             Edit the job and save your changes.
-          </DialogDescription>
-        </DialogHeader> */}
-        app {appId}
+          </DialogDescription> */}
+        </DialogHeader>
+        <div>
+          <p className="text-lg font-medium">
+            {application.last_name} {application.first_name}
+          </p>
+          <p>{application.email}</p>
+        </div>
+        <ApplicantDetailsTab application={application} setStatus={setStatus} />
       </DialogContent>
     </Dialog>
   );
