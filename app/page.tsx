@@ -6,10 +6,10 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const images = [
-  "https://images.pexels.com/photos/3783471/pexels-photo-3783471.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
-  "https://images.pexels.com/photos/3808517/pexels-photo-3808517.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
-  "https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
-  "https://images.pexels.com/photos/3962286/pexels-photo-3962286.jpeg?auto=compress&cs=tinysrgb&w=1200&h=800&fit=crop",
+  "https://images.pexels.com/photos/35528435/pexels-photo-35528435.jpeg?",
+  "https://images.pexels.com/photos/34079769/pexels-photo-34079769.jpeg?",
+  "https://images.pexels.com/photos/20243360/pexels-photo-20243360.jpeg?",
+  "https://images.pexels.com/photos/15215323/pexels-photo-15215323.jpeg?",
 ];
 
 export default function Home() {
