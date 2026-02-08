@@ -19,7 +19,7 @@ export async function GET() {
 
     const pending_applications = await db
       .query(
-        "SELECT COUNT(*) FROM job_applications WHERE acc_id = $1 AND status = 'pending';",
+        "SELECT COUNT(*) FROM job_applications WHERE acc_id = $1 AND status = 'Pending';",
         [userId]
       )
       .then((res: any) => res.rows[0]);

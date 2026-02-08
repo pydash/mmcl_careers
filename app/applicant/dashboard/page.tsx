@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 import OverviewCard from "@/components/applicant/dashboard/overview-card";
 import RecentApplications from "@/components/applicant/dashboard/recent-applications";
-import ResumeCard from "@/components/applicant/dashboard/resume-card";
 import ExploreJobs from "@/components/applicant/dashboard/explore-jobs";
 import InterviewCard from "@/components/applicant/dashboard/interview-card";
 
@@ -50,7 +49,6 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-4">
           <OverviewCard />
           <RecentApplications />
-          <ResumeCard />
           <ExploreJobs />
         </div>
         <InterviewCard />

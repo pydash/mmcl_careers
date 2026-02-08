@@ -2,20 +2,31 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useApplicationsList } from "@/hooks/applicant/applications/useApplicationsList";
 import { Separator } from "@/components/ui/separator";
 import { ApplicationsSearchbar } from "@/components/applicant/applications/applications-searchbar";
 
 export default function ApplicationsPage() {
+  const searchParams = useSearchParams();
+  const statusFilter = searchParams.get("status");
   const { applications, loading, error } = useApplicationsList();
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredApplications = useMemo(() => {
     const query = searchQuery.toLowerCase();
-    return (applications || []).filter((application) =>
+    let filtered = (applications || []).filter((application) =>
       application.title.toLowerCase().includes(query),
     );
-  }, [applications, searchQuery]);
+
+    if (statusFilter) {
+      filtered = filtered.filter(
+        (application) => application.status.toLowerCase() === statusFilter.toLowerCase()
+      );
+    }
+
+    return filtered;
+  }, [applications, searchQuery, statusFilter]);
 
   if (loading) {
     return <div>Loading applications...</div>;
@@ -33,7 +44,7 @@ export default function ApplicationsPage() {
         filteredApplications.map((application) => (
           <Link
             key={application.id}
-            href={`/applicant/applications/${application.public_id}`}
+            href={`/applicant/applications/${application.id}`}
             className="w-full border border-gray-200 p-6 hover:border-gray-400 transition-colors cursor-pointer block"
             prefetch
           >

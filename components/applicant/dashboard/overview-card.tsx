@@ -1,10 +1,12 @@
 import { Separator } from "@/components/ui/separator";
 import { UserPlus, Hourglass, Handshake } from "lucide-react";
 import { useOverview } from "@/hooks/applicant/dashboard/useOverview";
+import Link from "next/link";
+
 
 function TotalSubmittedApplications({ data }: any) {
   return (
-    <div className="p-4 rounded-xl flex flex-col gap-2">
+    <Link href="/applicant/applications"  className="p-4 rounded-xl flex flex-col gap-2">
       <UserPlus className="mb-2 h-6 w-6 text-primary" />
       <div className="flex flex-col gap-1">
         <p className="text-3xl font-bold">{data?.total_applications}</p>
@@ -12,13 +14,13 @@ function TotalSubmittedApplications({ data }: any) {
           Submitted Applications
         </h2>
       </div>
-    </div>
+    </Link>
   );
 }
 
 function PendingApplications({ data }: any) {
   return (
-    <div className="p-4 rounded-xl flex flex-col gap-2">
+    <Link href="/applicant/applications?status=pending" className="p-4 rounded-xl flex flex-col gap-2 hover:bg-muted/50 transition-colors">
       <Hourglass className="mb-2 h-6 w-6 text-primary" />
       <div className="flex flex-col gap-1">
         <p className="text-3xl font-bold">{data?.pending_applications}</p>
@@ -26,7 +28,7 @@ function PendingApplications({ data }: any) {
           Pending Applications
         </h2>
       </div>
-    </div>
+    </Link>
   );
 }
 
