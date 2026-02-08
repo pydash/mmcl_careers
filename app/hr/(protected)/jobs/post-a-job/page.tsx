@@ -35,6 +35,41 @@ export default function PostJobPage() {
     handleSubmit,
   } = usePostJob();
 
+  const calculateTotalPoints = () => {
+    const fields = [
+      formData.bachelor_degree_points,
+      formData.master_degree_points,
+      formData.phd_points,
+      formData.work_exp_1,
+      formData.work_exp_2,
+      formData.work_exp_3,
+      formData.published_paper_points,
+      formData.research_project_points,
+    ];
+    return fields.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+  };
+
+  const areRequiredFieldsFilled = () => {
+    return (
+      formData.title.trim() !== "" &&
+      formData.description.trim() !== "" &&
+      formData.responsibilities.trim() !== "" &&
+      formData.requirements.trim() !== "" &&
+      formData.deadline_date !== "" &&
+      formData.salary_min !== "" &&
+      formData.salary_max !== "" &&
+      formData.job_type !== "" &&
+      formData.department !== "" &&
+      formData.is_active !== ""
+    );
+  };
+
+  const totalPoints = calculateTotalPoints();
+  const pointsExceeded = totalPoints > 100;
+  const pointsNotComplete = totalPoints !== 100;
+  const requiredFieldsFilled = areRequiredFieldsFilled();
+  const isSubmitDisabled = isLoading || !requiredFieldsFilled || pointsNotComplete;
+
   return (
     <>
       <main className="container max-w-4xl py-8">
@@ -271,6 +306,175 @@ export default function PostJobPage() {
             </FieldSet>
           </FieldGroup>
 
+          <FieldGroup>
+          <FieldSet>
+          <FieldLegend>Pointing System</FieldLegend>
+          <FieldDescription>
+            Define the criteria and point values for evaluating applicants
+          </FieldDescription>
+
+          <div className="mt-1 flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Total Points:</span>
+            <span className={`px-2 py-0.5 rounded-md border font-semibold ${
+              pointsNotComplete ? 'border-red-500 bg-red-50 text-red-700' : 'border-green-500 bg-green-50 text-green-700'
+            }`}>
+              {totalPoints}/100
+            </span>
+          </div>
+
+          <Field>
+            <div className="border border-gray-300 rounded-lg p-6 bg-white space-y-6">
+
+              <div>
+                <div className="mb-2 text-base font-semibold">
+                  Educational Background
+                </div>
+                <div className="mt-4 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Label className="w-40">Bachelor's Degree</Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter points e.g. 10"
+                      value={formData.bachelor_degree_points || ""}
+                      onChange={(e) =>
+                        handleInputChange("bachelor_degree_points", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <Label className="w-40">Master's Degree</Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter points e.g. 10"
+                      value={formData.master_degree_points || ""}
+                      onChange={(e) =>
+                        handleInputChange("master_degree_points", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <Label className="w-40">PhD</Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter points e.g. 10"
+                      value={formData.phd_points || ""}
+                      onChange={(e) =>
+                        handleInputChange("phd_points", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-2 text-base font-semibold">Work Experience</div>
+                <div className="mt-4 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Label className="w-40">1–2 Years</Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter points e.g. 10"
+                      value={formData.work_exp_1 || ""}
+                      onChange={(e) =>
+                        handleInputChange("work_exp_1", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <Label className="w-40">3–5 Years</Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter points e.g. 10"
+                      value={formData.work_exp_2 || ""}
+                      onChange={(e) =>
+                        handleInputChange("work_exp_2", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <Label className="w-40">6+ Years</Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter points e.g. 10"
+                      value={formData.work_exp_3 || ""}
+                      onChange={(e) =>
+                        handleInputChange("work_exp_3", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="mb-2 text-base font-semibold">Extracurricular</div>
+                <div className="mt-4 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Label className="w-40">Published Paper</Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter points e.g. 10"
+                      value={formData.published_paper_points || ""}
+                      onChange={(e) =>
+                        handleInputChange("published_paper_points", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <Label className="w-40">Research Project</Label>
+                    <Input
+                      type="text"
+                      placeholder="Enter points e.g. 10"
+                      value={formData.research_project_points || ""}
+                      onChange={(e) =>
+                        handleInputChange("research_project_points", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="mb-2 text-base font-semibold">Others</div>
+
+                {(formData.other_points || []).map((item: string, index: number) => (
+                  <div key={index} className="flex items-center gap-4 mt-2">
+                    <Input
+                      type="text"
+                      placeholder="Criteria name"
+                      value={item}
+                      onChange={(e) => {
+                        const updated = [...formData.other_points];
+                        updated[index] = e.target.value;
+                        handleInputChange("other_points", updated);
+                      }}
+                    />
+                  </div>
+                ))}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-3"
+                  onClick={() =>
+                    handleInputChange("other_points", [
+                      ...(formData.other_points || []),
+                      "",
+                    ])
+                  }
+                >
+                  + Add Criteria
+                </Button>
+              </div>
+
+            </div>
+          </Field>
+        </FieldSet>
+      </FieldGroup>
+
+
           <div className="flex items-center justify-end gap-4 pt-4">
             <Button
               type="button"
@@ -280,7 +484,7 @@ export default function PostJobPage() {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isSubmitDisabled}>
               {isLoading ? "Posting..." : "Post Job"}
             </Button>
           </div>

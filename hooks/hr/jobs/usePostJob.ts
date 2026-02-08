@@ -11,13 +11,67 @@ export function usePostJob() {
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState<JobFormData>(initialJobFormData);
 
+  const calculateTotalPoints = (data: JobFormData, fieldName: string, newValue: string): number => {
+    const pointFields = [
+      'bachelor_degree_points',
+      'master_degree_points',
+      'phd_points',
+      'work_exp_1',
+      'work_exp_2',
+      'work_exp_3',
+      'published_paper_points',
+      'research_project_points',
+    ];
+
+    let total = 0;
+    for (const field of pointFields) {
+      if (field === fieldName) {
+        total += parseInt(newValue) || 0;
+      } else {
+        total += parseInt((data as any)[field]) || 0;
+      }
+    }
+    return total;
+  };
+
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    nameOrEvent: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    value?: string
   ) => {
-    const { name, value } = e.target;
+    let fieldName = '';
+    let fieldValue = '';
+
+    if (typeof nameOrEvent === "string") {
+      fieldName = nameOrEvent;
+      fieldValue = value || '';
+    } else {
+      fieldName = nameOrEvent.target.name;
+      fieldValue = nameOrEvent.target.value;
+    }
+
+    // Check if this is a pointing system field
+    const pointFields = [
+      'bachelor_degree_points',
+      'master_degree_points',
+      'phd_points',
+      'work_exp_1',
+      'work_exp_2',
+      'work_exp_3',
+      'published_paper_points',
+      'research_project_points',
+    ];
+
+    if (pointFields.includes(fieldName)) {
+      // Validate that total points don't exceed 100
+      const totalPoints = calculateTotalPoints(formData, fieldName, fieldValue);
+      if (totalPoints > 100) {
+        return; // Prevent the update if it exceeds 100
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [fieldName]: fieldValue,
     }));
   };
 
