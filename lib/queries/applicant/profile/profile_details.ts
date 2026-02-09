@@ -19,18 +19,7 @@ SELECT jsonb_build_object(
     '{}'::jsonb
   ),
 
-  'education', COALESCE(
-    jsonb_build_object(
-      'degree', eb.degree,
-      'institution', eb.institution,
-      'course', eb.course,
-      'status', eb.status,
-      'units_earned', eb.units_earned,
-      'year_finished', eb.year_finished,
-      'honors', eb.honors
-    ),
-    '{}'::jsonb
-  ),
+  'education', COALESCE(ed.education, '[]'::jsonb),
 
   'employment', COALESCE(eh.employment, '[]'::jsonb),
 
@@ -73,10 +62,25 @@ SELECT jsonb_build_object(
 FROM (SELECT 1) AS dummy
 
 LEFT JOIN user_profiles up ON up.id = $1
-LEFT JOIN educational_backgrounds eb ON up.id = eb.id
 LEFT JOIN gov_ids gid ON up.id = gid.acc_id
 LEFT JOIN user_attachments ua ON up.id = ua.acc_id
 LEFT JOIN user_extras ue ON up.id = ue.id
+LEFT JOIN LATERAL (
+  SELECT jsonb_agg(
+    jsonb_build_object(
+      'degree', eb.degree,
+      'institution', eb.institution,
+      'course', eb.course,
+      'status', eb.status,
+      'units_earned', eb.units_earned,
+      'year_finished', eb.year_finished,
+      'honors', eb.honors
+    )
+    ORDER BY eb.year_finished DESC NULLS LAST
+  ) AS education
+  FROM educational_backgrounds eb
+  WHERE eb.id = $1
+) ed ON TRUE
 
 LEFT JOIN LATERAL (
   SELECT jsonb_agg(

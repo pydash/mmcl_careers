@@ -6,7 +6,7 @@ export interface ProfileResponse {
 // Main profile
 export interface Profile {
   personal: Personal;
-  education: Education;
+  education: Education[];
   employment: Employment[];
   gov_ids: GovID[];
   license: License[];
