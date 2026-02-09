@@ -10,7 +10,7 @@ SELECT jsonb_build_object(
       'phone_number', up.phone_number,
       'physical_address', up.physical_address,
       'birth_date', up.birth_date,
-      'sex', up.sex
+      'sex', up.sex,
       'citizenship', up.citizenship,
       'civil_status', up.civil_status,
       'about', up.about,
