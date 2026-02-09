@@ -25,8 +25,6 @@ export default function ReviewTabsContent() {
         <TabsTrigger value="education">Education</TabsTrigger>
         <TabsTrigger value="licenses">Licenses & Certifications</TabsTrigger>
         <TabsTrigger value="employment">Employment</TabsTrigger>
-        <TabsTrigger value="extras">Additional</TabsTrigger>
-        <TabsTrigger value="attachments">Attachments</TabsTrigger>
       </TabsList>
       <Separator className="my-2" />
       <TabsContent value="personal">
@@ -284,7 +282,10 @@ export default function ReviewTabsContent() {
                         Monthly Salary:
                       </strong>
                       <p className="text-gray-900">
-                        ₱{job.monthly_salary.toLocaleString()}
+                        {job.monthly_salary !== null &&
+                        job.monthly_salary !== undefined
+                          ? `₱${Number(job.monthly_salary).toLocaleString()}`
+                          : "N/A"}
                       </p>
                     </div>
                     <div>
@@ -305,7 +306,7 @@ export default function ReviewTabsContent() {
           </div>
         )}
       </TabsContent>
-      <TabsContent value="extras">
+      {/* <TabsContent value="extras">
         {loading && <div>Loading profile...</div>}
         {error && <div className="text-red-500">Error: {error}</div>}
         {profile && profile.extras && (
@@ -333,7 +334,7 @@ export default function ReviewTabsContent() {
                 </strong>
                 <p className="text-gray-900">
                   {new Date(
-                    profile.extras.start_date_preference
+                    profile.extras.start_date_preference,
                   ).toLocaleDateString()}
                 </p>
               </div>
@@ -363,63 +364,65 @@ export default function ReviewTabsContent() {
             )}
           </div>
         )}
-      </TabsContent>
-      <TabsContent value="attachments">
+      </TabsContent> */}
+      {/* <TabsContent value="attachments">
         {loading && <div>Loading profile...</div>}
         {error && <div className="text-red-500">Error: {error}</div>}
         {profile && profile.attachments && (
           <div className="space-y-4">
             {profile.attachments.length > 0 ? (
-              profile.attachments.map((attachment: any, index: number) => (
-                <div
-                  key={attachment.id}
-                  className="border rounded-lg p-4 bg-white"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-2">
-                        {attachment.file_name}
-                      </h3>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <strong className="text-gray-600">Type:</strong>
-                          <p className="text-gray-900">
-                            {attachment.file_type}
-                          </p>
-                        </div>
-                        <div>
-                          <strong className="text-gray-600">Size:</strong>
-                          <p className="text-gray-900">
-                            {(attachment.file_size / 1024).toFixed(2)} KB
-                          </p>
-                        </div>
-                        <div>
-                          <strong className="text-gray-600">Uploaded:</strong>
-                          <p className="text-gray-900">
-                            {new Date(
-                              attachment.created_at
-                            ).toLocaleDateString()}
-                          </p>
+              profile.attachments
+                .filter(Boolean)
+                .map((attachment: any, index: number) => (
+                  <div
+                    key={attachment.id}
+                    className="border rounded-lg p-4 bg-white"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 mb-2">
+                          {attachment.file_name}
+                        </h3>
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <strong className="text-gray-600">Type:</strong>
+                            <p className="text-gray-900">
+                              {attachment.file_type}
+                            </p>
+                          </div>
+                          <div>
+                            <strong className="text-gray-600">Size:</strong>
+                            <p className="text-gray-900">
+                              {(attachment.file_size / 1024).toFixed(2)} KB
+                            </p>
+                          </div>
+                          <div>
+                            <strong className="text-gray-600">Uploaded:</strong>
+                            <p className="text-gray-900">
+                              {new Date(
+                                attachment.created_at,
+                              ).toLocaleDateString()}
+                            </p>
+                          </div>
                         </div>
                       </div>
+                      <a
+                        href={attachment.file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-4 text-blue-600 hover:underline text-sm font-medium"
+                      >
+                        View File
+                      </a>
                     </div>
-                    <a
-                      href={attachment.file_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ml-4 text-blue-600 hover:underline text-sm font-medium"
-                    >
-                      View File
-                    </a>
                   </div>
-                </div>
-              ))
+                ))
             ) : (
               <p className="text-gray-500">No attachments found.</p>
             )}
           </div>
         )}
-      </TabsContent>
+      </TabsContent> */}
     </Tabs>
   );
 }
