@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
   FieldGroup,
@@ -25,6 +27,7 @@ import { usePostJob } from "@/hooks/hr/jobs/usePostJob";
 
 export default function PostJobPage() {
   const router = useRouter();
+  const [isCompensationEnabled, setIsCompensationEnabled] = useState(false);
   const {
     formData,
     isLoading,
@@ -50,14 +53,16 @@ export default function PostJobPage() {
   };
 
   const areRequiredFieldsFilled = () => {
+    const compensationFilled =
+      !isCompensationEnabled ||
+      (formData.salary_min !== "" && formData.salary_max !== "");
     return (
       formData.title.trim() !== "" &&
       formData.description.trim() !== "" &&
       formData.responsibilities.trim() !== "" &&
       formData.requirements.trim() !== "" &&
       formData.deadline_date !== "" &&
-      formData.salary_min !== "" &&
-      formData.salary_max !== "" &&
+      compensationFilled &&
       formData.job_type !== "" &&
       formData.department !== "" &&
       formData.is_active !== ""
@@ -68,7 +73,8 @@ export default function PostJobPage() {
   const pointsExceeded = totalPoints > 100;
   const pointsNotComplete = totalPoints !== 100;
   const requiredFieldsFilled = areRequiredFieldsFilled();
-  const isSubmitDisabled = isLoading || !requiredFieldsFilled || pointsNotComplete;
+  const isSubmitDisabled =
+    isLoading || !requiredFieldsFilled || pointsNotComplete;
 
   return (
     <>
@@ -270,210 +276,255 @@ export default function PostJobPage() {
                 Set the salary range for this position
               </FieldDescription>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Field>
-                  <FieldLabel>
-                    <Label htmlFor="salary_min">Minimum Salary</Label>
-                  </FieldLabel>
-                  <Input
-                    type="number"
-                    id="salary_min"
-                    name="salary_min"
-                    placeholder="e.g. 50000"
-                    value={formData.salary_min}
-                    onChange={handleInputChange}
-                    required
+              <Field>
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id="has_compensation"
+                    checked={isCompensationEnabled}
+                    onCheckedChange={(checked) => {
+                      const isChecked = checked === true;
+                      setIsCompensationEnabled(isChecked);
+                      if (!isChecked) {
+                        handleInputChange("salary_min", "");
+                        handleInputChange("salary_max", "");
+                      }
+                    }}
                     disabled={isLoading}
                   />
-                </Field>
+                  <Label htmlFor="has_compensation">
+                    Add compensation for this job
+                  </Label>
+                </div>
+              </Field>
 
-                <Field>
-                  <FieldLabel>
-                    <Label htmlFor="salary_max">Maximum Salary</Label>
-                  </FieldLabel>
-                  <Input
-                    type="number"
-                    id="salary_max"
-                    name="salary_max"
-                    placeholder="e.g. 80000"
-                    value={formData.salary_max}
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                  />
-                </Field>
-              </div>
+              {isCompensationEnabled && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Field>
+                    <FieldLabel>
+                      <Label htmlFor="salary_min">Minimum Salary</Label>
+                    </FieldLabel>
+                    <Input
+                      type="number"
+                      id="salary_min"
+                      name="salary_min"
+                      placeholder="e.g. 50000"
+                      value={formData.salary_min}
+                      onChange={handleInputChange}
+                      required
+                      disabled={isLoading}
+                    />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel>
+                      <Label htmlFor="salary_max">Maximum Salary</Label>
+                    </FieldLabel>
+                    <Input
+                      type="number"
+                      id="salary_max"
+                      name="salary_max"
+                      placeholder="e.g. 80000"
+                      value={formData.salary_max}
+                      onChange={handleInputChange}
+                      required
+                      disabled={isLoading}
+                    />
+                  </Field>
+                </div>
+              )}
             </FieldSet>
           </FieldGroup>
 
           <FieldGroup>
-          <FieldSet>
-          <FieldLegend>Pointing System</FieldLegend>
-          <FieldDescription>
-            Define the criteria and point values for evaluating applicants
-          </FieldDescription>
+            <FieldSet>
+              <FieldLegend>Pointing System</FieldLegend>
+              <FieldDescription>
+                Define the criteria and point values for evaluating applicants
+              </FieldDescription>
 
-          <div className="mt-1 flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Total Points:</span>
-            <span className={`px-2 py-0.5 rounded-md border font-semibold ${
-              pointsNotComplete ? 'border-red-500 bg-red-50 text-red-700' : 'border-green-500 bg-green-50 text-green-700'
-            }`}>
-              {totalPoints}/100
-            </span>
-          </div>
-
-          <Field>
-            <div className="border border-gray-300 rounded-lg p-6 bg-white space-y-6">
-
-              <div>
-                <div className="mb-2 text-base font-semibold">
-                  Educational Background
-                </div>
-                <div className="mt-4 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <Label className="w-40">Bachelor's Degree</Label>
-                    <Input
-                      type="text"
-                      placeholder="Enter points e.g. 10"
-                      value={formData.bachelor_degree_points || ""}
-                      onChange={(e) =>
-                        handleInputChange("bachelor_degree_points", e.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <Label className="w-40">Master's Degree</Label>
-                    <Input
-                      type="text"
-                      placeholder="Enter points e.g. 10"
-                      value={formData.master_degree_points || ""}
-                      onChange={(e) =>
-                        handleInputChange("master_degree_points", e.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <Label className="w-40">PhD</Label>
-                    <Input
-                      type="text"
-                      placeholder="Enter points e.g. 10"
-                      value={formData.phd_points || ""}
-                      onChange={(e) =>
-                        handleInputChange("phd_points", e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <div className="mb-2 text-base font-semibold">Work Experience</div>
-                <div className="mt-4 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <Label className="w-40">1–2 Years</Label>
-                    <Input
-                      type="text"
-                      placeholder="Enter points e.g. 10"
-                      value={formData.work_exp_1 || ""}
-                      onChange={(e) =>
-                        handleInputChange("work_exp_1", e.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <Label className="w-40">3–5 Years</Label>
-                    <Input
-                      type="text"
-                      placeholder="Enter points e.g. 10"
-                      value={formData.work_exp_2 || ""}
-                      onChange={(e) =>
-                        handleInputChange("work_exp_2", e.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <Label className="w-40">6+ Years</Label>
-                    <Input
-                      type="text"
-                      placeholder="Enter points e.g. 10"
-                      value={formData.work_exp_3 || ""}
-                      onChange={(e) =>
-                        handleInputChange("work_exp_3", e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="mb-2 text-base font-semibold">Extracurricular</div>
-                <div className="mt-4 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <Label className="w-40">Published Paper</Label>
-                    <Input
-                      type="text"
-                      placeholder="Enter points e.g. 10"
-                      value={formData.published_paper_points || ""}
-                      onChange={(e) =>
-                        handleInputChange("published_paper_points", e.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <Label className="w-40">Research Project</Label>
-                    <Input
-                      type="text"
-                      placeholder="Enter points e.g. 10"
-                      value={formData.research_project_points || ""}
-                      onChange={(e) =>
-                        handleInputChange("research_project_points", e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="mb-2 text-base font-semibold">Others</div>
-
-                {(formData.other_points || []).map((item: string, index: number) => (
-                  <div key={index} className="flex items-center gap-4 mt-2">
-                    <Input
-                      type="text"
-                      placeholder="Criteria name"
-                      value={item}
-                      onChange={(e) => {
-                        const updated = [...formData.other_points];
-                        updated[index] = e.target.value;
-                        handleInputChange("other_points", updated);
-                      }}
-                    />
-                  </div>
-                ))}
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="mt-3"
-                  onClick={() =>
-                    handleInputChange("other_points", [
-                      ...(formData.other_points || []),
-                      "",
-                    ])
-                  }
+              <div className="mt-1 flex items-center gap-2 text-sm">
+                <span className="text-muted-foreground">Total Points:</span>
+                <span
+                  className={`px-2 py-0.5 rounded-md border font-semibold ${
+                    pointsNotComplete
+                      ? "border-red-500 bg-red-50 text-red-700"
+                      : "border-green-500 bg-green-50 text-green-700"
+                  }`}
                 >
-                  + Add Criteria
-                </Button>
+                  {totalPoints}/100
+                </span>
               </div>
 
-            </div>
-          </Field>
-        </FieldSet>
-      </FieldGroup>
+              <Field>
+                <div className="border border-gray-300 rounded-lg p-6 bg-white space-y-6">
+                  <div>
+                    <div className="mb-2 text-base font-semibold">
+                      Educational Background
+                    </div>
+                    <div className="mt-4 space-y-4">
+                      <div className="flex items-center gap-4">
+                        <Label className="w-40">Bachelor's Degree</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter points e.g. 10"
+                          value={formData.bachelor_degree_points || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "bachelor_degree_points",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
 
+                      <div className="flex items-center gap-4">
+                        <Label className="w-40">Master's Degree</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter points e.g. 10"
+                          value={formData.master_degree_points || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "master_degree_points",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <Label className="w-40">PhD</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter points e.g. 10"
+                          value={formData.phd_points || ""}
+                          onChange={(e) =>
+                            handleInputChange("phd_points", e.target.value)
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="mb-2 text-base font-semibold">
+                      Work Experience
+                    </div>
+                    <div className="mt-4 space-y-4">
+                      <div className="flex items-center gap-4">
+                        <Label className="w-40">1–2 Years</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter points e.g. 10"
+                          value={formData.work_exp_1 || ""}
+                          onChange={(e) =>
+                            handleInputChange("work_exp_1", e.target.value)
+                          }
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <Label className="w-40">3–5 Years</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter points e.g. 10"
+                          value={formData.work_exp_2 || ""}
+                          onChange={(e) =>
+                            handleInputChange("work_exp_2", e.target.value)
+                          }
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <Label className="w-40">6+ Years</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter points e.g. 10"
+                          value={formData.work_exp_3 || ""}
+                          onChange={(e) =>
+                            handleInputChange("work_exp_3", e.target.value)
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="mb-2 text-base font-semibold">
+                      Extracurricular
+                    </div>
+                    <div className="mt-4 space-y-4">
+                      <div className="flex items-center gap-4">
+                        <Label className="w-40">Published Paper</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter points e.g. 10"
+                          value={formData.published_paper_points || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "published_paper_points",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <Label className="w-40">Research Project</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter points e.g. 10"
+                          value={formData.research_project_points || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "research_project_points",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="mb-2 text-base font-semibold">Others</div>
+
+                    {(formData.other_points || []).map(
+                      (item: string, index: number) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-4 mt-2"
+                        >
+                          <Input
+                            type="text"
+                            placeholder="Criteria name"
+                            value={item}
+                            onChange={(e) => {
+                              const updated = [...(formData.other_points || [])];
+                              updated[index] = e.target.value;
+                              handleInputChange("other_points", JSON.stringify(updated));
+                            }}
+                          />
+                        </div>
+                      ),
+                    )}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="mt-3"
+                      onClick={() =>
+                        handleInputChange("other_points", JSON.stringify([
+                          ...(formData.other_points || []),
+                          "",
+                        ]))
+                      }
+                    >
+                      + Add Criteria
+                    </Button>
+                  </div>
+                </div>
+              </Field>
+            </FieldSet>
+          </FieldGroup>
 
           <div className="flex items-center justify-end gap-4 pt-4">
             <Button
