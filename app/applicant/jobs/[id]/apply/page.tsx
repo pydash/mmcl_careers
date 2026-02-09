@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { redirect, useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 import useSubmitApplication from "@/hooks/applicant/jobs/useSubmitApplication";
 
@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function JobApplyPage() {
+  const router = useRouter();
   const [pitchValue, setPitchValue] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [showPitchAlert, setShowPitchAlert] = useState(false);
@@ -22,7 +23,7 @@ export default function JobApplyPage() {
   const successTimerRef = useRef<NodeJS.Timeout | null>(null);
   const { submitApplication, loading, error } = useSubmitApplication();
   const params = useParams<{ id: string }>();
-  const jobId = params.id;
+  const job_pub_id = params.id;
 
   const handleSubmit = async () => {
     if (!pitchValue.trim()) {
@@ -31,13 +32,23 @@ export default function JobApplyPage() {
       alertTimerRef.current = setTimeout(() => setShowPitchAlert(false), 5000);
       return;
     }
-    await submitApplication({ jobId, pitch: pitchValue });
+
+    console.log("Submitting:", {
+      job_pub_id,
+      pitch: pitchValue,
+    });
+
+    try {
+      await submitApplication({ job_pub_id, pitch: pitchValue });
+    } catch (err) {
+      return;
+    }
 
     setShowSuccessAlert(true);
     if (successTimerRef.current) clearTimeout(successTimerRef.current);
     successTimerRef.current = setTimeout(() => {
       setShowSuccessAlert(false);
-      redirect("/applicant/dashboard");
+      router.push("/applicant/dashboard");
     }, 5000);
   };
 
