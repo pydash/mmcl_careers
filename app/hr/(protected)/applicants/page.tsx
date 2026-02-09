@@ -81,7 +81,7 @@ export default function ApplicantsPage() {
     (app: any) => app.status === "For interview",
   );
   const deferredApplications = applications.filter(
-    (app: any) => app.status === "Cancelled",
+    (app: any) => app.status === "Deferred",
   );
 
   const appsFilterLabels = ["all", "pending", "for_interview", "deferred"];
