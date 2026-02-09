@@ -24,6 +24,7 @@ export interface Personal {
   last_name: string;
   sex: "male" | "female" | string;
   birth_date: string; // ISO date
+  email_address: string;
   civil_status: string;
   citizenship: string;
   phone_number: string;

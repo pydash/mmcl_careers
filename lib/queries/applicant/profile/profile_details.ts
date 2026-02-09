@@ -6,14 +6,15 @@ SELECT jsonb_build_object(
       'first_name', up.first_name,
       'middle_name', up.middle_name,
       'last_name', up.last_name,
-      'honorifics', up.honorifics,
+      'honorifics', up.honorific,
       'phone_number', up.phone_number,
       'physical_address', up.physical_address,
       'birth_date', up.birth_date,
-      'sex', up.sex,
+      'sex', up.sex
       'citizenship', up.citizenship,
       'civil_status', up.civil_status,
-      'about', up.about
+      'about', up.about,
+      'email_address', up.email_address
     ),
     '{}'::jsonb
   ),

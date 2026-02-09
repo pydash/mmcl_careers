@@ -5,7 +5,10 @@ export async function fetchProfileGetter() {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch profile getter");
+    const body = await response.text();
+    throw new Error(
+      `Failed to fetch profile getter: ${response.status} ${body}`,
+    );
   }
 
   const data = await response.json();
