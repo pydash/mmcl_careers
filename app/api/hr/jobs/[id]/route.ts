@@ -9,7 +9,7 @@ async function getUserId() {
 
 export async function GET(
   _req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const userId = await getUserId();
@@ -18,9 +18,13 @@ export async function GET(
 
     const { id } = await params;
     const result = await db.query(
-      `SELECT id, title, description, created_at, is_active
-       FROM job_posts WHERE id = $1`,
-      [id]
+      `SELECT title, department, employment_type, description, responsibilities, requirements,
+        salary_min, salary_max, posted_by, jp.created_at, is_active,
+        CONCAT_WS(' ', up.first_name, up.middle_name, up.last_name) AS posted_by
+       FROM job_posts jp
+       LEFT JOIN user_profiles up ON jp.posted_by = up.id
+       WHERE public_id = $1`,
+      [id],
     );
 
     if (result.rows.length === 0) {
@@ -36,7 +40,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const userId = await getUserId();
@@ -49,6 +53,12 @@ export async function PATCH(
     const allowedFields = {
       title: (val: any) => typeof val === "string",
       description: (val: any) => typeof val === "string" || val === null,
+      department: (val: any) => typeof val === "string" || val === null,
+      employment_type: (val: any) => typeof val === "string" || val === null,
+      responsibilities: (val: any) => typeof val === "string" || val === null,
+      requirements: (val: any) => typeof val === "string" || val === null,
+      salary_min: (val: any) => typeof val === "string" || val === null,
+      salary_max: (val: any) => typeof val === "string" || val === null,
       is_active: (val: any) => typeof val === "boolean",
     };
 
@@ -64,13 +74,15 @@ export async function PATCH(
       .filter(
         (field) =>
           field in body &&
-          allowedFields[field as keyof typeof allowedFields](body[field])
+          allowedFields[field as keyof typeof allowedFields](body[field]),
       )
       .map((field) => body[field]);
 
     const sql = `UPDATE job_posts SET ${updates.join(", ")}
-                 WHERE id = $${updates.length + 1}
-                 RETURNING id, title, description, created_at, is_active`;
+                 WHERE public_id = $${updates.length + 1}
+                 RETURNING id, title, department, employment_type, description,
+                   responsibilities, requirements, salary_min, salary_max,
+                   posted_by, created_at, is_active`;
 
     const result = await db.query(sql, [...values, id]);
     return NextResponse.json(result.rows[0]);
@@ -78,7 +90,7 @@ export async function PATCH(
     console.error("Error updating job", e);
     return NextResponse.json(
       { error: "Failed to update job" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

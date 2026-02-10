@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     console.error("Error fetching jobs", error);
     return NextResponse.json(
       { error: "Failed to fetch jobs" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -53,8 +53,8 @@ export async function POST(request: Request) {
 
       const insertQuery = `
       INSERT INTO job_posts
-      (is_active, title, employment_type, department, expiry_date, description, responsibilities, requirements, salary_min, salary_max, posted_by)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      (public_id, is_active, title, employment_type, department, expiry_date, description, responsibilities, requirements, salary_min, salary_max, posted_by)
+      VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING id
     `;
 
@@ -77,13 +77,13 @@ export async function POST(request: Request) {
 
       return NextResponse.json(
         { success: true, jobId: newJobId },
-        { status: 201 }
+        { status: 201 },
       );
     } catch (error) {
       console.error("Error posting job", error);
       return NextResponse.json(
         { error: "Failed to post job" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   }
