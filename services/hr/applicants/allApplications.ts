@@ -4,7 +4,8 @@ export async function fetchAllApplications() {
     cache: "no-store",
   });
   if (!response.ok) {
-    throw new Error("Failed to fetch applications");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData?.details || "Failed to fetch applications");
   }
   const data = await response.json();
   return data;

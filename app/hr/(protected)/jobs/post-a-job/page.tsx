@@ -53,21 +53,22 @@ export default function PostJobPage() {
   };
 
   const areRequiredFieldsFilled = () => {
-    const compensationFilled =
-      !isCompensationEnabled ||
-      (formData.salary_min !== "" && formData.salary_max !== "");
+    if (isCompensationEnabled) {
+      if (!formData.salary_min || !formData.salary_max) return false;
+    }
+
     return (
       formData.title.trim() !== "" &&
       formData.description.trim() !== "" &&
       formData.responsibilities.trim() !== "" &&
       formData.requirements.trim() !== "" &&
       formData.deadline_date !== "" &&
-      compensationFilled &&
       formData.job_type !== "" &&
       formData.department !== "" &&
       formData.is_active !== ""
     );
   };
+
 
   const totalPoints = calculateTotalPoints();
   const pointsExceeded = totalPoints > 100;
@@ -483,43 +484,6 @@ export default function PostJobPage() {
                         />
                       </div>
                     </div>
-                  </div>
-                  <div>
-                    <div className="mb-2 text-base font-semibold">Others</div>
-
-                    {(formData.other_points || []).map(
-                      (item: string, index: number) => (
-                        <div
-                          key={index}
-                          className="flex items-center gap-4 mt-2"
-                        >
-                          <Input
-                            type="text"
-                            placeholder="Criteria name"
-                            value={item}
-                            onChange={(e) => {
-                              const updated = [...(formData.other_points || [])];
-                              updated[index] = e.target.value;
-                              handleInputChange("other_points", JSON.stringify(updated));
-                            }}
-                          />
-                        </div>
-                      ),
-                    )}
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="mt-3"
-                      onClick={() =>
-                        handleInputChange("other_points", JSON.stringify([
-                          ...(formData.other_points || []),
-                          "",
-                        ]))
-                      }
-                    >
-                      + Add Criteria
-                    </Button>
                   </div>
                 </div>
               </Field>

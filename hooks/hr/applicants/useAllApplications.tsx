@@ -12,11 +12,20 @@ export function useAllApplications() {
     setLoading(true);
     fetchAllApplications()
       .then((data) => {
-        setApplications(data);
+        // Ensure we have an array
+        if (Array.isArray(data)) {
+          setApplications(data);
+        } else if (data?.error) {
+          setError(data.error);
+          setApplications([]);
+        } else {
+          setApplications([]);
+        }
         setLoading(false);
       })
       .catch((err: any) => {
         setError(err?.message ?? "Unknown error");
+        setApplications([]);
         setLoading(false);
       });
   }, []);
