@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching jobs", error);
     return NextResponse.json(
       { error: "Failed to fetch user profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -38,27 +38,39 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const jobId = body.jobId ?? body.job_id;
+    const job_id_result = await db.query(
+      "SELECT id FROM job_posts WHERE public_id = $1",
+      [body.job_id],
+    );
+    const jobId = job_id_result.rows[0]?.id;
     const pitch = body.pitch;
+
+    console.log("Received application data:", {
+      userId,
+      jobId,
+      pitch,
+    });
 
     if (!jobId || !pitch) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
+
+    console.log(userId, jobId, pitch);
 
     await db.query(INSERT_APPLICATION_QUERY, [userId, jobId, pitch]);
 
     return NextResponse.json(
       { message: "Application submitted successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error submitting application", error);
     return NextResponse.json(
       { error: "Failed to submit application" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

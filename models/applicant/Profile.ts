@@ -6,7 +6,7 @@ export interface ProfileResponse {
 // Main profile
 export interface Profile {
   personal: Personal;
-  education: Education;
+  education: Education[];
   employment: Employment[];
   gov_ids: GovID[];
   license: License[];
@@ -24,6 +24,7 @@ export interface Personal {
   last_name: string;
   sex: "male" | "female" | string;
   birth_date: string; // ISO date
+  email_address: string;
   civil_status: string;
   citizenship: string;
   phone_number: string;

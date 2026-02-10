@@ -10,7 +10,7 @@ export default function useSubmitApplication() {
     try {
       setLoading(true);
       setError(null);
-      await pushSubmitApplication(data.jobId, data.pitch);
+      await pushSubmitApplication(data.job_pub_id, data.pitch);
     } catch (err) {
       setError("Failed to create profile");
     } finally {

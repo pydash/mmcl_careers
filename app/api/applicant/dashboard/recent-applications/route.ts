@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const recent_applications_query_result = await db
       .query(
-        "SELECT j.title as position, ja.status, ja.applied_at as dateapplied FROM job_applications ja JOIN job_posts j ON ja.job_id = j.id WHERE ja.acc_id = $1 ORDER BY applied_at DESC LIMIT 5;",
+        "SELECT ja.id, j.title as position, ja.status, ja.applied_at as dateapplied FROM job_applications ja JOIN job_posts j ON ja.job_id = j.id WHERE ja.acc_id = $1 ORDER BY applied_at DESC LIMIT 5;",
         [userId]
       )
       .then((res: any) => res.rows);

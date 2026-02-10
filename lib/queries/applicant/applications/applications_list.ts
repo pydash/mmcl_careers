@@ -2,7 +2,6 @@ export const getAllApplications = `
 SELECT
     ja.id,
     jp.title,
-    jp.public_id,
     ja.status,
     ja.applied_at
 FROM job_applications ja

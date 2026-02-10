@@ -13,8 +13,7 @@ SELECT
   jp.expiry_date,
   jp.created_at AS posted_at
   FROM job_posts jp
-  WHERE jp.public_id = $1
-  GROUP BY jp.id;
+  WHERE jp.public_id = $1;
   `;
 
 // LEFT JOIN job_tags jt ON jp.id = jt.job_id

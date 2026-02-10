@@ -1,4 +1,3 @@
-import Job from "@/models/Job";
 import IntextEmpty from "@/components/intext-empty";
 import { useJobs } from "@/hooks/applicant/dashboard/useJobs";
 import { getDate } from "@/utils/formatDate";
@@ -17,7 +16,7 @@ export default function ExploreJobs() {
           {jobs.map((job) => (
             <div
               key={job.id}
-              className="p-4 border rounded-lg hover:bg-gray-100"
+              className="p-4 border rounded-lg"
             >
               <h2 className="text-lg font-semibold">{job.title}</h2>
               <p className="text-sm text-muted-foreground">
