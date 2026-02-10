@@ -7,6 +7,8 @@ import {
   ClipboardPen,
   Settings,
   ChartPie,
+  Users,
+  ClipboardClock,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -20,6 +22,8 @@ export default function Sidebar() {
       icon: ClipboardPen,
     },
     { title: "Analytics", href: "/admin/analytics", icon: ChartPie },
+    { title: "Accounts", href: "/admin/accounts", icon: Users },
+    { title: "Logs", href: "/admin/logs", icon: ClipboardClock },
     { title: "Settings", href: "/admin/settings", icon: Settings },
   ];
   return <SidebarComponent title={app_title} items={items} />;
