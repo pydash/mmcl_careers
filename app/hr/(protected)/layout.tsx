@@ -1,4 +1,6 @@
 "use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Notifications from "@/components/applicant/notifications";
 import Sidebar from "@/components/hr/sidebar";
 import { Button } from "@/components/ui/button";
@@ -19,17 +21,35 @@ const menuItems = [
   { title: "Manage Jobs", href: "/hr/jobs" },
   { title: "Manage Applicants", href: "/hr/applicants" },
   { title: "Analytics", href: "/hr/analytics" },
-  {title: "Profile", href: "/hr/profile"},
+  { title: "Profile", href: "/hr/profile" },
   { title: "Settings", href: "/hr/settings" },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
   const secondSegment = segments[1];
 
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/auth/session", {
+          credentials: "include",
+        });
+        if (!response.ok) {
+          router.push("/hr/login");
+        }
+      } catch (error) {
+        router.push("/hr/login");
+      }
+    };
+
+    checkSession();
+  }, [router]);
+
   const currentPage = menuItems.find((item) =>
-    item.href.includes(`/hr/${secondSegment}`)
+    item.href.includes(`/hr/${secondSegment}`),
   );
   const pageTitle = currentPage?.title || "Dashboard";
   return (
