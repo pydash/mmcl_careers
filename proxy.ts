@@ -28,6 +28,18 @@ export function proxy(req: NextRequest) {
     }
   }
 
+  if (subdomain === "admin") {
+    // Root or /login → always go to /admin/login
+    if (pathname === "/" || pathname === "/login") {
+      return NextResponse.redirect(new URL("/admin/login", req.url));
+    }
+
+    // Rewrite everything else under /admin
+    if (!pathname.startsWith("/admin")) {
+      return NextResponse.rewrite(new URL(`/admin${pathname}`, req.url));
+    }
+  }
+
   // Applicant & localhost → normal flow
   return NextResponse.next();
 }
