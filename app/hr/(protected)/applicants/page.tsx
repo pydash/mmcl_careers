@@ -81,15 +81,25 @@ export default function ApplicantsPage() {
     (app: any) => app.status === "For interview",
   );
   const deferredApplications = applications.filter(
-    (app: any) => app.status === "Cancelled",
+    (app: any) => app.status === "Deferred",
+  );
+  const offeredApplications = applications.filter(
+    (app: any) => app.status === "Offered",
   );
 
-  const appsFilterLabels = ["all", "pending", "for_interview", "deferred"];
+  const appsFilterLabels = [
+    "all",
+    "pending",
+    "for_interview",
+    "deferred",
+    "offered",
+  ];
   const appsFilters = [
     applications,
     pendingApplications,
     forInterviewApplications,
     deferredApplications,
+    offeredApplications,
   ];
 
   const ApplicationsTable = ({
@@ -145,14 +155,23 @@ export default function ApplicantsPage() {
     <Tabs defaultValue="applications">
       <div className="flex border-b-2 border-b-muted pb-4">
         <div>
-          <TabsList className="bg-0">
-            <TabsTrigger value="applications" className="shadow-none!">
+          <TabsList className="bg-0 gap-2">
+            <TabsTrigger
+              value="applications"
+              className="shadow-none! border-b-2 border-transparent rounded-none data-[state=active]:border-gray-800"
+            >
               Applications
             </TabsTrigger>
-            <TabsTrigger value="interviews" className="shadow-none!">
+            <TabsTrigger
+              value="interviews"
+              className="shadow-none! border-b-2 border-transparent rounded-none data-[state=active]:border-gray-800"
+            >
               Interviews
             </TabsTrigger>
-            <TabsTrigger value="hire_offers" className="shadow-none!">
+            <TabsTrigger
+              value="hire_offers"
+              className="shadow-none! border-b-2 border-transparent rounded-none data-[state=active]:border-gray-800"
+            >
               Hire & Offers
             </TabsTrigger>
           </TabsList>
@@ -162,20 +181,14 @@ export default function ApplicantsPage() {
       <TabsContent value="applications">
         <Tabs defaultValue="all">
           <div className="flex border-b-2 border-b-muted pb-4">
-            <div>
-              <TabsList className="bg-0">
-                <TabsTrigger value="all" className="shadow-none!">
-                  All
-                </TabsTrigger>
-                <TabsTrigger value="pending" className="shadow-none!">
-                  Pending
-                </TabsTrigger>
-                <TabsTrigger value="for_interview" className="shadow-none!">
-                  For Interview
-                </TabsTrigger>
-                <TabsTrigger value="deferred" className="shadow-none!">
-                  Deferred
-                </TabsTrigger>
+            <div className="flex justify-center items-center gap-2">
+              <p className="text-xs pl-4 text-gray-500 font-bold">Status: </p>
+              <TabsList>
+                <TabsTrigger value="all">All</TabsTrigger>
+                <TabsTrigger value="pending">Pending</TabsTrigger>
+                <TabsTrigger value="offered">Offered</TabsTrigger>
+                <TabsTrigger value="for_interview">For Interview</TabsTrigger>
+                <TabsTrigger value="deferred">Deferred</TabsTrigger>
               </TabsList>
             </div>
             {/* <div className="ml-auto">asd</div> */}

@@ -12,6 +12,7 @@ import {
 import { getDate, getDateTime } from "@/utils/formatDate";
 import { useApplicantDetails } from "@/hooks/hr/applicants/useApplicantDetails";
 import { useState } from "react";
+import InterviewPrompt from "@/components/hr/applicants/interview-prompt";
 
 export default function ApplicantDetailsTab({
   application,
@@ -23,9 +24,16 @@ export default function ApplicantDetailsTab({
   const { applicantDetails, loading, error, saving, save } =
     useApplicantDetails(application.userid, application.id);
 
+  const [open, setOpen] = useState(false);
+
   const handleChange = async (value: string) => {
-    await save({ status: value });
-    setStatus(application.id, value);
+    console.log(value);
+    if (value === "For interview") {
+      setOpen(true);
+    } else {
+      await save({ status: value });
+      setStatus(application.id, value);
+    }
   };
 
   return (
@@ -64,8 +72,16 @@ export default function ApplicantDetailsTab({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Pending">Pending</SelectItem>
+                <SelectItem value="Offered">Offered</SelectItem>
                 <SelectItem value="For interview">For interview</SelectItem>
-                <SelectItem value="Cancelled">Cancelled</SelectItem>
+                <SelectItem value="Deferred">Deferred</SelectItem>
+                <InterviewPrompt
+                  open={open}
+                  setOpen={setOpen}
+                  appId={application.id}
+                  save={save}
+                  setStatus={setStatus}
+                />
               </SelectContent>
             </Select>
             {/* <ApplicantSelectStatus defaultValue={application.status} /> */}
