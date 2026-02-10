@@ -9,8 +9,7 @@ SELECT
     jp.title,
     ja.applied_at,
     ja.status,
-    ja.notes,
-    up.resume_url
+    ja.notes
 FROM job_applications ja
 LEFT JOIN job_posts jp
     ON ja.job_id = jp.id
