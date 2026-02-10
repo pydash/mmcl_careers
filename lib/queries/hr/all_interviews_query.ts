@@ -1,6 +1,6 @@
 export const ALL_INTERVIEWS_QUERY = `
 SELECT
-    i.id,
+    ja.id,
     up.first_name,
     up.last_name,
     i.title,

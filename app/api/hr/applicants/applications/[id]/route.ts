@@ -35,7 +35,12 @@ export async function PATCH(
       return NextResponse.json({ error: "No valid fields" }, { status: 400 });
     }
 
-    const allowedStatuses = ["Pending", "For interview", "Cancelled"] as const;
+    const allowedStatuses = [
+      "Pending",
+      "For interview",
+      "Deferred",
+      "Offered",
+    ] as const;
 
     if (!allowedStatuses.includes(body.status)) {
       return NextResponse.json({ error: "Invalid status" }, { status: 400 });

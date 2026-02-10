@@ -81,15 +81,25 @@ export default function ApplicantsPage() {
     (app: any) => app.status === "For interview",
   );
   const deferredApplications = applications.filter(
-    (app: any) => app.status === "Cancelled",
+    (app: any) => app.status === "Deferred",
+  );
+  const offeredApplications = applications.filter(
+    (app: any) => app.status === "Offered",
   );
 
-  const appsFilterLabels = ["all", "pending", "for_interview", "deferred"];
+  const appsFilterLabels = [
+    "all",
+    "pending",
+    "for_interview",
+    "deferred",
+    "offered",
+  ];
   const appsFilters = [
     applications,
     pendingApplications,
     forInterviewApplications,
     deferredApplications,
+    offeredApplications,
   ];
 
   const ApplicationsTable = ({
@@ -176,6 +186,7 @@ export default function ApplicantsPage() {
               <TabsList>
                 <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value="pending">Pending</TabsTrigger>
+                <TabsTrigger value="offered">Offered</TabsTrigger>
                 <TabsTrigger value="for_interview">For Interview</TabsTrigger>
                 <TabsTrigger value="deferred">Deferred</TabsTrigger>
               </TabsList>
