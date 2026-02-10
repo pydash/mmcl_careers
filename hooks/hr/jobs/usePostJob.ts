@@ -11,16 +11,20 @@ export function usePostJob() {
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState<JobFormData>(initialJobFormData);
 
-  const calculateTotalPoints = (data: JobFormData, fieldName: string, newValue: string): number => {
+  const calculateTotalPoints = (
+    data: JobFormData,
+    fieldName: string,
+    newValue: string,
+  ): number => {
     const pointFields = [
-      'bachelor_degree_points',
-      'master_degree_points',
-      'phd_points',
-      'work_exp_1',
-      'work_exp_2',
-      'work_exp_3',
-      'published_paper_points',
-      'research_project_points',
+      "bachelor_degree_points",
+      "master_degree_points",
+      "phd_points",
+      "work_exp_1",
+      "work_exp_2",
+      "work_exp_3",
+      "published_paper_points",
+      "research_project_points",
     ];
 
     let total = 0;
@@ -35,15 +39,17 @@ export function usePostJob() {
   };
 
   const handleInputChange = (
-    nameOrEvent: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    value?: string
+    nameOrEvent:
+      | string
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    value?: string,
   ) => {
-    let fieldName = '';
-    let fieldValue = '';
+    let fieldName = "";
+    let fieldValue = "";
 
     if (typeof nameOrEvent === "string") {
       fieldName = nameOrEvent;
-      fieldValue = value || '';
+      fieldValue = value || "";
     } else {
       fieldName = nameOrEvent.target.name;
       fieldValue = nameOrEvent.target.value;
@@ -51,14 +57,14 @@ export function usePostJob() {
 
     // Check if this is a pointing system field
     const pointFields = [
-      'bachelor_degree_points',
-      'master_degree_points',
-      'phd_points',
-      'work_exp_1',
-      'work_exp_2',
-      'work_exp_3',
-      'published_paper_points',
-      'research_project_points',
+      "bachelor_degree_points",
+      "master_degree_points",
+      "phd_points",
+      "work_exp_1",
+      "work_exp_2",
+      "work_exp_3",
+      "published_paper_points",
+      "research_project_points",
     ];
 
     if (pointFields.includes(fieldName)) {
@@ -98,19 +104,19 @@ export function usePostJob() {
     if (!formData.deadline_date) {
       throw new Error("Application deadline is required");
     }
-    if (!formData.salary_min || !formData.salary_max) {
-      throw new Error("Salary range is required");
-    }
 
-    const salaryMin = parseInt(formData.salary_min);
-    const salaryMax = parseInt(formData.salary_max);
+    // Validate salary only if provided
+    if (formData.salary_min || formData.salary_max) {
+      const salaryMin = parseInt(formData.salary_min);
+      const salaryMax = parseInt(formData.salary_max);
 
-    if (isNaN(salaryMin) || isNaN(salaryMax)) {
-      throw new Error("Salary values must be valid numbers");
-    }
+      if (isNaN(salaryMin) || isNaN(salaryMax)) {
+        throw new Error("Salary values must be valid numbers");
+      }
 
-    if (salaryMin > salaryMax) {
-      throw new Error("Minimum salary cannot be greater than maximum salary");
+      if (salaryMin > salaryMax) {
+        throw new Error("Minimum salary cannot be greater than maximum salary");
+      }
     }
   };
 
@@ -131,8 +137,8 @@ export function usePostJob() {
         description: formData.description.trim(),
         responsibilities: formData.responsibilities.trim(),
         requirements: formData.requirements.trim(),
-        salary_min: parseInt(formData.salary_min),
-        salary_max: parseInt(formData.salary_max),
+        salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
+        salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
       };
 
       await postJob(jobData);

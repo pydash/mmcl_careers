@@ -10,6 +10,13 @@ export type JobDetails = {
   id: number;
   title: string;
   description: string | null;
+  department?: string | null;
+  employment_type?: string | null;
+  responsibilities?: string | null;
+  requirements?: string | null;
+  salary_min?: string | null;
+  salary_max?: string | null;
+  posted_by?: string | null;
   is_active: boolean;
   created_at: string;
 };
@@ -45,7 +52,7 @@ export function useJobDetails(jobId: string | number) {
         setSaving(false);
       }
     },
-    [jobId]
+    [jobId],
   );
 
   return { jobDetails, loading, error, saving, save };
