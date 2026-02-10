@@ -58,11 +58,22 @@ export function ApplicationDetailsButton({
             Edit the job and save your changes.
           </DialogDescription> */}
         </DialogHeader>
-        <div>
-          <p className="text-lg font-medium">
-            {application.last_name} {application.first_name}
-          </p>
-          <p>{application.email}</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-lg font-medium">
+              {application.last_name} {application.first_name}
+            </p>
+            <p>{application.email}</p>
+          </div>
+          <div>
+            <Button
+              onClick={() => {
+                window.print();
+              }}
+            >
+              Download
+            </Button>
+          </div>
         </div>
         <ApplicantDetailsTab application={application} setStatus={setStatus} />
       </DialogContent>
