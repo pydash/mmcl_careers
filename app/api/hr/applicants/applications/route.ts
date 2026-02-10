@@ -15,7 +15,6 @@ export async function GET(request: Request) {
 
     console.log("Fetching applications for user:", userId);
     
-    // First try a simple count query to verify table exists
     try {
       const countResult = await db.query("SELECT COUNT(*) FROM job_applications");
       console.log("Total applications in database:", countResult.rows[0].count);

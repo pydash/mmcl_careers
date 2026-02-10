@@ -18,6 +18,7 @@ import { InterviewsTable } from "@/components/hr/applicants/interviews-table";
 import { useEffect, useState } from "react";
 import { OffersTable } from "@/components/hr/applicants/offers-table";
 import { ApplicationDetailsButton } from "@/components/hr/applicants/application-details-button";
+import { off } from "process";
 
 const applicants = [
   {
@@ -83,13 +84,17 @@ export default function ApplicantsPage() {
   const deferredApplications = applications.filter(
     (app: any) => app.status === "Deferred",
   );
+  const offeredApplications = applications.filter(
+    (app: any) => app.status === "Offered",
+  );
 
-  const appsFilterLabels = ["all", "pending", "for_interview", "deferred"];
+  const appsFilterLabels = ["all", "pending", "for_interview", "deferred", "offered"];
   const appsFilters = [
     applications,
     pendingApplications,
     forInterviewApplications,
     deferredApplications,
+    offeredApplications,
   ];
 
   const ApplicationsTable = ({
@@ -101,6 +106,7 @@ export default function ApplicantsPage() {
       <TableHeader>
         <TableRow>
           <TableHead>Application No.</TableHead>
+          <TableHead>Score</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Job Title</TableHead>
           <TableHead>Application Date</TableHead>
@@ -122,6 +128,7 @@ export default function ApplicantsPage() {
           applicationsList.map((application: any) => (
             <TableRow key={application.id}>
               <TableCell>{application.id}</TableCell>
+              <TableCell>{application.score}</TableCell>
               <TableCell>
                 {application.first_name} {application.last_name}
               </TableCell>
@@ -153,7 +160,7 @@ export default function ApplicantsPage() {
               Interviews
             </TabsTrigger>
             <TabsTrigger value="hire_offers" className="shadow-none!">
-              Hire & Offers
+              Offers
             </TabsTrigger>
           </TabsList>
         </div>
@@ -175,6 +182,9 @@ export default function ApplicantsPage() {
                 </TabsTrigger>
                 <TabsTrigger value="deferred" className="shadow-none!">
                   Deferred
+                </TabsTrigger>
+                <TabsTrigger value="offered" className="shadow-none!">
+                  Offered
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -203,7 +213,7 @@ export default function ApplicantsPage() {
         <InterviewsTable />
       </TabsContent>
       <TabsContent value="hire_offers">
-        <OffersTable />
+     <OffersTable offers={applications.filter(app => app.status === "Offered")} />
       </TabsContent>
     </Tabs>
   );

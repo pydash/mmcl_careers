@@ -7,8 +7,9 @@ export type PostJobData = {
   description: string;
   responsibilities: string;
   requirements: string;
-  salary_min: number;
-  salary_max: number;
+  salary_min?: number | null;
+  salary_max?: number | null;
+  score: number;
 };
 
 export type PostJobResponse = {

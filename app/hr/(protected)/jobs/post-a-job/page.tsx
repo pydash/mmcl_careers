@@ -53,21 +53,22 @@ export default function PostJobPage() {
   };
 
   const areRequiredFieldsFilled = () => {
-    const compensationFilled =
-      !isCompensationEnabled ||
-      (formData.salary_min !== "" && formData.salary_max !== "");
+    if (isCompensationEnabled) {
+      if (!formData.salary_min || !formData.salary_max) return false;
+    }
+
     return (
       formData.title.trim() !== "" &&
       formData.description.trim() !== "" &&
       formData.responsibilities.trim() !== "" &&
       formData.requirements.trim() !== "" &&
       formData.deadline_date !== "" &&
-      compensationFilled &&
       formData.job_type !== "" &&
       formData.department !== "" &&
       formData.is_active !== ""
     );
   };
+
 
   const totalPoints = calculateTotalPoints();
   const pointsExceeded = totalPoints > 100;

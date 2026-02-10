@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import db from "@/lib/db";
 import { ALL_JOBS_QUERY } from "@/lib/queries/hr/all_jobs_query";
+import { v4 as uuidv4 } from "uuid";
 
 export async function GET(request: Request) {
   try {
@@ -38,28 +39,50 @@ export async function POST(request: Request) {
 
       const data = await request.json();
 
-      const {
-        is_active,
-        title,
-        job_type,
-        department,
-        deadline_date,
-        description,
-        responsibilities,
-        requirements,
-        salary_min,
-        salary_max,
-      } = data;
+        const {
+      is_active,
+      title,
+      job_type,
+      department,
+      deadline_date,
+      description,
+      responsibilities,
+      requirements,
+      salary_min,
+      salary_max,
+
+      posted_by,
+      score,
+
+
+    } = data;
+    const publicId = uuidv4();
+
 
       const insertQuery = `
-      INSERT INTO job_posts
-      (is_active, title, employment_type, department, expiry_date, description, responsibilities, requirements, salary_min, salary_max, posted_by)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      RETURNING id
-    `;
+        INSERT INTO job_posts
+        (
+        public_id,
+          is_active,
+          title,
+          employment_type,
+          department,
+          expiry_date,
+          description,
+          responsibilities,
+          requirements,
+          salary_min,
+          salary_max,
+          posted_by,
+          score
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        RETURNING id, public_id;
+      `;
 
       const values = [
-        is_active,
+        publicId,
+        is_active === "true" || is_active === true,
         title,
         job_type,
         department,
@@ -67,10 +90,13 @@ export async function POST(request: Request) {
         description,
         responsibilities,
         requirements,
-        salary_min,
-        salary_max,
-        userId,
+        salary_min ? Number(salary_min) : null,
+        salary_max ? Number(salary_max) : null,
+        userId, 
+        Number(score)
       ];
+
+
 
       const result = await db.query(insertQuery, values);
       const newJobId = result.rows[0].id;

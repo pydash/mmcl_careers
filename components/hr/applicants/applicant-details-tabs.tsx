@@ -65,7 +65,8 @@ export default function ApplicantDetailsTab({
               <SelectContent>
                 <SelectItem value="Pending">Pending</SelectItem>
                 <SelectItem value="For interview">For interview</SelectItem>
-                <SelectItem value="Cancelled">Cancelled</SelectItem>
+                <SelectItem value="Deferred">Deferred</SelectItem>
+                <SelectItem value="Offered">Offered</SelectItem>
               </SelectContent>
             </Select>
             {/* <ApplicantSelectStatus defaultValue={application.status} /> */}

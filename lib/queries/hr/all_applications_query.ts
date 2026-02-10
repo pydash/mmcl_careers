@@ -7,6 +7,7 @@ SELECT
     ja.status,
     ja.notes,
     jp.title,
+    ja.score AS score,
     ua.email,
     up.first_name,
     up.last_name
