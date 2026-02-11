@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useAdminAccounts } from "@/hooks/admin/accounts/useAdminAccounts";
 
 interface HRAccount {
   id: string;
@@ -42,35 +42,23 @@ interface HRAccount {
 }
 
 export default function AccountsPage() {
-  const [accounts, setAccounts] = useState<HRAccount[]>([
-    {
-      id: "1",
-      email: "john.doe@mmcl.edu",
-      first_name: "John",
-      last_name: "Doe",
-      department: "HR",
-      status: "active",
-      created_at: "2024-01-15",
-    },
-    {
-      id: "2",
-      email: "jane.smith@mmcl.edu",
-      first_name: "Jane",
-      last_name: "Smith",
-      department: "HR",
-      status: "active",
-      created_at: "2024-02-10",
-    },
-    {
-      id: "3",
-      email: "bob.wilson@mmcl.edu",
-      first_name: "Bob",
-      last_name: "Wilson",
-      department: "HR",
-      status: "inactive",
-      created_at: "2024-01-05",
-    },
-  ]);
+  const { accounts: apiAccounts, loading } = useAdminAccounts();
+  const [localAccounts, setLocalAccounts] = useState<HRAccount[]>([]);
+
+  useEffect(() => {
+    if (apiAccounts && apiAccounts.length > 0) {
+      const mappedAccounts: HRAccount[] = apiAccounts.map((account: any) => ({
+        id: account.id,
+        email: account.email,
+        first_name: account.full_name?.split(" ")[0] || "",
+        last_name: account.full_name?.split(" ")[1] || "",
+        department: "HR",
+        status: "active" as const,
+        created_at: account.created_at,
+      }));
+      setLocalAccounts(mappedAccounts);
+    }
+  }, [apiAccounts]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
@@ -87,7 +75,7 @@ export default function AccountsPage() {
     status: "active" as const,
   });
 
-  const filteredAccounts = accounts.filter(
+  const filteredAccounts = localAccounts.filter(
     (account) =>
       account.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       account.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -101,7 +89,7 @@ export default function AccountsPage() {
     }
 
     const newAccount: HRAccount = {
-      id: String(accounts.length + 1),
+      id: String(localAccounts.length + 1),
       email: formData.email,
       first_name: formData.first_name,
       last_name: formData.last_name,
@@ -110,7 +98,7 @@ export default function AccountsPage() {
       created_at: new Date().toISOString().split("T")[0],
     };
 
-    setAccounts([...accounts, newAccount]);
+    setLocalAccounts([...localAccounts, newAccount]);
     setSuccessMessage("Account created successfully!");
     setOpenCreateDialog(false);
     setFormData({
@@ -131,8 +119,8 @@ export default function AccountsPage() {
 
   const confirmDelete = () => {
     if (selectedAccountId) {
-      setAccounts(
-        accounts.filter((account) => account.id !== selectedAccountId),
+      setLocalAccounts(
+        localAccounts.filter((account) => account.id !== selectedAccountId),
       );
       setSuccessMessage("Account deleted successfully!");
       setOpenDeleteDialog(false);
@@ -272,21 +260,28 @@ export default function AccountsPage() {
             <TableRow className="bg-muted">
               <TableHead>Email</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Department</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Created</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredAccounts.length > 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="text-center py-8 text-muted-foreground"
+                >
+                  Loading accounts...
+                </TableCell>
+              </TableRow>
+            ) : filteredAccounts.length > 0 ? (
               filteredAccounts.map((account) => (
                 <TableRow key={account.id}>
                   <TableCell className="font-medium">{account.email}</TableCell>
                   <TableCell>
                     {account.first_name} {account.last_name}
                   </TableCell>
-                  <TableCell>{account.department}</TableCell>
                   <TableCell>
                     <Badge
                       variant={
@@ -353,7 +348,7 @@ export default function AccountsPage() {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={5}
                   className="text-center py-8 text-muted-foreground"
                 >
                   No accounts found matching your search.
@@ -368,18 +363,18 @@ export default function AccountsPage() {
       <div className="grid grid-cols-3 gap-4">
         <div className="border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Total Accounts</p>
-          <p className="text-2xl font-bold">{accounts.length}</p>
+          <p className="text-2xl font-bold">{localAccounts.length}</p>
         </div>
         <div className="border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Active Accounts</p>
           <p className="text-2xl font-bold text-green-600">
-            {accounts.filter((a) => a.status === "active").length}
+            {localAccounts.filter((a) => a.status === "active").length}
           </p>
         </div>
         <div className="border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Inactive Accounts</p>
           <p className="text-2xl font-bold text-red-600">
-            {accounts.filter((a) => a.status === "inactive").length}
+            {localAccounts.filter((a) => a.status === "inactive").length}
           </p>
         </div>
       </div>

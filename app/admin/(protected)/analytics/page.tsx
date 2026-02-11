@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useAnalytics } from "@/hooks/admin/analytics/useAnalytics";
 import {
   BarChart,
   Bar,
@@ -19,46 +20,86 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const pipelineData = [
-  { stage: "Applied", count: 340, percentage: 100 },
-  { stage: "Screen", count: 190, percentage: 56 },
-  { stage: "Interview", count: 88, percentage: 26 },
-  { stage: "Offer", count: 22, percentage: 6 },
-  { stage: "Hired", count: 18, percentage: 5 },
-];
-
-const applicationTrend = [
-  { month: "Jan", applications: 45, hired: 3 },
-  { month: "Feb", applications: 62, hired: 5 },
-  { month: "Mar", applications: 78, hired: 6 },
-  { month: "Apr", applications: 92, hired: 8 },
-  { month: "May", applications: 110, hired: 9 },
-  { month: "Jun", applications: 135, hired: 11 },
-];
-
-const departmentData = [
-  { name: "Engineering", value: 145, color: "#3b82f6" },
-  { name: "Marketing", value: 78, color: "#ef4444" },
-  { name: "HR", value: 45, color: "#10b981" },
-  { name: "Sales", value: 72, color: "#f59e0b" },
-];
-
-const jobPerformance = [
-  { title: "Senior Software Engineer", applications: 125, conversion: 8.8 },
-  { title: "Product Manager", applications: 98, conversion: 6.1 },
-  { title: "Data Analyst", applications: 87, conversion: 5.7 },
-  { title: "UX Designer", applications: 76, conversion: 7.9 },
-  { title: "Backend Engineer", applications: 65, conversion: 6.2 },
-];
-
-const metrics = [
-  { label: "Total Applications", value: "340", change: "+12%" },
-  { label: "Total Hired", value: "18", change: "+2" },
-  { label: "Avg Time to Hire", value: "32 days", change: "-3 days" },
-  { label: "Offer Acceptance", value: "82%", change: "+5%" },
-];
-
 export default function AnalyticsPage() {
+  const { analytics, loading } = useAnalytics();
+
+  const totalApplications = analytics?.totalApplications;
+  const totalHires = analytics?.totalHires;
+  const totalOpenPositions = analytics?.totalOpenPositions;
+  const offerAcceptance = analytics?.offerAcceptanceRate;
+  const rawApplicationTrend = analytics?.applicationTrend ?? [];
+  const departmentData = analytics?.applicationsByDepartment ?? [];
+  const monthOrder = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const applicationTrend = monthOrder.map((month) => {
+    const match = rawApplicationTrend.find(
+      (item) => String(item.month).trim().toLowerCase() === month.toLowerCase(),
+    );
+    return {
+      month,
+      applications:
+        match?.applications != null ? Number(match.applications) : 0,
+      hired: match?.hired != null ? Number(match.hired) : 0,
+    };
+  });
+
+  const metrics = [
+    {
+      label: "Total Applications",
+      value: loading ? "—" : (totalApplications?.this_month?.toString() ?? "0"),
+      change: loading
+        ? "—"
+        : totalApplications?.percentage_change != null
+          ? `${totalApplications.percentage_change > 0 ? "+" : ""}${totalApplications.percentage_change}%`
+          : "0%",
+    },
+    {
+      label: "Total Hired",
+      value: loading ? "—" : (totalHires?.this_month?.toString() ?? "0"),
+      change: loading
+        ? "—"
+        : totalHires?.absolute_change != null
+          ? `${totalHires.absolute_change > 0 ? "+" : ""}${totalHires.absolute_change}`
+          : "0",
+    },
+    {
+      label: "Open Positions",
+      value: loading
+        ? "—"
+        : (totalOpenPositions?.this_month?.toString() ?? "0"),
+      change: loading
+        ? "—"
+        : totalOpenPositions?.absolute_change != null
+          ? `${totalOpenPositions.absolute_change > 0 ? "+" : ""}${totalOpenPositions.absolute_change}`
+          : "0",
+    },
+    {
+      label: "Offer Acceptance",
+      value: loading
+        ? "—"
+        : offerAcceptance?.acceptance_rate != null
+          ? `${offerAcceptance.acceptance_rate}%`
+          : "0%",
+      change: loading
+        ? "—"
+        : offerAcceptance?.accepted != null && offerAcceptance?.rejected != null
+          ? `${offerAcceptance.accepted}/${offerAcceptance.accepted + offerAcceptance.rejected}`
+          : "0/0",
+    },
+  ];
+
   return (
     <div className="space-y-8 py-8">
       {/* Key Metrics */}
@@ -114,84 +155,38 @@ export default function AnalyticsPage() {
           <h3 className="font-semibold text-lg mb-4">
             Applications by Department
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={departmentData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, value }) => `${name}: ${value}`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {departmentData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </Card>
-      </section>
-
-      <Separator />
-
-      {/* Pipeline Breakdown */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4">Hiring Pipeline</h2>
-        <Card className="p-6">
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={pipelineData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="stage" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="count" fill="#3b82f6" name="Count" />
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-4">
-            {pipelineData.map((stage) => (
-              <div key={stage.stage} className="text-center">
-                <p className="text-sm text-muted-foreground">{stage.stage}</p>
-                <p className="text-2xl font-bold">{stage.count}</p>
-                <p className="text-xs text-muted-foreground">
-                  {stage.percentage}%
-                </p>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </section>
-
-      <Separator />
-
-      {/* Top Performing Jobs */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4">Top Performing Jobs</h2>
-        <Card className="p-6">
-          <div className="space-y-4">
-            {jobPerformance.map((job, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between pb-4 border-b last:border-b-0"
-              >
-                <div className="flex-1">
-                  <p className="font-semibold">{job.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {job.applications} applications
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold text-green-600">
-                    {job.conversion}%
-                  </p>
-                  <p className="text-xs text-muted-foreground">conversion</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+              Loading...
+            </div>
+          ) : departmentData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={departmentData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, value }) => `${name}: ${value}`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {departmentData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.color || "#8884d8"}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+              No department data available
+            </div>
+          )}
         </Card>
       </section>
     </div>
