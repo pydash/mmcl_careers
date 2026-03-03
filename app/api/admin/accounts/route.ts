@@ -42,34 +42,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { email, first_name, last_name } = body;
 
-    // Validate required fields
-    if (!email || !first_name || !last_name) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 },
-      );
-    }
-
-    // Check if email already exists
-    const checkEmailQuery = `
-      SELECT id FROM user_accounts WHERE email = $1
-    `;
-    const emailCheck = await db.query(checkEmailQuery, [email]);
-
-    if (emailCheck.rows.length > 0) {
-      return NextResponse.json(
-        { error: "Email already exists" },
-        { status: 409 },
-      );
-    }
-
     // Generate a default password
     const defaultPassword = "ChangeMe123!";
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-
-    // Start transaction
-    await db.query("BEGIN");
-    transactionStarted = true;
 
     // Insert into user_accounts
     const insertAccountQuery = `
@@ -81,34 +56,10 @@ export async function POST(request: Request) {
       email,
       hashedPassword,
     ]);
-    const newAccount = accountResult.rows[0];
-
-    // Insert into user_profiles
-    const insertProfileQuery = `
-      INSERT INTO user_profiles (id, first_name, last_name, email_address)
-      VALUES ($1, $2, $3, $4)
-    `;
-    await db.query(insertProfileQuery, [
-      newAccount.id,
-      first_name,
-      last_name,
-      email,
-    ]);
-
-    // Commit transaction
-    await db.query("COMMIT");
-    transactionStarted = false;
 
     return NextResponse.json(
       {
         success: true,
-        account: {
-          id: newAccount.id,
-          email: newAccount.email,
-          full_name: `${first_name} ${last_name}`,
-          created_at: newAccount.created_at,
-        },
-        message: "Account created successfully",
       },
       { status: 201 },
     );
