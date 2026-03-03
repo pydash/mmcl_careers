@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import db from "@/lib/db";
 import { ALL_INTERVIEWS_QUERY } from "@/lib/queries/hr/all_interviews_query";
+import { getUserIdFromSession } from "@/lib/auth";
 
 export async function GET(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("session_user_id")?.value;
+    const userId = await getUserIdFromSession();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -28,8 +27,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("session_user_id")?.value;
+    const userId = await getUserIdFromSession();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -89,8 +87,7 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("session_user_id")?.value;
+    const userId = await getUserIdFromSession();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

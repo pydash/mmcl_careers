@@ -38,16 +38,7 @@ export function useApplicantDetails(
       setSaving(true);
       setError(null);
       try {
-        const updated = await updateApplicationDetails(
-          String(applicationId),
-          updates,
-        );
-        // setJobDetails(updated);
-        // return updated;
-
-        // console.log("saving...");
-        // await new Promise((resolve) => setTimeout(resolve, 2000));
-        // console.log("hello", updates);
+        await updateApplicationDetails(String(applicationId), updates);
       } catch (e: any) {
         setError(e?.message ?? "Failed to save applicant details");
         throw e;
@@ -55,25 +46,8 @@ export function useApplicantDetails(
         setSaving(false);
       }
     },
-    [applicantId],
+    [applicationId],
   );
-  // const save = useCallback(
-  //   async (updates: Partial<JobDetails>) => {
-  //     setSaving(true);
-  //     setError(null);
-  //     try {
-  //       const updated = await updateJobDetails(String(jobId), updates);
-  //       setJobDetails(updated);
-  //       return updated;
-  //     } catch (e: any) {
-  //       setError(e?.message ?? "Failed to save job");
-  //       throw e;
-  //     } finally {
-  //       setSaving(false);
-  //     }
-  //   },
-  //   [jobId],
-  // );
 
   return { applicantDetails, loading, error, saving, save };
 }

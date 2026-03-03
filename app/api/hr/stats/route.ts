@@ -7,8 +7,9 @@ import {
   getInterviewsScheduledStats,
   getOffersMadeStats,
   getPipelineHealthStats,
+  getUpcomingInterviewsStats,
+  getRecentApplicantsStats,
 } from "@/lib/queries/hr/dashboard";
-import { get } from "http";
 
 export async function GET(request: NextRequest) {
   try {
@@ -34,6 +35,12 @@ export async function GET(request: NextRequest) {
     const pipelineHealthResult = await db.query(getPipelineHealthStats);
     const pipeline_health = pipelineHealthResult.rows[0];
 
+    const interviewsResult = await db.query(getUpcomingInterviewsStats);
+    const interviews = interviewsResult.rows;
+
+    const recentApplicantsResult = await db.query(getRecentApplicantsStats);
+    const recent_applicants = recentApplicantsResult.rows;
+
     return NextResponse.json({
       stats: {
         open_roles,
@@ -45,6 +52,12 @@ export async function GET(request: NextRequest) {
         applied: pipeline_health.applied,
         interview: pipeline_health.interview,
         offer: pipeline_health.offer,
+      },
+      upcoming_interviews: {
+        interviews,
+      },
+      recent_applicants: {
+        recent_applicants,
       },
     });
   } catch (error) {

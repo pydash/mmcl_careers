@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useJobDetails } from "@/hooks/hr/jobs/useJobDetails";
 
 import {
@@ -12,34 +12,12 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 export function JobViewButton({ jobId }: { jobId: number | string }) {
-  const { jobDetails, loading, error, saving, save } = useJobDetails(jobId);
+  const { jobDetails, loading, error } = useJobDetails(jobId);
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    is_active: true,
-  });
-
-  useEffect(() => {
-    if (jobDetails) {
-      setForm({
-        title: jobDetails.title ?? "",
-        description: jobDetails.description ?? "",
-        is_active: jobDetails.is_active,
-      });
-    }
-  }, [jobDetails, open]);
-
-  const onSave = async () => {
-    await save(form);
-    setOpen(false);
-  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -52,53 +30,56 @@ export function JobViewButton({ jobId }: { jobId: number | string }) {
         <DialogHeader>
           <DialogTitle>Job Details</DialogTitle>
           <DialogDescription>
-            Edit the job and save your changes.
+            View job information and details.
           </DialogDescription>
         </DialogHeader>
 
         {loading ? (
-          <div className="text-muted-foreground">Loading…</div>
+          <div className="rounded-lg border bg-card p-8 text-center">
+            <p className="text-muted-foreground">Loading job details...</p>
+          </div>
         ) : error ? (
-          <div className="text-destructive">Error: {error}</div>
+          <div className="rounded-lg border bg-destructive/10 p-4">
+            <p className="text-destructive">Error: {error}</p>
+          </div>
         ) : jobDetails ? (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor={`title-${jobDetails.id}`}>Title</Label>
-              <Input
-                id={`title-${jobDetails.id}`}
-                value={form.title}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, title: e.target.value }))
-                }
-              />
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                  Job Title
+                </h3>
+                <p className="text-lg font-semibold">{jobDetails.position}</p>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                  Description
+                </h3>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                  {jobDetails.description}
+                </p>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">
+                  Status
+                </h3>
+                <Badge variant="secondary">
+                  {jobDetails.is_open ? "Open" : "Closed"}
+                </Badge>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor={`desc-${jobDetails.id}`}>Description</Label>
-              <Input
-                id={`desc-${jobDetails.id}`}
-                value={form.description}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, description: e.target.value }))
-                }
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id={`active-${jobDetails.id}`}
-                checked={form.is_active}
-                onCheckedChange={(v: boolean) =>
-                  setForm((f) => ({ ...f, is_active: Boolean(v) }))
-                }
-              />
-              <Label htmlFor={`active-${jobDetails.id}`}>Active</Label>
-            </div>
+
             <Separator />
-            <div className="flex justify-end gap-2">
+
+            <div className="flex justify-end">
               <Button variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={onSave} disabled={saving}>
-                {saving ? "Saving…" : "Save changes"}
+                Close
               </Button>
             </div>
           </div>

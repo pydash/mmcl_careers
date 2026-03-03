@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -31,42 +31,17 @@ import {
 } from "@/components/ui/select";
 import { useAdminAccounts } from "@/hooks/admin/accounts/useAdminAccounts";
 
-interface HRAccount {
-  id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  department: string;
-  status: "active" | "inactive";
-  created_at: string;
-}
-
 export default function AccountsPage() {
-  const { accounts: apiAccounts, loading } = useAdminAccounts();
-  const [localAccounts, setLocalAccounts] = useState<HRAccount[]>([]);
+  const { accounts, loading, error: fetchError, refetch } = useAdminAccounts();
 
-  useEffect(() => {
-    if (apiAccounts && apiAccounts.length > 0) {
-      const mappedAccounts: HRAccount[] = apiAccounts.map((account: any) => ({
-        id: account.id,
-        email: account.email,
-        first_name: account.full_name?.split(" ")[0] || "",
-        last_name: account.full_name?.split(" ")[1] || "",
-        department: "HR",
-        status: "active" as const,
-        created_at: account.created_at,
-      }));
-      setLocalAccounts(mappedAccounts);
-    }
-  }, [apiAccounts]);
-
-  const [searchTerm, setSearchTerm] = useState("");
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(
     null,
   );
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [creating, setCreating] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     first_name: "",
@@ -75,41 +50,55 @@ export default function AccountsPage() {
     status: "active" as const,
   });
 
-  const filteredAccounts = localAccounts.filter(
-    (account) =>
-      account.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      account.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      account.last_name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-
-  const handleCreateAccount = () => {
+  const handleCreateAccount = async () => {
     if (!formData.email || !formData.first_name || !formData.last_name) {
-      alert("Please fill in all required fields");
+      setErrorMessage("Please fill in all required fields");
+      setTimeout(() => setErrorMessage(""), 3000);
       return;
     }
 
-    const newAccount: HRAccount = {
-      id: String(localAccounts.length + 1),
-      email: formData.email,
-      first_name: formData.first_name,
-      last_name: formData.last_name,
-      department: formData.department,
-      status: formData.status,
-      created_at: new Date().toISOString().split("T")[0],
-    };
+    setCreating(true);
+    setErrorMessage("");
 
-    setLocalAccounts([...localAccounts, newAccount]);
-    setSuccessMessage("Account created successfully!");
-    setOpenCreateDialog(false);
-    setFormData({
-      email: "",
-      first_name: "",
-      last_name: "",
-      department: "HR",
-      status: "active",
-    });
+    try {
+      const response = await fetch("/api/admin/accounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+        }),
+      });
 
-    setTimeout(() => setSuccessMessage(""), 3000);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create account");
+      }
+
+      setSuccessMessage(
+        "Account created successfully! Default password: ChangeMe123!",
+      );
+      setOpenCreateDialog(false);
+      setFormData({
+        email: "",
+        first_name: "",
+        last_name: "",
+        department: "HR",
+        status: "active",
+      });
+
+      // Refresh the accounts list
+      refetch();
+
+      setTimeout(() => setSuccessMessage(""), 5000);
+    } catch (error: any) {
+      setErrorMessage(error.message || "Failed to create account");
+      setTimeout(() => setErrorMessage(""), 3000);
+    } finally {
+      setCreating(false);
+    }
   };
 
   const handleDeleteAccount = (id: string) => {
@@ -119,14 +108,10 @@ export default function AccountsPage() {
 
   const confirmDelete = () => {
     if (selectedAccountId) {
-      setLocalAccounts(
-        localAccounts.filter((account) => account.id !== selectedAccountId),
-      );
-      setSuccessMessage("Account deleted successfully!");
+      // TODO: Implement API call to delete account
+      alert("Delete account API integration coming soon");
       setOpenDeleteDialog(false);
       setSelectedAccountId(null);
-
-      setTimeout(() => setSuccessMessage(""), 3000);
     }
   };
 
@@ -226,10 +211,13 @@ export default function AccountsPage() {
               <Button
                 variant="outline"
                 onClick={() => setOpenCreateDialog(false)}
+                disabled={creating}
               >
                 Cancel
               </Button>
-              <Button onClick={handleCreateAccount}>Create Account</Button>
+              <Button onClick={handleCreateAccount} disabled={creating}>
+                {creating ? "Creating..." : "Create Account"}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -242,16 +230,17 @@ export default function AccountsPage() {
         </Alert>
       )}
 
-      {/* Search Bar */}
-      <div>
-        <Input
-          type="text"
-          placeholder="Search by email, first name, or last name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
-      </div>
+      {errorMessage && (
+        <Alert className="border-red-200 bg-red-50">
+          <p className="text-sm text-red-800">{errorMessage}</p>
+        </Alert>
+      )}
+
+      {fetchError && (
+        <Alert className="border-red-200 bg-red-50">
+          <p className="text-sm text-red-800">Error: {fetchError}</p>
+        </Alert>
+      )}
 
       {/* Accounts Table */}
       <div className="border rounded-lg overflow-hidden">
@@ -275,24 +264,17 @@ export default function AccountsPage() {
                   Loading accounts...
                 </TableCell>
               </TableRow>
-            ) : filteredAccounts.length > 0 ? (
-              filteredAccounts.map((account) => (
+            ) : accounts.length > 0 ? (
+              accounts.map((account) => (
                 <TableRow key={account.id}>
                   <TableCell className="font-medium">{account.email}</TableCell>
+                  <TableCell>{account.full_name}</TableCell>
                   <TableCell>
-                    {account.first_name} {account.last_name}
+                    <Badge variant="default">Active</Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant={
-                        account.status === "active" ? "default" : "secondary"
-                      }
-                    >
-                      {account.status.charAt(0).toUpperCase() +
-                        account.status.slice(1)}
-                    </Badge>
+                    {new Date(account.created_at).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>{account.created_at}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button
                       variant="outline"
@@ -351,7 +333,7 @@ export default function AccountsPage() {
                   colSpan={5}
                   className="text-center py-8 text-muted-foreground"
                 >
-                  No accounts found matching your search.
+                  No accounts found.
                 </TableCell>
               </TableRow>
             )}
@@ -363,19 +345,15 @@ export default function AccountsPage() {
       <div className="grid grid-cols-3 gap-4">
         <div className="border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Total Accounts</p>
-          <p className="text-2xl font-bold">{localAccounts.length}</p>
+          <p className="text-2xl font-bold">{accounts.length}</p>
         </div>
         <div className="border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Active Accounts</p>
-          <p className="text-2xl font-bold text-green-600">
-            {localAccounts.filter((a) => a.status === "active").length}
-          </p>
+          <p className="text-2xl font-bold text-green-600">{accounts.length}</p>
         </div>
         <div className="border rounded-lg p-4">
           <p className="text-sm text-muted-foreground">Inactive Accounts</p>
-          <p className="text-2xl font-bold text-red-600">
-            {localAccounts.filter((a) => a.status === "inactive").length}
-          </p>
+          <p className="text-2xl font-bold text-red-600">0</p>
         </div>
       </div>
     </div>

@@ -140,12 +140,6 @@ export default function ApplicantDetailsTab({
                 <p>{applicantDetails?.personal?.physical_address}</p>
               </div>
             </div>
-            <div className="grid grid-cols-[1fr] border border-gray-300 rounded-xl">
-              <div className="p-4">
-                <p className="text-sm text-gray-500">Resume</p>
-                <p>{application.resume_url}</p>
-              </div>
-            </div>
           </>
         ) : null}
       </TabsContent>

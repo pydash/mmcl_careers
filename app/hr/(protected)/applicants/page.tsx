@@ -18,38 +18,7 @@ import { InterviewsTable } from "@/components/hr/applicants/interviews-table";
 import { useEffect, useState } from "react";
 import { OffersTable } from "@/components/hr/applicants/offers-table";
 import { ApplicationDetailsButton } from "@/components/hr/applicants/application-details-button";
-import { off } from "process";
-
-const applicants = [
-  {
-    name: "Alex Turner",
-    role: "Senior Backend Engineer",
-    stage: "Interview",
-    status: "Active",
-    updated: "Today",
-  },
-  {
-    name: "Maria Chen",
-    role: "Product Designer",
-    stage: "Portfolio Review",
-    status: "Active",
-    updated: "1d ago",
-  },
-  {
-    name: "Samir Patel",
-    role: "QA Engineer",
-    stage: "Offer",
-    status: "Offer",
-    updated: "2d ago",
-  },
-  {
-    name: "Grace Hill",
-    role: "People Operations Lead",
-    stage: "Screen",
-    status: "On hold",
-    updated: "3d ago",
-  },
-];
+import { toTitleCase } from "@/utils/formatText";
 
 export default function ApplicantsPage() {
   const [mounted, setMounted] = useState(false);
@@ -88,7 +57,13 @@ export default function ApplicantsPage() {
     (app: any) => app.status === "Offered",
   );
 
-  const appsFilterLabels = ["all", "pending", "for_interview", "deferred", "offered"];
+  const appsFilterLabels = [
+    "all",
+    "pending",
+    "for_interview",
+    "deferred",
+    "offered",
+  ];
   const appsFilters = [
     applications,
     pendingApplications,
@@ -106,7 +81,6 @@ export default function ApplicantsPage() {
       <TableHeader>
         <TableRow>
           <TableHead>Application No.</TableHead>
-          <TableHead>Score</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Job Title</TableHead>
           <TableHead>Application Date</TableHead>
@@ -128,13 +102,12 @@ export default function ApplicantsPage() {
           applicationsList.map((application: any) => (
             <TableRow key={application.id}>
               <TableCell>{application.id}</TableCell>
-              <TableCell>{application.score}</TableCell>
               <TableCell>
                 {application.first_name} {application.last_name}
               </TableCell>
-              <TableCell>{application.title.trim()}</TableCell>
+              <TableCell>{application.title?.trim() ?? "—"}</TableCell>
               <TableCell>{getDate(application.applied_at)}</TableCell>
-              <TableCell>{application.status}</TableCell>
+              <TableCell>{toTitleCase(application.status)}</TableCell>
               <TableCell>
                 <ApplicationDetailsButton
                   application={application}
@@ -149,125 +122,96 @@ export default function ApplicantsPage() {
   );
 
   return (
-    <Tabs defaultValue="applications">
-      <div className="flex border-b-2 border-b-muted pb-4">
-        <div>
-          <TabsList className="bg-0">
-            <TabsTrigger value="applications" className="shadow-none!">
+    <div className="space-y-6">
+      <Tabs defaultValue="applications" className="w-full">
+        <div className="bg-white rounded-lg border p-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 bg-muted/50">
+            <TabsTrigger
+              value="applications"
+              className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
               Applications
             </TabsTrigger>
-            <TabsTrigger value="interviews" className="shadow-none!">
+            <TabsTrigger
+              value="interviews"
+              className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
               Interviews
             </TabsTrigger>
-            <TabsTrigger value="hire_offers" className="shadow-none!">
+            <TabsTrigger
+              value="hire_offers"
+              className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
               Offers
             </TabsTrigger>
           </TabsList>
         </div>
-        {/* <div className="ml-auto">asd</div> */}
-      </div>
-      <TabsContent value="applications">
-        <Tabs defaultValue="all">
-          <div className="flex border-b-2 border-b-muted pb-4">
-            <div>
-              <TabsList className="bg-0">
-                <TabsTrigger value="all" className="shadow-none!">
+
+        <TabsContent value="applications" className="mt-0">
+          <Tabs defaultValue="all" className="w-full">
+            <div className="bg-white rounded-lg border p-2 mb-6">
+              <TabsList className="grid w-full grid-cols-5 bg-muted/50">
+                <TabsTrigger
+                  value="all"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                >
                   All
                 </TabsTrigger>
-                <TabsTrigger value="pending" className="shadow-none!">
+                <TabsTrigger
+                  value="pending"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                >
                   Pending
                 </TabsTrigger>
-                <TabsTrigger value="for_interview" className="shadow-none!">
+                <TabsTrigger
+                  value="for_interview"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                >
                   For Interview
                 </TabsTrigger>
-                <TabsTrigger value="deferred" className="shadow-none!">
+                <TabsTrigger
+                  value="deferred"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                >
                   Deferred
                 </TabsTrigger>
-                <TabsTrigger value="offered" className="shadow-none!">
+                <TabsTrigger
+                  value="offered"
+                  className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                >
                   Offered
                 </TabsTrigger>
               </TabsList>
             </div>
-            {/* <div className="ml-auto">asd</div> */}
-          </div>
-          {appsFilterLabels.map((label, i) => {
-            return (
-              <TabsContent value={label} key={i}>
-                {loading && (
-                  <div className="mt-4 text-muted-foreground">
-                    Loading applications...
-                  </div>
-                )}
-                {error && (
-                  <div className="mt-4 text-destructive">Error: {error}</div>
-                )}
-                {!loading && !error && (
-                  <ApplicationsTable applicationsList={appsFilters[i]} />
-                )}
-              </TabsContent>
-            );
-          })}
-        </Tabs>
-      </TabsContent>
-      <TabsContent value="interviews">
-        <InterviewsTable />
-      </TabsContent>
-      <TabsContent value="hire_offers">
-     <OffersTable offers={applications.filter(app => app.status === "Offered")} />
-      </TabsContent>
-    </Tabs>
-  );
 
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">Candidate list</p>
-          <h2 className="text-xl font-semibold">Applicants</h2>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">Export CSV</Button>
-          <Button>New applicant</Button>
-        </div>
-      </div>
+            {appsFilterLabels.map((label, i) => {
+              return (
+                <TabsContent value={label} key={i} className="mt-0">
+                  {loading && (
+                    <div className="mt-4 text-muted-foreground">
+                      Loading applications...
+                    </div>
+                  )}
+                  {error && (
+                    <div className="mt-4 text-destructive">Error: {error}</div>
+                  )}
+                  {!loading && !error && (
+                    <ApplicationsTable applicationsList={appsFilters[i]} />
+                  )}
+                </TabsContent>
+              );
+            })}
+          </Tabs>
+        </TabsContent>
 
-      <Table>
-        <TableCaption>Active candidates across all open roles.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Stage</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Updated</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {applicants.map((applicant) => (
-            <TableRow key={`${applicant.name}-${applicant.role}`}>
-              <TableCell className="font-medium">{applicant.name}</TableCell>
-              <TableCell>{applicant.role}</TableCell>
-              <TableCell>{applicant.stage}</TableCell>
-              <TableCell>
-                <Badge
-                  variant={
-                    applicant.status === "Offer"
-                      ? "default"
-                      : applicant.status === "Active"
-                        ? "secondary"
-                        : "outline"
-                  }
-                >
-                  {applicant.status}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right text-muted-foreground">
-                {applicant.updated}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+        <TabsContent value="interviews" className="mt-0">
+          <InterviewsTable />
+        </TabsContent>
+
+        <TabsContent value="hire_offers" className="mt-0">
+          <OffersTable />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

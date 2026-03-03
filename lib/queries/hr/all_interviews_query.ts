@@ -1,21 +1,22 @@
 export const ALL_INTERVIEWS_QUERY = `
 SELECT
     i.id,
-    ja.id AS appId,
+    a.id AS appid,
     up.first_name,
     up.last_name,
-    i.title,
+  jp.position,
     i.scheduled_at,
-    i.interview_mode,
-    i.meeting_link,
+    i.mode,
+    i.link,
     i.location,
-    ua.email
-FROM job_interviews i
-LEFT JOIN job_applications ja
-    ON ja.id = i.app_id
+    up.email_address
+FROM interviews i
+LEFT JOIN applications a
+    ON a.id = i.application_id
 LEFT JOIN user_accounts ua
-    ON ua.id = ja.acc_id
+    ON ua.id = a.profile_id
 LEFT JOIN user_profiles up
     ON up.id = ua.id
-ORDER BY ja.id DESC;
+LEFT JOIN job_postings jp ON a.job_id = jp.id
+ORDER BY a.id DESC; 
 `;

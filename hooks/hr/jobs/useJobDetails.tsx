@@ -8,7 +8,7 @@ import {
 
 export type JobDetails = {
   id: number;
-  title: string;
+  position: string;
   description: string | null;
   department?: string | null;
   employment_type?: string | null;
@@ -17,7 +17,7 @@ export type JobDetails = {
   salary_min?: string | null;
   salary_max?: string | null;
   posted_by?: string | null;
-  is_active: boolean;
+  is_open: boolean;
   created_at: string;
 };
 

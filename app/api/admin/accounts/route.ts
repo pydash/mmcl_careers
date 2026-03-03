@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import db from "@/lib/db";
 import { getAllAccountsQuery } from "@/lib/queries/admin/accounts/query";
+import { getUserIdFromSession } from "@/lib/auth";
+import bcrypt from "bcryptjs";
 
 export async function GET() {
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("session_user_id")?.value;
+    const userId = await getUserIdFromSession();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -24,6 +24,106 @@ export async function GET() {
     console.error("Error fetching hr accounts", error);
     return NextResponse.json(
       { error: "Failed to fetch accounts" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  let transactionStarted = false;
+
+  try {
+    const userId = await getUserIdFromSession();
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { email, first_name, last_name } = body;
+
+    // Validate required fields
+    if (!email || !first_name || !last_name) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
+    }
+
+    // Check if email already exists
+    const checkEmailQuery = `
+      SELECT id FROM user_accounts WHERE email = $1
+    `;
+    const emailCheck = await db.query(checkEmailQuery, [email]);
+
+    if (emailCheck.rows.length > 0) {
+      return NextResponse.json(
+        { error: "Email already exists" },
+        { status: 409 },
+      );
+    }
+
+    // Generate a default password
+    const defaultPassword = "ChangeMe123!";
+    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+
+    // Start transaction
+    await db.query("BEGIN");
+    transactionStarted = true;
+
+    // Insert into user_accounts
+    const insertAccountQuery = `
+      INSERT INTO user_accounts (email, password_hash, role)
+      VALUES ($1, $2, 'hr')
+      RETURNING id, email, created_at
+    `;
+    const accountResult = await db.query(insertAccountQuery, [
+      email,
+      hashedPassword,
+    ]);
+    const newAccount = accountResult.rows[0];
+
+    // Insert into user_profiles
+    const insertProfileQuery = `
+      INSERT INTO user_profiles (id, first_name, last_name, email_address)
+      VALUES ($1, $2, $3, $4)
+    `;
+    await db.query(insertProfileQuery, [
+      newAccount.id,
+      first_name,
+      last_name,
+      email,
+    ]);
+
+    // Commit transaction
+    await db.query("COMMIT");
+    transactionStarted = false;
+
+    return NextResponse.json(
+      {
+        success: true,
+        account: {
+          id: newAccount.id,
+          email: newAccount.email,
+          full_name: `${first_name} ${last_name}`,
+          created_at: newAccount.created_at,
+        },
+        message: "Account created successfully",
+      },
+      { status: 201 },
+    );
+  } catch (error) {
+    // Only rollback if transaction was started
+    if (transactionStarted) {
+      try {
+        await db.query("ROLLBACK");
+      } catch (rollbackError) {
+        console.error("Error rolling back transaction", rollbackError);
+      }
+    }
+    console.error("Error creating hr account", error);
+    return NextResponse.json(
+      { error: "Failed to create account" },
       { status: 500 },
     );
   }

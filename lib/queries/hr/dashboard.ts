@@ -89,10 +89,43 @@ WITH pipeline AS (
 SELECT * FROM pipeline;
 `;
 
+// Upcoming interviews
+const getUpcomingInterviewsStats = `
+SELECT
+    i.id,
+    i.scheduled_at,
+    jp.position,
+    CONCAT(up.first_name, ' ', up.last_name) AS applicant_name
+FROM interviews i
+JOIN applications a ON i.application_id = a.id 
+JOIN user_profiles up ON a.profile_id = up.id
+JOIN job_postings jp ON a.job_id = jp.id
+WHERE i.scheduled_at >= NOW()
+ORDER BY i.scheduled_at ASC
+LIMIT 5;
+`;
+
+// Recent applicants
+const getRecentApplicantsStats = `
+SELECT
+    CONCAT(up.first_name, ' ', up.last_name) AS name,
+    jp.position AS role,
+    a.status,
+    a.created_at AS submitted
+FROM applications a
+JOIN user_profiles up ON a.profile_id = up.id
+JOIN job_postings jp ON a.job_id = jp.id
+WHERE a.created_at >= NOW() - INTERVAL '7 days'
+ORDER BY a.created_at DESC
+LIMIT 5;
+`;
+
 export {
   getOpenRolesStats,
   getNewApplicantsStats,
   getInterviewsScheduledStats,
   getOffersMadeStats,
   getPipelineHealthStats,
+  getUpcomingInterviewsStats,
+  getRecentApplicantsStats,
 };

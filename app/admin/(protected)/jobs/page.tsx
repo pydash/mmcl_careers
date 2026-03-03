@@ -16,10 +16,8 @@ import { useAllJobs } from "@/hooks/hr/jobs/useAllJobs";
 import { getDate } from "@/utils/formatDate";
 import { useState, useEffect } from "react";
 import { JobViewButton } from "@/components/hr/jobs/job-view-button";
+import { JobEditButton } from "@/components/hr/jobs/job-edit-button";
 import Link from "next/link";
-import AllJobsCard from "@/components/admin/jobs/all-jobs-card";
-import ActiveJobsCard from "@/components/admin/jobs/active-jobs-card";
-import ClosedJobsCard from "@/components/admin/jobs/closed-jobs-card";
 
 export default function JobsPage() {
   const [mounted, setMounted] = useState(false);
@@ -33,8 +31,8 @@ export default function JobsPage() {
     return null;
   }
 
-  const activeJobs = jobs.filter((job: any) => job.is_active);
-  const inactiveJobs = jobs.filter((job: any) => !job.is_active);
+  const activeJobs = jobs.filter((job: any) => job.is_open);
+  const inactiveJobs = jobs.filter((job: any) => !job.is_open);
 
   const JobsTable = ({ jobsList }: { jobsList: any[] }) => (
     <Table>
@@ -45,6 +43,7 @@ export default function JobsPage() {
           <TableHead>Date Posted</TableHead>
           <TableHead>Total Applicants</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead></TableHead>
           <TableHead></TableHead>
         </TableRow>
       </TableHeader>
@@ -62,12 +61,15 @@ export default function JobsPage() {
           jobsList.map((job: any) => (
             <TableRow key={job.id}>
               <TableCell>{job.id}</TableCell>
-              <TableCell>{job.title.trim()}</TableCell>
+              <TableCell>{job.position.trim()}</TableCell>
               <TableCell>{getDate(job.date_posted)}</TableCell>
               <TableCell>{job.total_applicants}</TableCell>
-              <TableCell>{job.is_active ? "Active" : "Inactive"}</TableCell>
+              <TableCell>{job.is_open ? "Open" : "Closed"}</TableCell>
               <TableCell>
                 <JobViewButton jobId={job.id} />
+              </TableCell>
+              <TableCell>
+                <JobEditButton jobId={job.id} />
               </TableCell>
             </TableRow>
           ))
@@ -77,47 +79,80 @@ export default function JobsPage() {
   );
 
   return (
-    <>
-      <Tabs defaultValue="all">
-        <div className="flex border-b-2 border-b-muted pb-4">
-          <div>
-            <TabsList className="bg-0">
-              <TabsTrigger
-                value="all"
-                className="shadow-none! data-[state=active]:border rounded-none"
-              >
-                All
-              </TabsTrigger>
-              <TabsTrigger
-                value="active"
-                className="shadow-none! data-[state=active]:border rounded-none"
-              >
-                Active
-              </TabsTrigger>
-              <TabsTrigger
-                value="closed"
-                className="shadow-none! data-[state=active]:border rounded-none"
-              >
-                Closed
-              </TabsTrigger>
-            </TabsList>
-          </div>
-          <div className="ml-auto">
-            <Button variant="default">
-              <Link href="/admin/jobs/post-a-job">Post a job</Link>
-            </Button>
-          </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Jobs</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage job postings and view applicants
+          </p>
         </div>
-        <TabsContent value="all">
-          <AllJobsCard />
+        <Button variant="default" asChild>
+          <Link href="/admin/jobs/post-a-job">Post a job</Link>
+        </Button>
+      </div>
+
+      <Tabs defaultValue="all" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="all">All Jobs</TabsTrigger>
+          <TabsTrigger value="active">Active</TabsTrigger>
+          <TabsTrigger value="inactive">Inactive</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="all" className="space-y-4">
+          {loading && (
+            <div className="rounded-lg border bg-card p-8 text-center">
+              <p className="text-muted-foreground">Loading jobs...</p>
+            </div>
+          )}
+          {error && (
+            <div className="rounded-lg border bg-destructive/10 p-8 text-center">
+              <p className="text-destructive">Error: {error}</p>
+            </div>
+          )}
+          {!loading && !error && (
+            <div className="rounded-lg border bg-card shadow-sm">
+              <JobsTable jobsList={jobs} />
+            </div>
+          )}
         </TabsContent>
-        <TabsContent value="active">
-          <ActiveJobsCard />
+
+        <TabsContent value="active" className="space-y-4">
+          {loading && (
+            <div className="rounded-lg border bg-card p-8 text-center">
+              <p className="text-muted-foreground">Loading jobs...</p>
+            </div>
+          )}
+          {error && (
+            <div className="rounded-lg border bg-destructive/10 p-8 text-center">
+              <p className="text-destructive">Error: {error}</p>
+            </div>
+          )}
+          {!loading && !error && (
+            <div className="rounded-lg border bg-card shadow-sm">
+              <JobsTable jobsList={activeJobs} />
+            </div>
+          )}
         </TabsContent>
-        <TabsContent value="closed">
-          <ClosedJobsCard />
+
+        <TabsContent value="inactive" className="space-y-4">
+          {loading && (
+            <div className="rounded-lg border bg-card p-8 text-center">
+              <p className="text-muted-foreground">Loading jobs...</p>
+            </div>
+          )}
+          {error && (
+            <div className="rounded-lg border bg-destructive/10 p-8 text-center">
+              <p className="text-destructive">Error: {error}</p>
+            </div>
+          )}
+          {!loading && !error && (
+            <div className="rounded-lg border bg-card shadow-sm">
+              <JobsTable jobsList={inactiveJobs} />
+            </div>
+          )}
         </TabsContent>
       </Tabs>
-    </>
+    </div>
   );
 }

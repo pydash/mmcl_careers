@@ -1,20 +1,20 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import db from "@/lib/db";
-import { ALL_JOBS_QUERY } from "@/lib/queries/hr/all_jobs_query";
+import { getAllJobs } from "@/lib/queries/hr/all_jobs_query";
+import { get } from "http";
+import { getUserIdFromSession } from "@/lib/auth";
 
 export async function GET(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("session_user_id")?.value;
+    const userId = await getUserIdFromSession();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const applications = await db
-      .query(ALL_JOBS_QUERY)
-      .then((res: any) => res.rows);
+    const applicationsResult = await db.query(getAllJobs);
+    const applications = applicationsResult.rows;
 
     return NextResponse.json(applications);
   } catch (error) {
@@ -27,64 +27,55 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  {
-    try {
-      const cookieStore = await cookies();
-      const userId = cookieStore.get("session_user_id")?.value;
+  try {
+    const userId = await getUserIdFromSession();
 
-      if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-      const data = await request.json();
+    const data = await request.json();
 
-      const {
-        is_active,
-        title,
-        job_type,
-        department,
-        deadline_date,
-        description,
-        responsibilities,
-        requirements,
-        salary_min,
-        salary_max,
-      } = data;
+    console.log(userId);
+    console.log(data);
 
-      const insertQuery = `
-      INSERT INTO job_posts
-      (public_id, is_active, title, employment_type, department, expiry_date, description, responsibilities, requirements, salary_min, salary_max, posted_by)
-      VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    const {
+      is_open,
+      position,
+      employment_type,
+      department,
+      expiration_date,
+      description,
+      salary,
+    } = data;
+
+    const insertQuery = `
+      INSERT INTO job_postings
+      (position, employment_type, department, expiration_date, description, salary, is_open, posted_by)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING id
     `;
 
-      const values = [
-        is_active,
-        title,
-        job_type,
-        department,
-        deadline_date,
-        description,
-        responsibilities,
-        requirements,
-        salary_min,
-        salary_max,
-        userId,
-      ];
+    const values = [
+      position,
+      employment_type,
+      department,
+      expiration_date,
+      description,
+      salary,
+      is_open,
+      userId,
+    ];
 
-      const result = await db.query(insertQuery, values);
-      const newJobId = result.rows[0].id;
+    const result = await db.query(insertQuery, values);
+    const newJobId = result.rows[0].id;
 
-      return NextResponse.json(
-        { success: true, jobId: newJobId },
-        { status: 201 },
-      );
-    } catch (error) {
-      console.error("Error posting job", error);
-      return NextResponse.json(
-        { error: "Failed to post job" },
-        { status: 500 },
-      );
-    }
+    return NextResponse.json(
+      { success: true, jobId: newJobId },
+      { status: 201 },
+    );
+  } catch (error) {
+    console.error("Error posting job", error);
+    return NextResponse.json({ error: "Failed to post job" }, { status: 500 });
   }
 }

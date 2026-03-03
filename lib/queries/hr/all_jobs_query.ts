@@ -1,14 +1,15 @@
-export const ALL_JOBS_QUERY = `
+const getAllJobs = `
 SELECT
     jp.id,
     jp.public_id,
-    jp.title,
+    jp.position,
     jp.created_at AS date_posted,
-    COUNT(ja.id) AS total_applicants,
-    jp.is_active
-FROM job_posts jp
-LEFT JOIN job_applications ja
-    ON ja.job_id = jp.id
-GROUP BY jp.id, jp.title
-ORDER BY jp.id;
+    COUNT(a.id) AS total_applicants,
+    jp.is_open
+FROM job_postings jp
+LEFT JOIN applications a ON a.job_id = jp.id
+GROUP BY jp.id
+ORDER BY jp.created_at DESC;
 `;
+
+export { getAllJobs };

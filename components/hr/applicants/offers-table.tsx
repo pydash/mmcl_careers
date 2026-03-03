@@ -50,10 +50,10 @@ export function OffersTable() {
                   <TableCell>
                     {offer.first_name} {offer.last_name}
                   </TableCell>
-                  <TableCell>{offer.title.trim()}</TableCell>
+                  <TableCell>{offer.title?.trim() ?? "—"}</TableCell>
                   <TableCell>{getDate(offer.offered_at)}</TableCell>
                   <TableCell>{offer.status}</TableCell>
-                  <TableCell>{offer.email}</TableCell>
+                  <TableCell>{offer.email_address}</TableCell>
                   {/* <TableCell><JobViewButton jobId={job.id} /></TableCell> */}
                 </TableRow>
               ))

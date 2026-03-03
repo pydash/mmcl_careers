@@ -1,193 +1,228 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
+import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useAnalytics } from "@/hooks/admin/analytics/useAnalytics";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+
+interface StatData {
+  count: string;
+  delta: string;
+}
+
+interface StatsResponse {
+  stats?: {
+    open_roles?: StatData;
+    new_applicants?: StatData;
+    interviews_scheduled?: StatData;
+    offers_made?: StatData;
+  };
+  pipeline_health?: {
+    applied?: string;
+    interview?: string;
+    offer?: string;
+  };
+}
 
 export default function AnalyticsPage() {
-  const { analytics, loading } = useAnalytics();
+  const [data, setData] = useState<StatsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const totalApplications = analytics?.totalApplications;
-  const totalHires = analytics?.totalHires;
-  const totalOpenPositions = analytics?.totalOpenPositions;
-  const offerAcceptance = analytics?.offerAcceptanceRate;
-  const rawApplicationTrend = analytics?.applicationTrend ?? [];
-  const departmentData = analytics?.applicationsByDepartment ?? [];
-  const monthOrder = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const applicationTrend = monthOrder.map((month) => {
-    const match = rawApplicationTrend.find(
-      (item) => String(item.month).trim().toLowerCase() === month.toLowerCase(),
-    );
-    return {
-      month,
-      applications:
-        match?.applications != null ? Number(match.applications) : 0,
-      hired: match?.hired != null ? Number(match.hired) : 0,
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const response = await fetch("/api/hr/stats", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Failed to fetch analytics");
+        }
+        const json = await response.json();
+        setData(json);
+      } catch (err: any) {
+        setError(err?.message || "Failed to load analytics");
+      } finally {
+        setLoading(false);
+      }
     };
-  });
 
-  const metrics = [
-    {
-      label: "Total Applications",
-      value: loading ? "—" : (totalApplications?.this_month?.toString() ?? "0"),
-      change: loading
-        ? "—"
-        : totalApplications?.percentage_change != null
-          ? `${totalApplications.percentage_change > 0 ? "+" : ""}${totalApplications.percentage_change}%`
-          : "0%",
-    },
-    {
-      label: "Total Hired",
-      value: loading ? "—" : (totalHires?.this_month?.toString() ?? "0"),
-      change: loading
-        ? "—"
-        : totalHires?.absolute_change != null
-          ? `${totalHires.absolute_change > 0 ? "+" : ""}${totalHires.absolute_change}`
-          : "0",
-    },
-    {
-      label: "Open Positions",
-      value: loading
-        ? "—"
-        : (totalOpenPositions?.this_month?.toString() ?? "0"),
-      change: loading
-        ? "—"
-        : totalOpenPositions?.absolute_change != null
-          ? `${totalOpenPositions.absolute_change > 0 ? "+" : ""}${totalOpenPositions.absolute_change}`
-          : "0",
-    },
-    {
-      label: "Offer Acceptance",
-      value: loading
-        ? "—"
-        : offerAcceptance?.acceptance_rate != null
-          ? `${offerAcceptance.acceptance_rate}%`
-          : "0%",
-      change: loading
-        ? "—"
-        : offerAcceptance?.accepted != null && offerAcceptance?.rejected != null
-          ? `${offerAcceptance.accepted}/${offerAcceptance.accepted + offerAcceptance.rejected}`
-          : "0/0",
-    },
-  ];
+    fetchAnalytics();
+  }, []);
+
+  const metrics = useMemo(() => {
+    const stats = data?.stats;
+    return [
+      {
+        label: "Open roles",
+        value: stats?.open_roles?.count ?? "0",
+        helper: `${stats?.open_roles?.delta ?? "0"} vs last period`,
+      },
+      {
+        label: "Active applicants",
+        value: stats?.new_applicants?.count ?? "0",
+        helper: `${stats?.new_applicants?.delta ?? "0"} vs last period`,
+      },
+      {
+        label: "Interviews scheduled",
+        value: stats?.interviews_scheduled?.count ?? "0",
+        helper: `${stats?.interviews_scheduled?.delta ?? "0"} vs last period`,
+      },
+      {
+        label: "Offers out",
+        value: stats?.offers_made?.count ?? "0",
+        helper: `${stats?.offers_made?.delta ?? "0"} vs last period`,
+      },
+    ];
+  }, [data]);
+
+  const funnel = useMemo(() => {
+    const applied = Number(data?.pipeline_health?.applied ?? 0);
+    const interview = Number(data?.pipeline_health?.interview ?? 0);
+    const offer = Number(data?.pipeline_health?.offer ?? 0);
+    const total = applied + interview + offer;
+
+    if (total === 0) {
+      return [
+        { stage: "Applied", percent: 0, helper: "No data" },
+        { stage: "Interview", percent: 0, helper: "No data" },
+        { stage: "Offer", percent: 0, helper: "No data" },
+      ];
+    }
+
+    return [
+      {
+        stage: "Applied",
+        percent: Math.round((applied / total) * 100),
+        helper: `${applied} applicants`,
+      },
+      {
+        stage: "Interview",
+        percent: Math.round((interview / total) * 100),
+        helper: `${interview} applicants`,
+      },
+      {
+        stage: "Offer",
+        percent: Math.round((offer / total) * 100),
+        helper: `${offer} applicants`,
+      },
+    ];
+  }, [data]);
+
+  const handleDownloadReport = () => {
+    const reportDate = new Date().toISOString().split("T")[0];
+
+    const lines = [
+      ["MMCL Careers - HR Analytics Report"],
+      [`Generated on`, reportDate],
+      [],
+      ["Metrics"],
+      ["Label", "Value", "Helper"],
+      ...metrics.map((metric) => [metric.label, metric.value, metric.helper]),
+      [],
+      ["Pipeline health"],
+      ["Stage", "Percent", "Details"],
+      ...funnel.map((item) => [item.stage, `${item.percent}%`, item.helper]),
+    ];
+
+    const csvContent = lines
+      .map((row) =>
+        row
+          .map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`)
+          .join(","),
+      )
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `hr-analytics-report-${reportDate}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  };
 
   return (
-    <div className="space-y-8 py-8">
-      {/* Key Metrics */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4">Key Metrics</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {metrics.map((metric) => (
-            <Card key={metric.label} className="p-6">
-              <p className="text-sm text-muted-foreground">{metric.label}</p>
-              <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-3xl font-bold">{metric.value}</span>
-                <Badge variant="secondary" className="text-xs">
-                  {metric.change}
-                </Badge>
-              </div>
-            </Card>
-          ))}
+    <div className="space-y-8">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm text-muted-foreground">Hiring performance</p>
+          <h2 className="text-xl font-semibold">Analytics</h2>
         </div>
+        <div className="flex gap-2">
+          <Button onClick={handleDownloadReport} disabled={loading}>
+            Download report
+          </Button>
+        </div>
+      </div>
+
+      {error && (
+        <section className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+          {error}
+        </section>
+      )}
+
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {(loading ? [...Array(4)] : metrics).map((metric: any, i) => (
+          <div
+            key={metric?.label ?? i}
+            className="rounded-lg border bg-card p-4 shadow-sm"
+          >
+            {loading ? (
+              <>
+                <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+                <div className="mt-2 h-8 w-16 animate-pulse rounded bg-muted" />
+                <div className="mt-2 h-4 w-32 animate-pulse rounded bg-muted" />
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground">{metric.label}</p>
+                <div className="mt-2 text-3xl font-semibold">
+                  {metric.value}
+                </div>
+                <p className="text-sm text-muted-foreground">{metric.helper}</p>
+              </>
+            )}
+          </div>
+        ))}
       </section>
 
-      <Separator />
-
-      {/* Charts Section */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Application Trend */}
-        <Card className="p-6">
-          <h3 className="font-semibold text-lg mb-4">Application Trend</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={applicationTrend}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="applications"
-                stroke="#3b82f6"
-                name="Applications"
-              />
-              <Line
-                type="monotone"
-                dataKey="hired"
-                stroke="#10b981"
-                name="Hired"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </Card>
-
-        {/* Applications by Department */}
-        <Card className="p-6">
-          <h3 className="font-semibold text-lg mb-4">
-            Applications by Department
-          </h3>
-          {loading ? (
-            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-              Loading...
+      <section className="rounded-lg border bg-card p-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground">Conversion</p>
+            <h3 className="text-lg font-semibold">Pipeline health</h3>
+          </div>
+          <Badge variant="secondary">Live</Badge>
+        </div>
+        <Separator className="my-4" />
+        <div className="space-y-4">
+          {(loading ? [] : funnel).map((item) => (
+            <div key={item.stage} className="space-y-1">
+              <div className="flex items-center justify-between text-sm">
+                <span>{item.stage}</span>
+                <span className="text-muted-foreground">
+                  {item.percent}% · {item.helper}
+                </span>
+              </div>
+              <div className="h-2 rounded-full bg-muted">
+                <div
+                  className="h-2 rounded-full bg-primary"
+                  style={{ width: `${item.percent}%` }}
+                />
+              </div>
             </div>
-          ) : departmentData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={departmentData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, value }) => `${name}: ${value}`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {departmentData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={entry.color || "#8884d8"}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-              No department data available
+          ))}
+          {loading && (
+            <div className="space-y-2">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-6 animate-pulse rounded bg-muted" />
+              ))}
             </div>
           )}
-        </Card>
+        </div>
       </section>
     </div>
   );

@@ -1,21 +1,30 @@
-"use client";
-
-import OpenRolesCard from "@/components/admin/dashboard/open-roles-card";
-import ActiveApplicantsCard from "@/components/admin/dashboard/active-applicants-card";
-import InterviewsScheduledCard from "@/components/admin/dashboard/interviews-scheduled-card";
-import OffersOutCard from "@/components/admin/dashboard/offers-out-card";
-import { useStats } from "@/hooks/admin/dashboard/useStats";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import Stats from "@/components/hr/dashboard/stats";
+import PipelineHealth from "@/components/hr/dashboard/pipeline-health";
+import UpcomingInterviews from "@/components/hr/dashboard/upcoming-interviews";
+import RecentApplicants from "@/components/hr/dashboard/recent-applicants";
 
 export default function DashboardPage() {
-  const { stats, loading, error } = useStats();
   return (
     <div className="space-y-8">
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <OpenRolesCard count={stats?.open_roles} />
-        <ActiveApplicantsCard count={stats?.applicants_total} />
-        <InterviewsScheduledCard count={stats?.upcoming_interviews} />
-        <OffersOutCard count={stats?.recent_offers} />
+      <Stats />
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <PipelineHealth />
+        <UpcomingInterviews />
       </section>
+
+      <RecentApplicants />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { fetchAdminAccounts } from "@/services/admin/accounts/accounts.service";
 
 export interface AdminAccount {
@@ -21,8 +21,9 @@ export function useAdminAccounts() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchAccounts = useCallback(() => {
     setLoading(true);
+    setError(null);
     fetchAdminAccounts()
       .then((data: AdminAccountsResponse) => {
         setAccounts(data.accounts ?? []);
@@ -34,5 +35,9 @@ export function useAdminAccounts() {
       });
   }, []);
 
-  return { accounts, loading, error };
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
+
+  return { accounts, loading, error, refetch: fetchAccounts };
 }

@@ -1,23 +1,97 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
-//placeholder palang ! kasi sa admin database kukunin!
+type HrProfile = {
+  name: string;
+  role: string;
+  department: string;
+  email: string;
+  phone: string;
+  status: string;
+  joined: string;
+  avatar: string;
+};
+
 export default function HrProfilePage() {
-  const hr = {
-    name: "Ashlie Argana",
-    role: "HR Manager",
-    department: "Human Resources",
-    email: "ashlie.argana@mmcl.edu.ph",
-    phone: "+63 9XX XXX XXXX",
-    status: "Active",
-    joined: "January 2024",
-    avatar: "",
-  };
+  const [hr, setHr] = useState<HrProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch("/api/hr/profile", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Failed to fetch profile");
+        }
+
+        const data = await response.json();
+        setHr({
+          ...data,
+          joined: data?.joined
+            ? new Date(data.joined).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+              })
+            : "-",
+        });
+      } catch (err: any) {
+        setError(err?.message || "Failed to load profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-6 p-6">
+        <div className="h-8 w-56 animate-pulse rounded bg-muted" />
+        <div className="grid gap-6 md:grid-cols-3">
+          <Card className="md:col-span-1">
+            <CardContent className="flex flex-col items-center gap-4 pt-6">
+              <div className="h-24 w-24 animate-pulse rounded-full bg-muted" />
+              <div className="h-5 w-40 animate-pulse rounded bg-muted" />
+              <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+            </CardContent>
+          </Card>
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle>Profile Details</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                {[...Array(6)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-12 animate-pulse rounded bg-muted"
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !hr) {
+    return (
+      <div className="space-y-6 p-6">
+        <p className="text-sm text-destructive">
+          {error || "No profile data found."}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 p-6">
@@ -32,7 +106,7 @@ export default function HrProfilePage() {
           <CardContent className="flex flex-col items-center gap-4 pt-6">
             <Avatar className="h-24 w-24">
               <AvatarImage src={hr.avatar} />
-              <AvatarFallback>{hr.name[0]}</AvatarFallback>
+              <AvatarFallback>{hr.name?.[0] ?? "H"}</AvatarFallback>
             </Avatar>
 
             <div className="text-center">
@@ -74,12 +148,6 @@ export default function HrProfilePage() {
                 <p className="text-muted-foreground">Joined</p>
                 <p className="font-medium">{hr.joined}</p>
               </div>
-            </div>
-
-            <Separator />
-
-            <div className="flex gap-2">
-              <Button variant="outline">Change Password</Button>
             </div>
           </CardContent>
         </Card>

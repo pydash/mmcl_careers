@@ -1,21 +1,20 @@
-export const ALL_APPLICATIONS_QUERY = `
+const ALL_APPLICATIONS_QUERY = `
 SELECT
-    ja.id,
-    ua.id AS userid,
-    up.first_name,
-    up.last_name,
-    ua.email,
-    ja.job_id,
-    jp.title,
-    ja.applied_at,
-    ja.status,
-    ja.notes
-FROM job_applications ja
-LEFT JOIN job_posts jp
-    ON ja.job_id = jp.id
-LEFT JOIN user_accounts ua
-    ON ja.acc_id = ua.id
-LEFT JOIN user_profiles up
-    ON ua.id = up.id
-ORDER BY ja.id;
+  a.id,
+  a.job_id,
+  up.id AS user_id,
+  up.first_name,
+  up.last_name,
+  up.email_address,
+  jp.position AS title,
+  a.created_at AS applied_at,
+  a.status,
+  a.score,
+  a.notes
+FROM applications a
+LEFT JOIN user_profiles up ON up.id = a.profile_id
+LEFT JOIN job_postings jp ON jp.id = a.job_id
+ORDER BY a.id DESC
 `;
+
+export { ALL_APPLICATIONS_QUERY };
