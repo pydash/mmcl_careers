@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { pushSubmitApplication } from "@/services/applicant/jobs/submitApplication.service";
+import { createApplication } from "@/services/applicant/jobs/submitApplication.service";
 
 export default function useSubmitApplication() {
   const [loading, setLoading] = useState(false);
@@ -10,9 +10,9 @@ export default function useSubmitApplication() {
     try {
       setLoading(true);
       setError(null);
-      await pushSubmitApplication(data.job_pub_id, data.pitch);
+      await createApplication(data.job_pub_id, data.pitch);
     } catch (err) {
-      setError("Failed to create profile");
+      setError("Failed to submit application");
     } finally {
       setLoading(false);
     }

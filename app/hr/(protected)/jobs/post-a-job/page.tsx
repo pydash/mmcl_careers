@@ -69,7 +69,6 @@ export default function PostJobPage() {
     );
   };
 
-
   const totalPoints = calculateTotalPoints();
   const pointsExceeded = totalPoints > 100;
   const pointsNotComplete = totalPoints !== 100;
@@ -164,8 +163,8 @@ export default function PostJobPage() {
                     <SelectValue placeholder="Select job type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="full_time">Full Time</SelectItem>
-                    <SelectItem value="part_time">Part Time</SelectItem>
+                    <SelectItem value="Full-time">Full Time</SelectItem>
+                    <SelectItem value="Part-time">Part Time</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>

@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 export default function SettingsPage() {
   return (
     <div className="space-y-8">
-      <section className="space-y-3">
+      {/* <section className="space-y-3">
         <div>
           <p className="text-sm text-muted-foreground">Account</p>
           <h2 className="text-xl font-semibold">Profile settings</h2>
@@ -46,9 +46,9 @@ export default function SettingsPage() {
             <Button>Save profile</Button>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <section className="space-y-3">
+      {/* <section className="space-y-3">
         <div>
           <p className="text-sm text-muted-foreground">Security</p>
           <h2 className="text-xl font-semibold">Access controls</h2>
@@ -76,7 +76,7 @@ export default function SettingsPage() {
             <Button>Update security</Button>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="space-y-3">
         <div>

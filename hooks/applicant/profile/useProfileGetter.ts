@@ -1,11 +1,11 @@
 "use client";
 
-import { Profile } from "@/models/applicant/Profile";
-import { fetchProfileGetter } from "@/services/applicant/profile/profileGetter.service";
+import { Applicant } from "@/models/User";
+import { fetchProfileGetter } from "@/services/applicant/profile/profile.service";
 import { useEffect, useState } from "react";
 
-export function useProfileGetter() {
-  const [profile, setProfile] = useState<Profile>();
+export function useProfile() {
+  const [profile, setProfile] = useState<Applicant>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
 

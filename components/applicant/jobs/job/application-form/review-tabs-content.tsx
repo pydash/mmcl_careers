@@ -2,235 +2,238 @@ import { useProfileDetails } from "@/hooks/applicant/jobs/useProfileDetails";
 
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toTitleCase } from "@/utils/formatText";
+import { getShortDate } from "@/utils/formatDate";
 
 export default function ReviewTabsContent() {
-  const { profile: rawProfile, loading, error } = useProfileDetails();
-
-  console.log("ProfileTabsContent render:", {
-    profile: rawProfile,
-    loading,
-    error,
-  });
-
-  // Handle if profile is returned as array (fallback)
-  const profile =
-    Array.isArray(rawProfile) && rawProfile.length > 0
-      ? (rawProfile[0] as any)?.profile
-      : rawProfile;
+  const { profile, loading, error } = useProfileDetails();
 
   return (
     <Tabs defaultValue="personal">
-      <TabsList className="bg-gray-100">
-        <TabsTrigger value="personal">Personal</TabsTrigger>
-        <TabsTrigger value="education">Education</TabsTrigger>
-        <TabsTrigger value="licenses">Licenses & Certifications</TabsTrigger>
-        <TabsTrigger value="employment">Employment</TabsTrigger>
+      <TabsList className="bg-gray-50 p-1 rounded-lg border border-gray-200 mb-6 inline-flex">
+        <TabsTrigger
+          value="personal"
+          className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 data-[state=active]:font-medium rounded-md px-4 py-1 text-sm transition-all"
+        >
+          Personal
+        </TabsTrigger>
+        <TabsTrigger
+          value="education"
+          className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 data-[state=active]:font-medium rounded-md px-4 py-1 text-sm transition-all"
+        >
+          Education
+        </TabsTrigger>
+        <TabsTrigger
+          value="employment"
+          className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 data-[state=active]:font-medium rounded-md px-4 py-1 text-sm transition-all"
+        >
+          Work
+        </TabsTrigger>
+        <TabsTrigger
+          value="credentials"
+          className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 data-[state=active]:font-medium rounded-md px-4 py-1 text-sm transition-all"
+        >
+          Credentials
+        </TabsTrigger>
+        <TabsTrigger
+          value="ids"
+          className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 data-[state=active]:font-medium rounded-md px-4 py-1 text-sm transition-all"
+        >
+          Government IDs
+        </TabsTrigger>
+        <TabsTrigger
+          value="media"
+          className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 data-[state=active]:font-medium rounded-md px-4 py-1 text-sm transition-all"
+        >
+          Social Media
+        </TabsTrigger>
       </TabsList>
-      <Separator className="my-2" />
+
+      {/* TAB FOR PERSONAL  */}
+
       <TabsContent value="personal">
         {loading && <div>Loading profile...</div>}
         {error && <div className="text-red-500">Error: {error}</div>}
-        {profile && profile.personal && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <strong className="text-sm text-gray-600">Full Name:</strong>
-                <p className="text-gray-900">
-                  {profile.personal.first_name} {profile.personal.middle_name}{" "}
-                  {profile.personal.last_name}
-                </p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">Sex:</strong>
-                <p className="text-gray-900 capitalize">
-                  {profile.personal.sex}
-                </p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">Birth Date:</strong>
-                <p className="text-gray-900">
-                  {new Date(profile.personal.birth_date).toLocaleDateString()}
-                </p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">Civil Status:</strong>
-                <p className="text-gray-900 capitalize">
-                  {profile.personal.civil_status}
-                </p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">Citizenship:</strong>
-                <p className="text-gray-900">{profile.personal.citizenship}</p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">Phone Number:</strong>
-                <p className="text-gray-900">{profile.personal.phone_number}</p>
-              </div>
-            </div>
-            <div>
-              <strong className="text-sm text-gray-600">
-                Physical Address:
-              </strong>
-              <p className="text-gray-900">
-                {profile.personal.physical_address}
-              </p>
-            </div>
-            {profile.personal.honorifics &&
-              profile.personal.honorifics.length > 0 && (
-                <div>
-                  <strong className="text-sm text-gray-600">Honorifics:</strong>
-                  <p className="text-gray-900">
-                    {profile.personal.honorifics.join(", ")}
+        {profile && profile.profile && (
+          <div className="space-y-6">
+            {/* Basic Information Section */}
+            <div className="border rounded-lg p-6 bg-white">
+              <h3 className="text-base font-semibold text-gray-900 mb-4 pb-2 border-b">
+                Basic Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Full Name
+                  </p>
+                  <p className="text-sm text-gray-900 font-medium">
+                    {profile.profile.first_name}{" "}
+                    {profile.profile.middle_name &&
+                      `${profile.profile.middle_name} `}
+                    {profile.profile.last_name}
                   </p>
                 </div>
-              )}
-            {profile.personal.about && (
-              <div>
-                <strong className="text-sm text-gray-600">About:</strong>
-                <p className="text-gray-900">{profile.personal.about}</p>
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Gender
+                  </p>
+                  <p className="text-sm text-gray-900 capitalize">
+                    {profile.profile.gender}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Civil Status
+                  </p>
+                  <p className="text-sm text-gray-900 capitalize">
+                    {profile.profile.civil_status}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Citizenship
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    {toTitleCase(profile.profile.citizenship)}
+                  </p>
+                </div>
+                {profile.profile.religion && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      Religion
+                    </p>
+                    <p className="text-sm text-gray-900 capitalize">
+                      {profile.profile.religion}
+                    </p>
+                  </div>
+                )}
+                {profile.profile.birth_place && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      Birth Place
+                    </p>
+                    <p className="text-sm text-gray-900">
+                      {profile.profile.birth_place}
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
-            {profile.personal.photo_url && (
-              <div>
-                <strong className="text-sm text-gray-600">Photo:</strong>
-                <p className="text-gray-900">
-                  <a
-                    href={profile.personal.photo_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    View Photo
-                  </a>
-                </p>
+            </div>
+
+            {/* Contact Information Section */}
+            <div className="border rounded-lg p-6 bg-white">
+              <h3 className="text-base font-semibold text-gray-900 mb-4 pb-2 border-b">
+                Contact Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Email Address
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    {profile.profile.email_address}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Mobile Number
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    {profile.profile.mobile_number}
+                  </p>
+                </div>
+                {profile.profile.landline_number && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      Landline
+                    </p>
+                    <p className="text-sm text-gray-900">
+                      {profile.profile.landline_number}
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
-            {profile.personal.resume_url && (
-              <div>
-                <strong className="text-sm text-gray-600">Resume:</strong>
-                <p className="text-gray-900">
-                  <a
-                    href={profile.personal.resume_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    View Resume
-                  </a>
-                </p>
+            </div>
+
+            {/* Address Information Section */}
+            <div className="border rounded-lg p-6 bg-white">
+              <h3 className="text-base font-semibold text-gray-900 mb-4 pb-2 border-b">
+                Address Information
+              </h3>
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Permanent Address
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    {profile.profile.permanent_address}
+                  </p>
+                </div>
+                {profile.profile.mailing_address &&
+                  profile.profile.mailing_address !==
+                    profile.profile.permanent_address && (
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Mailing Address
+                      </p>
+                      <p className="text-sm text-gray-900">
+                        {profile.profile.mailing_address}
+                      </p>
+                    </div>
+                  )}
               </div>
-            )}
+            </div>
           </div>
         )}
       </TabsContent>
+
+      {/* TAB FOR EDUCATION */}
+
       <TabsContent value="education">
         {loading && <div>Loading profile...</div>}
         {error && <div className="text-red-500">Error: {error}</div>}
-        {profile && profile.education && (
+        {profile && profile.education_background && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <strong className="text-sm text-gray-600">Institution:</strong>
-                <p className="text-gray-900">{profile.education.institution}</p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">Course:</strong>
-                <p className="text-gray-900">{profile.education.course}</p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">Degree:</strong>
-                <p className="text-gray-900">{profile.education.degree}</p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">Status:</strong>
-                <p className="text-gray-900 capitalize">
-                  {profile.education.status}
-                </p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">Units Earned:</strong>
-                <p className="text-gray-900">
-                  {profile.education.units_earned}
-                </p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">
-                  Year Finished:
-                </strong>
-                <p className="text-gray-900">
-                  {profile.education.year_finished}
-                </p>
-              </div>
-            </div>
-            {profile.education.honors &&
-              profile.education.honors.length > 0 && (
-                <div>
-                  <strong className="text-sm text-gray-600">Honors:</strong>
-                  <p className="text-gray-900">
-                    {profile.education.honors.join(", ")}
-                  </p>
-                </div>
-              )}
-          </div>
-        )}
-      </TabsContent>
-      <TabsContent value="licenses">
-        {loading && <div>Loading profile...</div>}
-        {error && <div className="text-red-500">Error: {error}</div>}
-        {profile && profile.license && (
-          <div className="space-y-4">
-            {profile.license.length > 0 ? (
-              profile.license.map((license: any, index: number) => (
-                <div
-                  key={license.id}
-                  className="border rounded-lg p-4 bg-white"
-                >
-                  <h3 className="font-semibold text-sm text-gray-900 mb-3">
-                    {license.title}
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
+            {profile.education_background.length > 0 ? (
+              profile.education_background.map((edu: any) => (
+                <div key={edu.id} className="border rounded-lg p-6 bg-white">
+                  <div className="flex items-start justify-between mb-4 pb-3 border-b">
                     <div>
-                      <strong className="text-sm text-gray-600">Number:</strong>
-                      <p className="text-gray-900">{license.number}</p>
-                    </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Issuing Organization:
-                      </strong>
-                      <p className="text-gray-900">
-                        {license.issuing_organization}
+                      <h3 className="text-base font-semibold text-gray-900">
+                        {edu.degree}
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {edu.school_name}
                       </p>
                     </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Date Issued:
-                      </strong>
-                      <p className="text-gray-900">
-                        {new Date(license.date_issued).toLocaleDateString()}
+                    <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded capitalize">
+                      {edu.level}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Status
+                      </p>
+                      <p className="text-sm text-gray-900 capitalize">
+                        {toTitleCase(edu.status)}
                       </p>
                     </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Expiry Date:
-                      </strong>
-                      <p className="text-gray-900">
-                        {new Date(license.expiry_date).toLocaleDateString()}
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Year Graduated
+                      </p>
+                      <p className="text-sm text-gray-900">
+                        {edu.year_graduated}
                       </p>
                     </div>
-                    {license.image_url && (
-                      <div>
-                        <strong className="text-sm text-gray-600">
-                          Image:
-                        </strong>
-                        <p className="text-gray-900">
-                          <a
-                            href={license.image_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            View Image
-                          </a>
+                    {edu.units_earned && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                          Units Earned
+                        </p>
+                        <p className="text-sm text-gray-900">
+                          {edu.units_earned}
                         </p>
                       </div>
                     )}
@@ -238,191 +241,204 @@ export default function ReviewTabsContent() {
                 </div>
               ))
             ) : (
-              <p className="text-gray-500">
-                No licenses or certifications found.
-              </p>
+              <div className="border rounded-lg p-8 bg-white text-center">
+                <p className="text-gray-500">No education background found.</p>
+              </div>
             )}
           </div>
         )}
       </TabsContent>
+
+      {/* TAB FOR EMPLOYMENT */}
+
       <TabsContent value="employment">
         {loading && <div>Loading profile...</div>}
         {error && <div className="text-red-500">Error: {error}</div>}
-        {profile && profile.employment && (
+        {profile && profile.work_experience && (
           <div className="space-y-4">
-            {profile.employment.length > 0 ? (
-              profile.employment.map((job: any, index: number) => (
-                <div key={job.id} className="border rounded-lg p-4 bg-white">
-                  <h3 className="font-semibold text-sm text-gray-900 mb-3">
-                    {job.job_title}
-                  </h3>
+            {profile.work_experience.length > 0 ? (
+              profile.work_experience.map((job: any, index: number) => (
+                <div key={job.id} className="border rounded-lg p-6 bg-white">
+                  <div className="mb-4 pb-3 border-b">
+                    <h3 className="text-base font-semibold text-gray-900">
+                      {job.position}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {job.company} • {job.department}
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Employment Period
+                      </p>
+                      <p className="text-sm text-gray-900">
+                        {getShortDate(job.date_started)} -{" "}
+                        {getShortDate(job.date_ended)}
+                      </p>
+                    </div>
+                    {job.courses_handled && (
+                      <div className="space-y-1 col-span-2">
+                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                          Courses Handled
+                        </p>
+                        <p className="text-sm text-gray-900">
+                          {job.courses_handled}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="border rounded-lg p-8 bg-white text-center">
+                <p className="text-gray-500">No employment history found.</p>
+              </div>
+            )}
+          </div>
+        )}
+      </TabsContent>
+
+      {/* TAB FOR CREDENTIALS */}
+
+      <TabsContent value="credentials">
+        {loading && <div>Loading profile...</div>}
+        {error && <div className="text-red-500">Error: {error}</div>}
+        {profile && profile.credentials && (
+          <div className="space-y-4">
+            {profile.credentials.length > 0 ? (
+              profile.credentials.map((credential: any, index: number) => (
+                <div
+                  key={credential.id}
+                  className="border rounded-lg p-6 bg-white"
+                >
+                  <div className="mb-4 pb-3 border-b">
+                    <h3 className="text-base font-semibold text-gray-900">
+                      {credential.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {credential.authority}
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {credential.number && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                          Number
+                        </p>
+                        <p className="text-sm text-gray-900">
+                          {credential.number}
+                        </p>
+                      </div>
+                    )}
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Date Taken
+                      </p>
+                      <p className="text-sm text-gray-900">
+                        {getShortDate(credential.date_taken)}
+                      </p>
+                    </div>
+                    {credential.valid_until && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                          Valid Until
+                        </p>
+                        <p className="text-sm text-gray-900">
+                          {credential.valid_until}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="border rounded-lg p-8 bg-white text-center">
+                <p className="text-gray-500">
+                  No licenses or certifications found.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </TabsContent>
+
+      {/* TAB FOR GOVERNMENT IDS */}
+
+      <TabsContent value="ids">
+        {loading && <div>Loading profile...</div>}
+        {error && <div className="text-red-500">Error: {error}</div>}
+        {profile && profile.government_ids && (
+          <div className="space-y-4">
+            {profile.government_ids.length > 0 ? (
+              profile.government_ids.map((govId: any) => (
+                <div key={govId.id} className="border rounded-lg p-4 bg-white">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <strong className="text-sm text-gray-600">
-                        Company Name:
+                        ID Type:
                       </strong>
-                      <p className="text-gray-900">{job.company_name}</p>
-                    </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Industry:
-                      </strong>
-                      <p className="text-gray-900">{job.industry}</p>
-                    </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Position Specialization:
-                      </strong>
-                      <p className="text-gray-900">
-                        {job.position_specialization}
+                      <p className="text-gray-900 capitalize">
+                        {toTitleCase(govId.id_type)}
                       </p>
                     </div>
                     <div>
                       <strong className="text-sm text-gray-600">
-                        Monthly Salary:
+                        ID Number:
                       </strong>
-                      <p className="text-gray-900">
-                        {job.monthly_salary !== null &&
-                        job.monthly_salary !== undefined
-                          ? `₱${Number(job.monthly_salary).toLocaleString()}`
-                          : "N/A"}
+                      <p className="text-gray-900">{govId.id_number}</p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No government IDs found.</p>
+            )}
+          </div>
+        )}
+      </TabsContent>
+
+      {/* TAB FOR MEDIA ACCOUNTS */}
+
+      <TabsContent value="media">
+        {loading && <div>Loading profile...</div>}
+        {error && <div className="text-red-500">Error: {error}</div>}
+        {profile && profile.media_accounts && (
+          <div className="space-y-4">
+            {profile.media_accounts.length > 0 ? (
+              profile.media_accounts.map((media: any) => (
+                <div key={media.id} className="border rounded-lg p-4 bg-white">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <strong className="text-sm text-gray-600">
+                        Platform:
+                      </strong>
+                      <p className="text-gray-900 capitalize">
+                        {media.platform}
                       </p>
                     </div>
                     <div>
-                      <strong className="text-sm text-gray-600">
-                        Employment Period:
-                      </strong>
+                      <strong className="text-sm text-gray-600">Link:</strong>
                       <p className="text-gray-900">
-                        {new Date(job.date_started).toLocaleDateString()} -{" "}
-                        {new Date(job.date_ended).toLocaleDateString()}
+                        <a
+                          href={media.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          {media.link}
+                        </a>
                       </p>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500">No employment history found.</p>
+              <p className="text-gray-500">No social media links found.</p>
             )}
           </div>
         )}
       </TabsContent>
-      {/* <TabsContent value="extras">
-        {loading && <div>Loading profile...</div>}
-        {error && <div className="text-red-500">Error: {error}</div>}
-        {profile && profile.extras && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <strong className="text-sm text-gray-600">
-                  Onsite Willing:
-                </strong>
-                <p className="text-gray-900 capitalize">
-                  {profile.extras.onsite_willing}
-                </p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">
-                  WFH Capability:
-                </strong>
-                <p className="text-gray-900 capitalize">
-                  {profile.extras.wfh_capability}
-                </p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">
-                  Start Date Preference:
-                </strong>
-                <p className="text-gray-900">
-                  {new Date(
-                    profile.extras.start_date_preference,
-                  ).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-            {profile.extras.skills && profile.extras.skills.length > 0 && (
-              <div>
-                <strong className="text-sm text-gray-600">Skills:</strong>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {profile.extras.skills.map((skill: string, index: number) => (
-                    <span
-                      key={index}
-                      className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {profile.extras.sources && profile.extras.sources.length > 0 && (
-              <div>
-                <strong className="text-sm text-gray-600">Sources:</strong>
-                <p className="text-gray-900">
-                  {profile.extras.sources.join(", ")}
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-      </TabsContent> */}
-      {/* <TabsContent value="attachments">
-        {loading && <div>Loading profile...</div>}
-        {error && <div className="text-red-500">Error: {error}</div>}
-        {profile && profile.attachments && (
-          <div className="space-y-4">
-            {profile.attachments.length > 0 ? (
-              profile.attachments
-                .filter(Boolean)
-                .map((attachment: any, index: number) => (
-                  <div
-                    key={attachment.id}
-                    className="border rounded-lg p-4 bg-white"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-2">
-                          {attachment.file_name}
-                        </h3>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div>
-                            <strong className="text-gray-600">Type:</strong>
-                            <p className="text-gray-900">
-                              {attachment.file_type}
-                            </p>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">Size:</strong>
-                            <p className="text-gray-900">
-                              {(attachment.file_size / 1024).toFixed(2)} KB
-                            </p>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">Uploaded:</strong>
-                            <p className="text-gray-900">
-                              {new Date(
-                                attachment.created_at,
-                              ).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <a
-                        href={attachment.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ml-4 text-blue-600 hover:underline text-sm font-medium"
-                      >
-                        View File
-                      </a>
-                    </div>
-                  </div>
-                ))
-            ) : (
-              <p className="text-gray-500">No attachments found.</p>
-            )}
-          </div>
-        )}
-      </TabsContent> */}
     </Tabs>
   );
 }

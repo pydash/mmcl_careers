@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { fetchDashboardInterviews } from "@/services/applicant/dashboard/interview.service";
-import Interview from "@/models/Interview";
+import { DashboardInterview } from "@/models/Interview";
 
 export function useInterviews() {
-  const [interviews, setInterviews] = useState<Interview[]>([]);
+  const [interviews, setInterviews] = useState<DashboardInterview[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 

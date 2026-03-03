@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { fetchApplications } from "@/services/applicant/applications/applicationsList.service";
-import { Application } from "@/models/Application";
+import { ApplicationsList } from "@/models/Application";
 
 export function useApplicationsList() {
-  const [applications, setApplications] = useState<Application[]>();
+  const [applications, setApplications] = useState<ApplicationsList[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 

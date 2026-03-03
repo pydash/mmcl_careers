@@ -1,28 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import db from "@/lib/db";
+import { getJobs } from "@/lib/queries/applicant/dashboard";
+import { getUserIdFromSession } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("session_user_id")?.value;
+    const userId = await getUserIdFromSession();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const jobs_query_result = await db
-      .query(
-        "SELECT id, title, expiry_date FROM job_posts ORDER BY expiry_date DESC LIMIT 4 "
-      )
-      .then((res: any) => res.rows);
+    const jobs = await db.query(getJobs, [userId]).then((res: any) => res.rows);
 
-    return NextResponse.json(jobs_query_result);
+    return NextResponse.json(jobs);
   } catch (error) {
     console.error("Error fetching jobs", error);
     return NextResponse.json(
-      { error: "Failed to fetch jobs" },
-      { status: 500 }
+      { error: "Something went wrong." },
+      { status: 500 },
     );
   }
 }

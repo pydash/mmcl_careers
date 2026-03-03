@@ -3,10 +3,12 @@ import { UserPlus, Hourglass, Handshake } from "lucide-react";
 import { useOverview } from "@/hooks/applicant/dashboard/useOverview";
 import Link from "next/link";
 
-
 function TotalSubmittedApplications({ data }: any) {
   return (
-    <Link href="/applicant/applications"  className="p-4 rounded-xl flex flex-col gap-2">
+    <Link
+      href="/applicant/applications"
+      className="p-4 rounded-xl flex flex-col gap-2"
+    >
       <UserPlus className="mb-2 h-6 w-6 text-primary" />
       <div className="flex flex-col gap-1">
         <p className="text-3xl font-bold">{data?.total_applications}</p>
@@ -20,7 +22,10 @@ function TotalSubmittedApplications({ data }: any) {
 
 function PendingApplications({ data }: any) {
   return (
-    <Link href="/applicant/applications?status=pending" className="p-4 rounded-xl flex flex-col gap-2 hover:bg-muted/50 transition-colors">
+    <Link
+      href="/applicant/applications?status=pending"
+      className="p-4 rounded-xl flex flex-col gap-2 hover:bg-muted/50 transition-colors"
+    >
       <Hourglass className="mb-2 h-6 w-6 text-primary" />
       <div className="flex flex-col gap-1">
         <p className="text-3xl font-bold">{data?.pending_applications}</p>
@@ -48,8 +53,14 @@ function InterviewScheduled({ data }: any) {
 
 export default function OverviewCard() {
   const { overview, loading, error } = useOverview();
-  if (loading) return <p className="p-4">Loading overview...</p>;
-  if (error) return <p className="p-4">Error loading overview: {error}</p>;
+  if (loading)
+    return <p className="p-4 rounded-xl bg-gray-50">Loading overview...</p>;
+  if (error)
+    return (
+      <p className="p-4 rounded-xl bg-gray-50">
+        Error loading overview: {error}
+      </p>
+    );
   return (
     <div className="p-4 rounded-xl bg-gray-50">
       <h2 className="text-xl font-semibold mb-4">Overview</h2>

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { fetchDashboardJobs } from "@/services/applicant/dashboard/jobs.service";
-import Job from "@/models/Job";
+import { JobPost } from "@/models/Job";
 
 export function useJobs() {
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<JobPost[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 

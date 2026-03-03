@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { fetchProfileDetails } from "@/services/applicant/jobs/profileDetails.service";
-import { Profile, ProfileResponse } from "@/models/applicant/Profile";
+import { Applicant } from "@/models/User";
 
 export function useProfileDetails() {
-  const [profile, setProfile] = useState<Profile>();
+  const [profile, setProfile] = useState<Applicant>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,14 +13,7 @@ export function useProfileDetails() {
     setLoading(true);
     fetchProfileDetails()
       .then((data: any) => {
-        console.log("Profile data received:", data);
-        // The API returns an array of ProfileResponse objects
-        if (Array.isArray(data) && data.length > 0 && data[0]?.profile) {
-          console.log("Setting profile:", data[0].profile);
-          setProfile(data[0].profile);
-        } else {
-          console.log("No profile data found in response");
-        }
+        setProfile(data[0].applicant);
         setLoading(false);
       })
       .catch((err: any) => {

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { type DashboardStat } from "@/models/DashboardStats";
+import { DashboardStats } from "@/models/DashboardStats";
 
 export function useStats() {
-  const [stats, setStats] = useState<DashboardStat[]>([]);
+  const [stats, setStats] = useState<DashboardStats>();
   const [loading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -12,7 +12,7 @@ export function useStats() {
     async function fetchStats() {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/hr/dashboard/stats");
+        const response = await fetch("/api/hr/stats");
 
         if (!response.ok) {
           throw new Error("Failed to fetch stats");

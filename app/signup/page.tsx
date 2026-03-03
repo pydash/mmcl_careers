@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useActionState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
-import { signup } from "./action";
-import { useCreateNewAccount } from "@/hooks/applicant/signup/useCreateNewAccount";
-
+import { signup } from "@/services/signup.service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert } from "@/components/ui/alert";
 import {
   Field,
   FieldDescription,
@@ -19,57 +19,48 @@ import {
   FieldSeparator,
   FieldSet,
 } from "@/components/ui/field";
-import { Alert } from "@/components/ui/alert";
 
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import Image from "next/image";
-
-const initialState = { error: "" };
+interface FormData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 export default function SignupPage() {
-  const [formData, setFormData] = useState({
+  const router = useRouter();
+  const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
     confirmPassword: "",
   });
-  const [showAlert, setShowAlert] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { createAccount, loading, error } = useCreateNewAccount();
-  const [state, formAction] = useActionState(signup, initialState);
-  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (error) {
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-      }, 5000);
-    }
-  }, [error]);
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-  useEffect(() => {
-    if (state?.error) {
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-      }, 5000);
-    } else if (state && state.error === null) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      await signup(formData.email, formData.password, formData.confirmPassword);
       router.push("/applicant/jobs");
+    } catch (err: any) {
+      setError(err.message || "An error occurred");
+    } finally {
+      setIsLoading(false);
     }
-  }, [state, router]);
+  };
 
   return (
     <>
       {error && (
-        <div
-          className={`fixed inset-x-0 top-4 z-50 mx-auto w-full max-w-md transition-all duration-300 ease-in-out ${
-            showAlert && error
-              ? "translate-y-0 opacity-100"
-              : "-translate-y-full opacity-0"
-          }`}
-          aria-live="assertive"
-        >
-          <Alert variant="destructive">
+        <div className="fixed inset-x-0 top-4 z-50 mx-auto w-full max-w-md transition-all duration-300 ease-in-out translate-y-0 opacity-100">
+          <Alert variant="destructive" className="bg-white">
             <p>{error}</p>
           </Alert>
         </div>
@@ -80,18 +71,20 @@ export default function SignupPage() {
           <div className="flex justify-center mb-6">
             <Image
               src="/MMCL_Logo_Horizontal.png"
-              alt="Signup Image"
+              alt="MMCL Logo"
               width={150}
               height={150}
             />
           </div>
-          <form action={formAction}>
+
+          <form onSubmit={handleSubmit}>
             <FieldGroup>
               <FieldSet>
                 <FieldLegend>Sign Up</FieldLegend>
                 <FieldDescription>
                   Please enter your email to create an account
                 </FieldDescription>
+
                 <Field>
                   <FieldLabel>
                     <Label htmlFor="email">Email</Label>
@@ -99,14 +92,13 @@ export default function SignupPage() {
                   <Input
                     type="email"
                     id="email"
-                    name="email"
                     placeholder="Enter email address"
                     value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    disabled={isLoading}
                   />
                 </Field>
+
                 <Field>
                   <FieldLabel>
                     <Label htmlFor="password">Password</Label>
@@ -115,12 +107,12 @@ export default function SignupPage() {
                     <Input
                       type={showPassword ? "text" : "password"}
                       id="password"
-                      name="password"
                       placeholder="Enter password"
                       value={formData.password}
                       onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
+                        handleInputChange("password", e.target.value)
                       }
+                      disabled={isLoading}
                     />
                     <button
                       type="button"
@@ -136,6 +128,7 @@ export default function SignupPage() {
                     </button>
                   </div>
                 </Field>
+
                 <Field>
                   <FieldLabel>
                     <Label htmlFor="confirm-password">Confirm Password</Label>
@@ -143,26 +136,26 @@ export default function SignupPage() {
                   <Input
                     type="password"
                     id="confirm-password"
-                    name="confirmPassword"
-                    placeholder="Enter password"
+                    placeholder="Confirm password"
                     value={formData.confirmPassword}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        confirmPassword: e.target.value,
-                      })
+                      handleInputChange("confirmPassword", e.target.value)
                     }
+                    disabled={isLoading}
                   />
                 </Field>
+
                 <FieldSeparator />
                 <Button
                   type="submit"
                   variant="default"
                   className="w-full bg-red-600 hover:bg-red-500"
+                  disabled={isLoading}
                 >
-                  Create Account
+                  {isLoading ? "Creating Account..." : "Create Account"}
                 </Button>
               </FieldSet>
+
               <Field>
                 <FieldDescription className="text-center">
                   Already have an account?{" "}

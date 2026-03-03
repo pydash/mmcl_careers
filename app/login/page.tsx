@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
-import { login } from "./action";
-
+import { login } from "@/services/login.service";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert } from "@/components/ui/alert";
 import {
   Field,
   FieldDescription,
@@ -16,61 +19,70 @@ import {
   FieldSet,
   FieldSeparator,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { Alert } from "@/components/ui/alert";
 
-const initialState = { error: "" };
+interface FormData {
+  email: string;
+  password: string;
+}
 
 export default function LoginPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-  const [error, setError] = useState("");
-  const [state, formAction] = useActionState(login, initialState);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Function to show error with animation
-  const showError = (message: string) => {
-    setShowAlert(false);
-    setError(message);
-    setTimeout(() => setShowAlert(true), 0);
-
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 5000);
-  };
-
-  // Function to toggle password visibility
-  const toggleShowPassword = () => {
-    setShowPassword((prev) => !prev);
-  };
-
-  // Handle state changes from the action
   useEffect(() => {
-    if (state?.error) {
-      showError(state.error);
-    } else if (state && state.error === null) {
-      router.push("/applicant/jobs");
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/auth/session", {
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          router.replace("/applicant/dashboard");
+        }
+      } catch {
+        // Ignore session check errors; show login page
+      }
+    };
+
+    checkSession();
+  }, [router]);
+
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const result = await login(formData.email, formData.password);
+
+      // Redirect based on user role
+      if (result.role === "hr") {
+        router.push("/hr/dashboard");
+      } else if (result.role === "admin") {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/applicant/dashboard");
+      }
+    } catch (err: any) {
+      setError(err.message || "An error occurred");
+      setIsLoading(false);
     }
-  }, [state, router]);
+  };
 
   return (
     <>
       {error && (
-        <div
-          className={`fixed inset-x-0 top-4 z-50 mx-auto w-full max-w-md transition-all duration-300 ease-in-out ${
-            showAlert && error
-              ? "translate-y-0 opacity-100"
-              : "-translate-y-full opacity-0"
-          }`}
-          aria-live="assertive"
-        >
+        <div className="fixed inset-x-0 top-4 z-50 mx-auto w-full max-w-md">
           <Alert variant="destructive" className="bg-white">
             <p>{error}</p>
           </Alert>
@@ -80,9 +92,9 @@ export default function LoginPage() {
       <main className="h-dvh flex flex-col items-center justify-center bg-blue-950">
         <form
           className="p-8 shadow-md shadow-accent-foreground w-full max-w-md bg-white"
-          action={formAction}
+          onSubmit={handleSubmit}
         >
-          <div className="flex justify-center">
+          <div className="flex justify-center mb-6">
             <Image
               src="/MMCL_Logo_Horizontal.png"
               alt="MMCL Logo"
@@ -90,12 +102,14 @@ export default function LoginPage() {
               height={150}
             />
           </div>
+
           <FieldGroup>
             <FieldSet>
               <FieldLegend>Log in</FieldLegend>
               <FieldDescription>
                 Please enter your email and password to log in
               </FieldDescription>
+
               <Field>
                 <FieldLabel>
                   <Label htmlFor="email">Email</Label>
@@ -103,14 +117,13 @@ export default function LoginPage() {
                 <Input
                   type="email"
                   id="email"
-                  name="email"
                   placeholder="you@example.com"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  disabled={isLoading}
                 />
               </Field>
+
               <Field>
                 <FieldLabel>
                   <Label htmlFor="password">Password</Label>
@@ -119,16 +132,16 @@ export default function LoginPage() {
                   <Input
                     type={showPassword ? "text" : "password"}
                     id="password"
-                    name="password"
                     placeholder="Enter password"
                     value={formData.password}
                     onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
+                      handleInputChange("password", e.target.value)
                     }
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
-                    onClick={toggleShowPassword}
+                    onClick={() => setShowPassword((prev) => !prev)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                     tabIndex={-1}
                   >
@@ -140,15 +153,18 @@ export default function LoginPage() {
                   </button>
                 </div>
               </Field>
+
               <FieldSeparator />
               <Button
                 type="submit"
                 variant="default"
                 className="w-full bg-red-600 hover:bg-red-500"
+                disabled={isLoading}
               >
-                Log In
+                {isLoading ? "Logging in..." : "Log In"}
               </Button>
             </FieldSet>
+
             <Field>
               <FieldDescription className="text-center">
                 Don't have an account?{" "}

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { fetchDashboardRecentApplications } from "@/services/applicant/dashboard/recentApplications.service";
-import { Application } from "@/models/Application";
+import { DashboardRecentApplication } from "@/models/Application";
 
 export function useRecentApplications() {
-  const [applications, setApplications] = useState<Application[]>([]);
+  const [applications, setApplications] = useState<
+    DashboardRecentApplication[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 

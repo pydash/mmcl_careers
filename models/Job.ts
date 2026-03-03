@@ -1,17 +1,25 @@
-export interface Job {
+interface JobPost {
   id: string;
   public_id: string;
-  title: string;
+  position: string;
   department: string;
   employment_type: string;
   description: string;
-  requirements: string;
-  responsibilities: string;
-  salary_min?: string;
-  salary_max?: string;
-  is_active: boolean;
-  expiry_date: string;
+  salary: string;
+  is_open: boolean;
+  expiration_date: Date;
   posted_by: string;
-  posted_at: string;
-  tags?: string[];
+  created_at: Date;
+  updated_at: Date;
 }
+
+interface JobPostApplication extends JobPost {
+  app_id: string;
+  has_applied: boolean;
+}
+
+interface JobListProps {
+  jobs: JobPostApplication[];
+}
+
+export type { JobPost, JobListProps, JobPostApplication };

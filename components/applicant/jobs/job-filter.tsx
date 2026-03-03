@@ -58,8 +58,7 @@ export default function JobFilter({
           variant="outline"
           className="gap-2 shadow-none rounded-none font-light"
         >
-          Filter
-          {selectedTags.length > 0 && <p>({selectedTags.length})</p>}
+          Filter{selectedTags.length > 0 && <p>{selectedTags.length}</p>}
         </Button>
       </SheetTrigger>
       <SheetContent>

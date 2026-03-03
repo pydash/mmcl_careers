@@ -1,18 +1,17 @@
 "use client";
 
-import { Profile } from "@/models/applicant/Profile";
-import { fetchProfileCreate } from "@/services/applicant/profile/profileCreate.service";
+import { createProfile } from "@/services/applicant/profile/profile.service";
 import { useState } from "react";
 
 export function useProfileCreate() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
-  const createProfile = async (payload: any) => {
+  const createUserProfile = async (payload: any) => {
     setLoading(true);
     setError("");
     try {
-      const result = await fetchProfileCreate(payload);
+      const result = await createProfile(payload);
       setLoading(false);
       return result;
     } catch (err: any) {
@@ -22,5 +21,5 @@ export function useProfileCreate() {
     }
   };
 
-  return { createProfile, loading, error };
+  return { createUserProfile, loading, error };
 }

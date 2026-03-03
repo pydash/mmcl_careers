@@ -7,9 +7,10 @@ import {
   ItemDescription,
   ItemFooter,
 } from "@/components/ui/item";
-import Interview from "@/models/Interview";
 import { getDateTime } from "@/utils/formatDate";
 import { useInterviews } from "@/hooks/applicant/dashboard/useInterviews";
+import { toTitleCase } from "@/utils/formatText";
+import Link from "next/link";
 
 export default function InterviewCard() {
   const { interviews, loading, error } = useInterviews();
@@ -24,14 +25,23 @@ export default function InterviewCard() {
         </div>
       ) : (
         interviews.map((interview, index) => (
-          <Item key={index} className="mb-4 last:mb-0 hover:bg-gray-100">
-            <ItemContent>
-              <ItemTitle>{interview.title}</ItemTitle>
-              <ItemDescription>
-                {getDateTime(interview.schedule)} | {interview.mode}
-              </ItemDescription>
-            </ItemContent>
-          </Item>
+          <Link
+            key={index}
+            href={`/applicant/applications/${interview.application_id}`}
+            className="block mb-4 last:mb-0 hover:bg-gray-100 rounded-lg"
+          >
+            <Item>
+              <ItemContent>
+                <ItemTitle>
+                  Interview for {toTitleCase(interview.position)}
+                </ItemTitle>
+                <ItemDescription>
+                  {getDateTime(interview.scheduled_at.toString())} |{" "}
+                  {toTitleCase(interview.mode)}
+                </ItemDescription>
+              </ItemContent>
+            </Item>
+          </Link>
         ))
       )}
     </div>

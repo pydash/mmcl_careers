@@ -1,15 +1,14 @@
-export async function pushSubmitApplication(job_pub_id: string, pitch: string) {
-  console.log("POST body:", {
-    job_id: job_pub_id,
-    pitch,
-  });
+export async function createApplication(job_pub_id: string, pitch: string) {
+  if (!job_pub_id || !pitch) {
+    throw new Error("Missing required fields");
+  }
 
   const response = await fetch("/api/applicant/jobs/apply", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ job_id: job_pub_id, pitch }),
+    body: JSON.stringify({ job_pub_id: job_pub_id, pitch: pitch }),
   });
 
   if (!response.ok) {

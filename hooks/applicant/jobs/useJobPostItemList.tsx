@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { fetchJobPostItemList } from "@/services/applicant/jobs/jobPostItemList.service";
-import { Job } from "@/models/Job";
+import { JobPostApplication } from "@/models/Job";
 
 export function useJobPostItemList() {
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<JobPostApplication[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 

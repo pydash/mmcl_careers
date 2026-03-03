@@ -1,40 +1,49 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-
+import { useState, useMemo } from "react";
 import JobList from "@/components/applicant/jobs/job-list";
+import JobSearchbar from "@/components/applicant/jobs/job-searchbar";
+import JobFilter from "@/components/applicant/jobs/job-filter";
+import { useJobPostItemList } from "@/hooks/applicant/jobs/useJobPostItemList";
 
 export default function JobsPage() {
-  const router = useRouter();
-  const [profile, setProfile] = useState<{ email: string | null } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { jobs, loading, error } = useJobPostItemList();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const res = await fetch("/api/session", { cache: "no-store" });
+  const filteredJobs = useMemo(() => {
+    return jobs.filter((job) => {
+      const matchesSearch = job.position
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
 
-        if (res.status === 401) {
-          router.push("/login");
-          return;
-        }
+      const matchesTags =
+        selectedTags.length === 0 ||
+        selectedTags.includes(job.department) ||
+        selectedTags.includes(job.employment_type);
 
-        if (!res.ok) {
-          throw new Error("Failed to load session");
-        }
-      } catch (err) {
-        router.push("/login");
-      }
-    };
+      return matchesSearch && matchesTags;
+    });
+  }, [jobs, searchQuery, selectedTags]);
 
-    loadProfile();
-  }, [router]);
+  if (loading) {
+    return <div>Loading jobs...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading jobs: {error}</div>;
+  }
 
   return (
-    <>
-      <JobList />
-    </>
+    <div>
+      <div className="flex gap-4 mb-6">
+        <JobSearchbar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
+        <JobFilter selectedTags={selectedTags} onTagsChange={setSelectedTags} />
+      </div>
+      <JobList jobs={filteredJobs} />
+    </div>
   );
 }

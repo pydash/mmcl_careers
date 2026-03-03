@@ -22,12 +22,13 @@ export default function RecentApplications() {
 
   return (
     <div className="p-4 rounded-xl bg-gray-50">
-      <h1 className="text-xl font-semibold mb-4">Recent Applications</h1>
+      <h1 className="text-xl font-semibold mb-4">Most Recent Application</h1>
 
       <Table>
         <TableHeader>
           <TableRow className="[&>th]:py-3">
             <TableHead>Job Title</TableHead>
+            <TableHead>Department</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Date Applied</TableHead>
             <TableHead></TableHead>
@@ -45,9 +46,14 @@ export default function RecentApplications() {
 
           {applications.slice(0, 1).map((application, index) => (
             <TableRow key={index} className="[&>td]:py-3">
-              <TableCell>{application.position}</TableCell>
+              <TableCell className="truncate">
+                {toTitleCase(application.position)}
+              </TableCell>
+              <TableCell>{application.department}</TableCell>
               <TableCell>{toTitleCase(application.status)}</TableCell>
-              <TableCell>{getDate(application.dateapplied)}</TableCell>
+              <TableCell>
+                {getDate(application.created_at.toString())}
+              </TableCell>
               <TableCell className="flex items-center gap-2">
                 <RecentApplicationsButtonGroup applicationId={application.id} />
               </TableCell>

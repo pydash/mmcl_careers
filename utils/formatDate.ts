@@ -58,3 +58,24 @@ export function getTimeAgo(isoString: string): string {
     return years === 1 ? "1 year ago" : `${years} years ago`;
   }
 }
+
+export function getShortDate(input: string): string {
+  if (!input) return "";
+
+  const [monthStr, year] = input.split("-");
+  const monthIndex = Number(monthStr) - 1;
+
+  const date = new Date(Number(year), monthIndex);
+
+  return date.toLocaleString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
+export function getDateString(date: Date): string {
+  const month = monthNames[date.getMonth()];
+  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${month} ${day}, ${year}`;
+}

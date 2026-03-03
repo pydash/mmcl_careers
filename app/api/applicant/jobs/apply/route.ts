@@ -1,24 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import db from "@/lib/db";
-import { ProfileResponse } from "@/models/applicant/Profile";
-import { APPLICANT_PROFILE_QUERY } from "@/lib/queries/applicant/profile";
-import { INSERT_APPLICATION_QUERY } from "@/lib/queries/applicant/jobs/apply/insert_application";
+import { Applicant } from "@/models/User";
+import {
+  getApplicantDetails,
+  getIdFromJobPublicId,
+  createApplication,
+} from "@/lib/queries/applicant/jobs";
+import { getUserIdFromSession } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("session_user_id")?.value;
+    const userId = await getUserIdFromSession();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const jobs_query_result = await db
-      .query<ProfileResponse>(APPLICANT_PROFILE_QUERY, [userId])
+    const applicant_result = await db
+      .query<Applicant>(getApplicantDetails, [userId])
       .then((res: any) => res.rows);
 
-    return NextResponse.json(jobs_query_result);
+    return NextResponse.json(applicant_result);
   } catch (error) {
     console.error("Error fetching jobs", error);
     return NextResponse.json(
@@ -30,26 +32,17 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("session_user_id")?.value;
+    const userId = await getUserIdFromSession();
 
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
-    const job_id_result = await db.query(
-      "SELECT id FROM job_posts WHERE public_id = $1",
-      [body.job_id],
-    );
-    const jobId = job_id_result.rows[0]?.id;
+    const jobId = await db
+      .query(getIdFromJobPublicId, [body.job_pub_id])
+      .then((res: any) => res.rows[0].id);
     const pitch = body.pitch;
-
-    console.log("Received application data:", {
-      userId,
-      jobId,
-      pitch,
-    });
 
     if (!jobId || !pitch) {
       return NextResponse.json(
@@ -58,9 +51,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(userId, jobId, pitch);
+    const response = await db.query(createApplication, [userId, jobId, pitch]);
 
-    await db.query(INSERT_APPLICATION_QUERY, [userId, jobId, pitch]);
+    if (!response) {
+      return NextResponse.json(
+        { error: "Failed to submit application" },
+        { status: 500 },
+      );
+    }
 
     return NextResponse.json(
       { message: "Application submitted successfully" },

@@ -1,12 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-
-import { Separator } from "@/components/ui/separator";
-
-type PitchCardProps = {
-  pitch?: string;
-  onPitchChange?: (value: string) => void;
-};
+import { PitchCardProps } from "@/models/Pitch";
 
 export default function PitchCard({
   pitch = "",
@@ -22,20 +16,36 @@ export default function PitchCard({
     setPitchValue(value);
     onPitchChange?.(value);
   };
+
   return (
-    <div className="flex flex-col p-4 bg-gray-50 rounded-xl">
-      <h1 className="font-semibold text-lg">Answer question</h1>
-      <Separator className="my-2" />
-      <label htmlFor="pitch" className="my-6 text-muted-foreground">
-        Why should we hire you?
-      </label>
-      <textarea
-        id="pitch"
-        className="w-full p-2 border border-gray-300 rounded-md resize-y min-h-25 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        placeholder="Write your pitch here..."
-        value={pitchValue}
-        onChange={(e) => handleChange(e.target.value)}
-      ></textarea>
+    <div className="border rounded-lg p-6 bg-white">
+      <div className="mb-4 pb-3 border-b">
+        <h3 className="text-base font-semibold text-gray-900">
+          Application Question
+        </h3>
+        <p className="text-sm text-gray-600 mt-1">
+          Tell us why you're the right fit for this position
+        </p>
+      </div>
+      <div className="space-y-3">
+        <label
+          htmlFor="pitch"
+          className="text-xs font-medium text-gray-500 uppercase tracking-wide block"
+        >
+          Why should we hire you?
+        </label>
+        <textarea
+          id="pitch"
+          className="w-full text-sm p-4 border border-gray-300 rounded-lg resize-y min-h-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          placeholder="Share your qualifications, experiences, and what makes you an ideal candidate for this position..."
+          value={pitchValue}
+          onChange={(e) => handleChange(e.target.value)}
+        />
+        <p className="text-xs text-gray-500">
+          Provide a thoughtful response that highlights your relevant skills and
+          experience.
+        </p>
+      </div>
     </div>
   );
 }

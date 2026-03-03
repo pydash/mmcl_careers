@@ -2,18 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { fetchJobDetails } from "@/services/applicant/jobs/jobDetails.service";
-import { Job } from "@/models/Job";
+import { JobPost } from "@/models/Job";
 
-export function useJobDetails(job_pub_id: string) {
-  const [job, setJob] = useState<Job | undefined>();
+export function useJobDetails(pub_id: string) {
+  const [job, setJob] = useState<JobPost>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!job_pub_id) return;
+    if (!pub_id) return;
 
     setLoading(true);
-    fetchJobDetails(job_pub_id)
+    fetchJobDetails(pub_id)
       .then((data) => {
         setJob(data);
         setLoading(false);
@@ -22,6 +22,6 @@ export function useJobDetails(job_pub_id: string) {
         setError(err?.message ?? "Unknown error");
         setLoading(false);
       });
-  }, [job_pub_id]);
+  }, [pub_id]);
   return { job, loading, error };
 }
