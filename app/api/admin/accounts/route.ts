@@ -79,3 +79,45 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const userId = await getUserIdFromSession();
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const accountId = searchParams.get("id");
+
+    if (!accountId) {
+      return NextResponse.json(
+        { error: "Account ID is required" },
+        { status: 400 },
+      );
+    }
+
+    // Delete the account
+    const deleteQuery = `
+      DELETE FROM user_accounts WHERE id = $1
+      RETURNING id
+    `;
+    const result = await db.query(deleteQuery, [accountId]);
+
+    if (result.rows.length === 0) {
+      return NextResponse.json({ error: "Account not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { success: true, message: "Account deleted successfully" },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Error deleting account", error);
+    return NextResponse.json(
+      { error: "Failed to delete account" },
+      { status: 500 },
+    );
+  }
+}

@@ -42,6 +42,7 @@ export default function AccountsPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [creating, setCreating] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     first_name: "",
@@ -106,20 +107,45 @@ export default function AccountsPage() {
     setOpenDeleteDialog(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedAccountId) {
-      // TODO: Implement API call to delete account
-      alert("Delete account API integration coming soon");
-      setOpenDeleteDialog(false);
-      setSelectedAccountId(null);
+      setDeleting(true);
+      setErrorMessage("");
+
+      try {
+        const response = await fetch(
+          `/api/admin/accounts?id=${selectedAccountId}`,
+          {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to delete account");
+        }
+
+        setSuccessMessage("Account deleted successfully");
+        setOpenDeleteDialog(false);
+        setSelectedAccountId(null);
+        refetch();
+        setTimeout(() => setSuccessMessage(""), 5000);
+      } catch (error: any) {
+        setErrorMessage(error.message || "Failed to delete account");
+        setTimeout(() => setErrorMessage(""), 3000);
+      } finally {
+        setDeleting(false);
+      }
     }
   };
 
   return (
-    <div className="space-y-6 py-8">
+    <div className="space-y-6 py-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">HR Accounts</h1>
+        <h1 className="text-xl font-bold">HR Accounts</h1>
         <Dialog open={openCreateDialog} onOpenChange={setOpenCreateDialog}>
           <DialogTrigger asChild>
             <Button>Create New Account</Button>
@@ -276,13 +302,6 @@ export default function AccountsPage() {
                     {new Date(account.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => alert("Edit feature coming soon")}
-                    >
-                      Edit
-                    </Button>
                     <Dialog
                       open={
                         openDeleteDialog && selectedAccountId === account.id
@@ -315,11 +334,16 @@ export default function AccountsPage() {
                           <Button
                             variant="outline"
                             onClick={() => setOpenDeleteDialog(false)}
+                            disabled={deleting}
                           >
                             Cancel
                           </Button>
-                          <Button variant="destructive" onClick={confirmDelete}>
-                            Delete Account
+                          <Button
+                            variant="destructive"
+                            onClick={confirmDelete}
+                            disabled={deleting}
+                          >
+                            {deleting ? "Deleting..." : "Delete Account"}
                           </Button>
                         </div>
                       </DialogContent>
@@ -339,22 +363,6 @@ export default function AccountsPage() {
             )}
           </TableBody>
         </Table>
-      </div>
-
-      {/* Stats Footer */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="border rounded-lg p-4">
-          <p className="text-sm text-muted-foreground">Total Accounts</p>
-          <p className="text-2xl font-bold">{accounts.length}</p>
-        </div>
-        <div className="border rounded-lg p-4">
-          <p className="text-sm text-muted-foreground">Active Accounts</p>
-          <p className="text-2xl font-bold text-green-600">{accounts.length}</p>
-        </div>
-        <div className="border rounded-lg p-4">
-          <p className="text-sm text-muted-foreground">Inactive Accounts</p>
-          <p className="text-2xl font-bold text-red-600">0</p>
-        </div>
       </div>
     </div>
   );
