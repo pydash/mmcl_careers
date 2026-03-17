@@ -13,9 +13,10 @@ import {
 
 export default function ApplicantNavbar() {
   const pathname = usePathname();
+  const rootPath = `/${pathname.split("/")[1]}`;
 
   return (
-    <aside className="w-64 min-h-screen bg-white border-r border-gray-200 p-4">
+    <aside className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200 p-4">
       <div className="mb-4 flex items-center justify-start gap-2">
         <Link href="/" className="inline-block">
           <img
@@ -26,12 +27,11 @@ export default function ApplicantNavbar() {
         </Link>
         <span className="text-lg font-semibold">MMCL Careers</span>
       </div>
-
       <nav className="space-y-1">
         <Link
           href="/dashboard"
           className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            pathname === "/dashboard"
+            rootPath === "/dashboard"
               ? "bg-red-50 text-red-700 font-medium"
               : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
           }`}
@@ -43,7 +43,7 @@ export default function ApplicantNavbar() {
         <Link
           href="/jobs"
           className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            pathname === "/jobs"
+            rootPath === "/jobs"
               ? "bg-red-50 text-red-700 font-medium"
               : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
           }`}
@@ -55,7 +55,7 @@ export default function ApplicantNavbar() {
         <Link
           href="/applications"
           className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            pathname === "/applications"
+            rootPath === "/applications"
               ? "bg-red-50 text-red-700 font-medium"
               : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
           }`}
@@ -67,7 +67,7 @@ export default function ApplicantNavbar() {
         <Link
           href="/profile"
           className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            pathname === "/profile"
+            rootPath === "/profile"
               ? "bg-red-50 text-red-700 font-medium"
               : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
           }`}
@@ -79,7 +79,7 @@ export default function ApplicantNavbar() {
         <Link
           href="/settings"
           className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            pathname === "/settings"
+            rootPath === "/settings"
               ? "bg-red-50 text-red-700 font-medium"
               : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
           }`}

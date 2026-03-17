@@ -1,6 +1,6 @@
 import { getUserRole } from "@/lib/auth";
 import ApplicantApplications from "@/components/applicant/applications";
-import HrApplications from "@/components/hr/applications";
+import HRApplications from "@/components/hr/applications";
 import AdminApplications from "@/components/admin/applications";
 
 export default async function ApplicationsPage() {
@@ -11,7 +11,7 @@ export default async function ApplicationsPage() {
   }
 
   if (userRole === "HR") {
-    return <HrApplications />;
+    return <HRApplications />;
   }
 
   if (userRole === "ADMIN") {

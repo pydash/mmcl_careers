@@ -1,6 +1,6 @@
 import AdminJobs from "@/components/admin/jobs";
 import ApplicantJobs from "@/components/applicant/jobs";
-import HrJobs from "@/components/hr/jobs";
+import HRJobs from "@/components/hr/jobs";
 import PublicJobs from "@/components/public-jobs";
 import { getUserRole } from "@/lib/auth";
 
@@ -12,7 +12,7 @@ export default async function JobsPage() {
   }
 
   if (userRole === "HR") {
-    return <HrJobs />;
+    return <HRJobs />;
   }
 
   if (userRole === "ADMIN") {

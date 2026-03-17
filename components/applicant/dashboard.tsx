@@ -9,7 +9,7 @@ export default function ApplicantDashboard() {
     <div className="flex min-h-screen bg-gray-50">
       <ApplicantNavbar />
 
-      <main className="flex-1 p-6 md:p-10">
+      <main className="flex-1 ml-64 p-6 md:p-10">
         <div className="max-w-6xl mx-auto space-y-6">
           <section>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
