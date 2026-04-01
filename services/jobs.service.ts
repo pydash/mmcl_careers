@@ -16,7 +16,7 @@ export class JobsService {
     }
   }
 
-  static async getJobById(id: number): Promise<Job | null> {
+  static async getJobById(id: string): Promise<Job | null> {
     try {
       const response = await fetch(`${API_BASE_URL}/jobs/${id}`);
       if (!response.ok) {
