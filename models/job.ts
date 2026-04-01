@@ -1,11 +1,14 @@
 export interface Job {
   id: number;
-  role: string;
+  public_id: string;
+  position: string;
   department: string;
-  type: string;
-  teaching_type: string;
-  posted: string;
+  employment_type: string;
   description?: string;
-  requirements?: string[];
-  salary_range?: string;
+  salary?: string;
+  is_open: boolean;
+  expiration_date: string;
+  posted_by: number;
+  created_at: string;
+  updated_at: string;
 }
