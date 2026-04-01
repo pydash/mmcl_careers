@@ -1,22 +1,13 @@
 import ApplicantNavbar from "../navbar";
 import { getDaysAgo, getDate } from "@/lib/datetime.helpers";
 import Link from "next/link";
+import { Job } from "@/models/job";
 
-const jobData = {
-  id: "1",
-  title: "Software Engineer",
-  department: "Information Technology",
-  type: "Full-time",
-  category: "Non-teaching",
-  postedDate: "2024-02-20T00:00:00Z",
-  description: `
-We are looking for a skilled Software Engineer to join our IT team. The ideal candidate will have experience in developing and maintaining software applications, as well as a strong understanding of software development principles and best practices.
-  `,
-  salaryRange: "$40,000 - $60,000 per year",
-  applicationDeadline: "2024-03-31T00:00:00Z",
+type JobDetailsData = Job & {
+  applications?: number;
 };
 
-export default function ApplicantJobDetailsPage() {
+export default function ApplicantJobDetailsPage({ id }: { id: string }) {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <ApplicantNavbar />
@@ -30,10 +21,10 @@ export default function ApplicantJobDetailsPage() {
                   {jobData.department}
                 </span>
                 <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
-                  {jobData.title}
+                  {jobData.position}
                 </h1>
                 <p className="text-sm text-slate-600">
-                  {jobData.type} • {jobData.category}
+                  {jobData.employment_type}
                 </p>
               </div>
             </div>
@@ -46,7 +37,7 @@ export default function ApplicantJobDetailsPage() {
                   Job Description
                 </h2>
                 <p className="leading-relaxed text-slate-700">
-                  {jobData.description}
+                  {jobData.description || "No description available."}
                 </p>
               </article>
             </section>
@@ -55,18 +46,18 @@ export default function ApplicantJobDetailsPage() {
               <div className="mb-6 space-y-2 rounded-lg bg-slate-50 p-4">
                 <p className="text-sm text-slate-600">Posted</p>
                 <p className="text-sm font-semibold text-slate-900">
-                  {getDate(jobData.postedDate)}
+                  {getDate(jobData.created_at)}
                 </p>
                 <p className="pt-2 text-sm text-slate-600">
                   Application Deadline
                 </p>
                 <p className="text-sm font-semibold text-slate-900">
-                  {getDaysAgo(jobData.applicationDeadline) > 0
-                    ? `Closed ${getDaysAgo(jobData.applicationDeadline)} day${
-                        getDaysAgo(jobData.applicationDeadline) === 1 ? "" : "s"
+                  {getDaysAgo(jobData.expiration_date) > 0
+                    ? `Closed ${getDaysAgo(jobData.expiration_date)} day${
+                        getDaysAgo(jobData.expiration_date) === 1 ? "" : "s"
                       } ago`
                     : "Open until " +
-                      new Date(jobData.applicationDeadline).toLocaleDateString(
+                      new Date(jobData.expiration_date).toLocaleDateString(
                         undefined,
                         {
                           year: "numeric",
@@ -77,12 +68,12 @@ export default function ApplicantJobDetailsPage() {
                 </p>
                 <p className="text-sm text-slate-600">Salary Range</p>
                 <p className="text-sm font-semibold text-slate-900">
-                  {jobData.salaryRange}
+                  {jobData.salary || "Not specified"}
                 </p>
               </div>
 
               <Link
-                href={`/jobs/${jobData.id}/apply`}
+                href={`/jobs/${jobData.public_id}/apply`}
                 className="mt-6 block w-full rounded-lg bg-red-600 px-4 py-2.5 text-center text-sm font-medium text-white transition hover:bg-red-700"
               >
                 Apply Now
