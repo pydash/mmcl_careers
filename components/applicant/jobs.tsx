@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
 
 const jobs = [
   {
@@ -43,7 +44,18 @@ const jobs = [
   },
 ];
 
-export default function ApplicantJobs() {
+export default function ApplicantJobs({ filter }: any) {
+  const filteredJobs = jobs.filter((job) => {
+    if (!filter) return true;
+    if (filter === "full-time" || filter === "part-time") {
+      return job.type.toLowerCase() === filter;
+    }
+    if (filter === "teaching" || filter === "non-teaching") {
+      return job.teachingType.toLowerCase() === filter;
+    }
+    return true;
+  });
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <ApplicantNavbar />
@@ -62,18 +74,23 @@ export default function ApplicantJobs() {
           <section className="flex flex-wrap gap-2">
             {["All", "Full-time", "Part-time", "Teaching", "Non-teaching"].map(
               (filter) => (
-                <button
+                <Link
+                  href={
+                    filter === "All"
+                      ? "/jobs"
+                      : `/jobs?filter=${filter.toLowerCase()}`
+                  }
                   key={filter}
                   className="text-xs px-3 py-1.5 rounded-full border border-gray-200 bg-white text-gray-600 hover:border-red-400 hover:text-red-700 transition-colors"
                 >
                   {filter}
-                </button>
+                </Link>
               ),
             )}
           </section>
 
           <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {jobs.map((job) => (
+            {filteredJobs.map((job) => (
               <Card
                 key={job.id}
                 className="flex flex-col bg-white hover:shadow-md transition-shadow"

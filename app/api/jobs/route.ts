@@ -7,7 +7,6 @@ import { getAllJobs } from "@/lib/query/get-jobs";
 export async function GET(request: NextRequest) {
   try {
     const userRole = await getUserRole();
-
     if (!userRole) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
