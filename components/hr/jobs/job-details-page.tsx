@@ -1,23 +1,35 @@
+"use client";
+
 import HRNavbar from "@/components/hr/ui/navbar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import useJobDetails from "@/hooks/jobs/useJobDetails";
+import { Job } from "@/models/job";
 
-const jobData = {
-  id: "1",
-  title: "Software Engineer",
-  department: "Information Technology",
-  type: "Full-time",
-  category: "Non-teaching",
-  date_posted: "2024-02-20T00:00:00Z",
-  description: `We are looking for a skilled Software Engineer to join our IT team. The ideal candidate will have experience in developing and maintaining software applications, as well as a strong understanding of software development principles and best practices.`,
-  salary: "$40,000 - $60,000 per year",
-  status: "Open",
-  expiration_date: "2024-03-31T00:00:00Z",
-  applications: 24,
+type JobDetailsData = Job & {
+  applications?: number;
 };
 
-export default function HRJobDetailsPage() {
+export default function HRJobDetailsPage({ id }: { id: string }) {
+  const { job, loading, error } = useJobDetails(id) as {
+    job: JobDetailsData;
+    loading: boolean;
+    error: Error | null;
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!job) {
+    return <div>Job not found.</div>;
+  }
+
   return (
     <div className="flex min-h-screen bg-slate-50">
       <HRNavbar />
@@ -37,23 +49,21 @@ export default function HRJobDetailsPage() {
               <div className="space-y-2">
                 <div className="flex gap-2">
                   <span className="inline-flex w-fit rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
-                    {jobData.department}
+                    {job.department}
                   </span>
                   <span
-                    className={`inline-flex items-center gap-1 w-fit rounded-full px-3 py-1 text-xs font-medium ${jobData.status === "Open" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
+                    className={`inline-flex items-center gap-1 w-fit rounded-full px-3 py-1 text-xs font-medium ${job.is_open ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
                   >
                     <div
-                      className={`size-1.5 rounded-xl ${jobData.status === "Open" ? "bg-green-500" : "bg-gray-500"}`}
+                      className={`size-1.5 rounded-xl ${job.is_open ? "bg-green-500" : "bg-gray-500"}`}
                     />
-                    {jobData.status}
+                    {job.is_open ? "Open" : "Closed"}
                   </span>
                 </div>
                 <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
-                  {jobData.title}
+                  {job.position}
                 </h1>
-                <p className="text-sm text-slate-600">
-                  {jobData.type} • {jobData.category}
-                </p>
+                <p className="text-sm text-slate-600">{job.employment_type}</p>
               </div>
             </div>
           </section>
@@ -65,7 +75,7 @@ export default function HRJobDetailsPage() {
                   Job Description
                 </h2>
                 <p className="leading-relaxed text-slate-700">
-                  {jobData.description}
+                  {job.description || "No description available."}
                 </p>
               </article>
             </section>
@@ -74,24 +84,25 @@ export default function HRJobDetailsPage() {
               <div className="mb-6 space-y-2 rounded-lg bg-slate-50 p-4">
                 <p className="text-sm text-slate-600">Posted</p>
                 <p className="text-sm font-semibold text-slate-900">
-                  {new Date(jobData.date_posted).toLocaleDateString()}
+                  {new Date(job.created_at).toLocaleDateString()}
                 </p>
                 <p className="pt-2 text-sm text-slate-600">
                   Application Deadline
                 </p>
                 <p className="text-sm font-semibold text-slate-900">
-                  {new Date(jobData.expiration_date).toLocaleDateString(
-                    undefined,
-                    { year: "numeric", month: "long", day: "numeric" },
-                  )}
+                  {new Date(job.expiration_date).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </p>
                 <p className="text-sm text-slate-600">Salary Range</p>
                 <p className="text-sm font-semibold text-slate-900">
-                  {jobData.salary}
+                  {job.salary || "Not specified"}
                 </p>
                 <p className="pt-2 text-sm text-slate-600">Applications</p>
                 <p className="text-sm font-semibold text-red-600">
-                  {jobData.applications}
+                  {job.applications ?? 0}
                 </p>
               </div>
 
@@ -100,7 +111,7 @@ export default function HRJobDetailsPage() {
                   Edit Job
                 </Button>
                 <Link
-                  href={`/jobs/${jobData.id}/applications`}
+                  href={`/jobs/${job.public_id}/applications`}
                   className="flex-1"
                 >
                   <Button className="w-full bg-red-600 hover:bg-red-700">
