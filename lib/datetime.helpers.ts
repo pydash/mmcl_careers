@@ -50,7 +50,7 @@ function getDate(dateTimeWithTimezone: string): string {
     "December",
   ];
 
-  return `${monthNames[monthIndex]} ${dayNumber} ${year}`;
+  return `${monthNames[monthIndex]} ${dayNumber}, ${year}`;
 }
 
 function getDateFromShortDate(shortDate: string): string {
@@ -85,4 +85,20 @@ function getDateFromShortDate(shortDate: string): string {
   return `${monthNames[monthIndex]} ${year}`;
 }
 
-export { getDaysAgo, getDate, getDateFromShortDate };
+function getDateTime(datetime: string): string {
+  const date = new Date(datetime);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new Error("Invalid datetime string passed to getDateTime");
+  }
+
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+export { getDaysAgo, getDate, getDateFromShortDate, getDateTime };
