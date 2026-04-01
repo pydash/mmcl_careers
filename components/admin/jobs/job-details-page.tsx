@@ -2,22 +2,13 @@ import AdminNavbar from "@/components/admin/navbar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { Job } from "@/models/job";
 
-const jobData = {
-  id: "1",
-  title: "Software Engineer",
-  department: "Information Technology",
-  type: "Full-time",
-  category: "Non-teaching",
-  date_posted: "2024-02-20T00:00:00Z",
-  description: `We are looking for a skilled Software Engineer to join our IT team. The ideal candidate will have experience in developing and maintaining software applications, as well as a strong understanding of software development principles and best practices.`,
-  salary: "$40,000 - $60,000 per year",
-  status: "Open",
-  expiration_date: "2024-03-31T00:00:00Z",
-  applications: 24,
+type JobDetailsData = Job & {
+  applications?: number;
 };
 
-export default function AdminJobDetailsPage() {
+export default function AdminJobDetailsPage({ id }: { id: string }) {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <AdminNavbar />
@@ -40,19 +31,19 @@ export default function AdminJobDetailsPage() {
                     {jobData.department}
                   </span>
                   <span
-                    className={`inline-flex items-center gap-1 w-fit rounded-full px-3 py-1 text-xs font-medium ${jobData.status === "Open" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
+                    className={`inline-flex items-center gap-1 w-fit rounded-full px-3 py-1 text-xs font-medium ${jobData.is_open ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
                   >
                     <div
-                      className={`size-1.5 rounded-xl ${jobData.status === "Open" ? "bg-green-500" : "bg-gray-500"}`}
+                      className={`size-1.5 rounded-xl ${jobData.is_open ? "bg-green-500" : "bg-gray-500"}`}
                     />
-                    {jobData.status}
+                    {jobData.is_open ? "Open" : "Closed"}
                   </span>
                 </div>
                 <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
-                  {jobData.title}
+                  {jobData.position}
                 </h1>
                 <p className="text-sm text-slate-600">
-                  {jobData.type} • {jobData.category}
+                  {jobData.employment_type}
                 </p>
               </div>
             </div>
@@ -65,7 +56,7 @@ export default function AdminJobDetailsPage() {
                   Job Description
                 </h2>
                 <p className="leading-relaxed text-slate-700">
-                  {jobData.description}
+                  {jobData.description || "No description available."}
                 </p>
               </article>
             </section>
@@ -74,7 +65,7 @@ export default function AdminJobDetailsPage() {
               <div className="mb-6 space-y-2 rounded-lg bg-slate-50 p-4">
                 <p className="text-sm text-slate-600">Posted</p>
                 <p className="text-sm font-semibold text-slate-900">
-                  {new Date(jobData.date_posted).toLocaleDateString()}
+                  {new Date(jobData.created_at).toLocaleDateString()}
                 </p>
                 <p className="pt-2 text-sm text-slate-600">
                   Application Deadline
@@ -87,11 +78,11 @@ export default function AdminJobDetailsPage() {
                 </p>
                 <p className="text-sm text-slate-600">Salary Range</p>
                 <p className="text-sm font-semibold text-slate-900">
-                  {jobData.salary}
+                  {jobData.salary || "Not specified"}
                 </p>
                 <p className="pt-2 text-sm text-slate-600">Applications</p>
                 <p className="text-sm font-semibold text-red-600">
-                  {jobData.applications}
+                  {jobData.applications ?? 0}
                 </p>
               </div>
 
@@ -100,7 +91,7 @@ export default function AdminJobDetailsPage() {
                   Edit Job
                 </Button>
                 <Link
-                  href={`/jobs/${jobData.id}/applications`}
+                  href={`/jobs/${jobData.public_id}/applications`}
                   className="flex-1"
                 >
                   <Button className="w-full bg-red-600 hover:bg-red-700">
