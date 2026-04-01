@@ -2,7 +2,7 @@
 
 import HRNavbar from "@/components/hr/ui/navbar";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -12,9 +12,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { getDate } from "@/lib/datetime.helpers";
-import { Download } from "lucide-react";
+import { getDate, getDateTime } from "@/lib/datetime.helpers";
 import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useParams } from "next/navigation";
+import StageButton from "./application/stage-buttons";
 
 const applicantData = {
   personal: {
@@ -24,12 +33,12 @@ const applicantData = {
     mobile: "+63 912 345 6789",
     address: "Makati City, Philippines",
     date_applied: "2024-02-25T00:00:00Z",
-    status: "Pending",
+    status: "Interview",
     notes: "Strong in full-stack development with React and Node.js.",
   },
   application: {
     applied_date: "2024-02-25T00:00:00Z",
-    status: "Pending",
+    status: "Shortlisted",
     stage: "Initial Screening",
     notes: "Strong in full-stack development with React and Node.js.",
   },
@@ -57,6 +66,30 @@ const applicantData = {
   attachments: [{ name: "Resume.pdf" }],
 };
 
+type ApplicationHistoryItem = {
+  date: string;
+  status: string;
+  info: string;
+};
+
+const applicationHistory: ApplicationHistoryItem[] = [
+  {
+    date: "2024-02-25T00:00:00Z",
+    status: "Pending",
+    info: "Application submitted.",
+  },
+  {
+    date: "2024-02-27T00:00:00Z",
+    status: "Shortlisted",
+    info: "Application shortlisted for review.",
+  },
+  {
+    date: "2024-03-01T00:00:00Z",
+    status: "Interview",
+    info: "Scheduled for interview on March 5th.",
+  },
+];
+
 const tabs = [
   "Personal",
   "Education",
@@ -77,35 +110,7 @@ const applicationStatusTrack = [
 ];
 
 export default function HRApplicationDetailsPage() {
-  const [applicationStatus, setApplicationStatus] = useState(
-    applicantData.application.status,
-  );
-
-  const currentStatusIndex = applicationStatusTrack.indexOf(applicationStatus);
-  const isRejected = applicationStatus === "Rejected";
-
-  const handleDownloadApplicationDetails = () => {
-    const payload = {
-      ...applicantData,
-      application: {
-        ...applicantData.application,
-        status: applicationStatus,
-      },
-    };
-
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = `application-details-${applicantData.personal.id}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+  const { id } = useParams();
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -114,7 +119,7 @@ export default function HRApplicationDetailsPage() {
       <main className="flex-1 ml-64 px-4 py-6 md:px-8 md:py-8 lg:px-10">
         <div className="mx-auto max-w-6xl space-y-6">
           <Link
-            href="/jobs/1/applications"
+            href={`/jobs/${id}/applications`}
             className="inline-flex items-center gap-2 text-sm text-red-600 hover:text-red-700"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -135,106 +140,66 @@ export default function HRApplicationDetailsPage() {
               <Button
                 variant="default"
                 className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={handleDownloadApplicationDetails}
               >
                 <Download className="h-4 w-4" />
                 Download Details
               </Button>
             </div>
 
-            <div className="mt-6 rounded-lg border border-slate-200 p-4">
-              <p className="text-xs text-slate-500">Status Track</p>
-
-              {isRejected ? (
-                <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
-                  Application marked as Rejected.
-                </div>
-              ) : (
-                <ol className="mt-4 flex items-center gap-3 overflow-x-auto pb-1">
-                  {applicationStatusTrack.map((status, index) => {
-                    const isActive = currentStatusIndex >= index;
-                    const isCurrent = applicationStatus === status;
-
-                    return (
-                      <li key={status} className="flex shrink-0 items-center">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`flex h-6 w-6 items-center justify-center rounded-full border text-xs font-semibold ${
-                              isActive
-                                ? "border-red-600 bg-red-600 text-white"
-                                : "border-slate-300 bg-white text-slate-500"
-                            }`}
-                          >
-                            {index + 1}
-                          </span>
-                          <span
-                            className={`whitespace-nowrap pr-1 text-xs sm:text-sm ${
-                              isCurrent
-                                ? "font-semibold text-red-700"
-                                : isActive
-                                  ? "text-slate-900"
-                                  : "text-slate-500"
-                            }`}
-                          >
-                            {status}
-                          </span>
-                        </div>
-
-                        {index < applicationStatusTrack.length - 1 && (
-                          <span
-                            className={`h-0.5 w-10 rounded ${
-                              currentStatusIndex > index
-                                ? "bg-red-500"
-                                : "bg-slate-200"
-                            }`}
-                          />
-                        )}
-                      </li>
-                    );
-                  })}
-                </ol>
-              )}
-            </div>
-
-            <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="mt-6 grid grid-cols-1 gap-6">
+              {/* Row 1 - Status Track (Full Width) */}
               <div className="rounded-lg border border-slate-200 p-4">
-                <p className="text-xs text-slate-500">Applied Date</p>
-                <p className="text-sm font-semibold text-slate-900">
-                  {getDate(applicantData.application.applied_date)}
-                </p>
+                <p className="text-xs text-slate-500">Track Status</p>
+                <Table className="w-full text-sm">
+                  <TableHeader>
+                    <TableRow className="border-b border-slate-200">
+                      <TableHead className="text-left py-2 px-3 text-xs font-semibold text-slate-600">
+                        Date & Time
+                      </TableHead>
+                      <TableHead className="text-left py-2 px-3 text-xs font-semibold text-slate-600">
+                        Status
+                      </TableHead>
+                      <TableHead className="text-left py-2 px-3 text-xs font-semibold text-slate-600">
+                        Info
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {applicationHistory.map((item, index) => (
+                      <TableRow
+                        key={index}
+                        className="border-b border-slate-100 hover:bg-slate-50"
+                      >
+                        <TableCell className="py-3 px-3 text-slate-700">
+                          {getDateTime(item.date)}
+                        </TableCell>
+                        <TableCell className="py-3 px-3">
+                          {item.status}
+                        </TableCell>
+                        <TableCell className="py-3 px-3">{item.info}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
-              <div className="rounded-lg border border-slate-200 p-4">
-                <p className="text-xs text-slate-500">Application Status</p>
-                <div className="mt-2">
-                  <Select
-                    value={applicationStatus}
-                    onValueChange={setApplicationStatus}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select application status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Pending">Pending</SelectItem>
-                      <SelectItem value="Shortlisted">Shortlisted</SelectItem>
-                      <SelectItem value="Interview">Interview</SelectItem>
-                      <SelectItem value="Offer">Offer</SelectItem>
-                      <SelectItem value="Hired">Hired</SelectItem>
-                      <SelectItem value="Deferred">Deferred</SelectItem>
-                    </SelectContent>
-                  </Select>
+
+              {/* Row 2 - 3 Column Grid */}
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="rounded-lg border border-slate-200 p-4">
+                  <p className="text-xs text-slate-500">Date Applied</p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {getDate(applicantData.application.applied_date)}
+                  </p>
                 </div>
-              </div>
-              <div className="rounded-lg border border-slate-200 p-4 md:col-span-2">
-                <p className="text-xs text-slate-500">Current Stage</p>
-                <p className="text-sm font-semibold text-slate-900">
-                  {applicantData.application.stage}
-                </p>
-              </div>
-              <div className="rounded-lg border border-slate-200 p-4 md:col-span-2">
-                <p className="text-xs text-slate-500">Application Notes</p>
-                <p className="text-sm font-semibold text-slate-900">
-                  {applicantData.application.notes}
-                </p>
+                <div className="rounded-lg border border-slate-200 p-4">
+                  <p className="text-xs text-slate-500">Note to Applicant</p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {applicantData.application.notes}
+                  </p>
+                </div>
+                <div className="rounded-lg border border-slate-200 p-4 flex flex-col gap-2">
+                  <StageButton status={applicantData.application.status} />
+                </div>
               </div>
             </div>
           </section>

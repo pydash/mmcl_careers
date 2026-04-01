@@ -15,65 +15,19 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Users, Calendar } from "lucide-react";
-
-const postedJobs = [
-  {
-    id: 1,
-    title: "Software Engineer",
-    department: "Information Technology",
-    postedDate: "2024-02-01",
-    applications: 24,
-    status: "Open",
-    statusColor: "bg-green-100 text-green-800",
-  },
-  {
-    id: 2,
-    title: "Faculty - Computer Science",
-    department: "Academic Affairs",
-    postedDate: "2024-01-25",
-    applications: 18,
-    status: "Open",
-    statusColor: "bg-green-100 text-green-800",
-  },
-  {
-    id: 3,
-    title: "Guidance Counselor",
-    department: "Student Services",
-    postedDate: "2024-01-20",
-    applications: 12,
-    status: "Open",
-    statusColor: "bg-green-100 text-green-800",
-  },
-  {
-    id: 4,
-    title: "Research Assistant",
-    department: "Research & Development",
-    postedDate: "2024-01-15",
-    applications: 8,
-    status: "Closed",
-    statusColor: "bg-gray-100 text-gray-800",
-  },
-  {
-    id: 5,
-    title: "Marketing Coordinator",
-    department: "Marketing & Communications",
-    postedDate: "2024-01-10",
-    applications: 15,
-    status: "Open",
-    statusColor: "bg-green-100 text-green-800",
-  },
-  {
-    id: 6,
-    title: "Library Assistant",
-    department: "Library Services",
-    postedDate: "2024-01-05",
-    applications: 6,
-    status: "Open",
-    statusColor: "bg-green-100 text-green-800",
-  },
-];
+import useJobs from "@/hooks/jobs/useJobs";
 
 export default function HRJobs() {
+  const { jobs, loading, error } = useJobs();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <HRNavbar />
@@ -95,47 +49,36 @@ export default function HRJobs() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {postedJobs.map((job) => (
+            {jobs.map((job) => (
               <Card key={job.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-lg mb-2">
-                        {job.title}
+                        {job.position}
                       </CardTitle>
                       <p className="text-sm text-gray-600">{job.department}</p>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Status</span>
-                      <Badge className={job.statusColor}>{job.status}</Badge>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">{job.employment_type}</Badge>
+                      {!job.is_open && (
+                        <Badge variant="destructive">Closed</Badge>
+                      )}
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600 flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        Applications
-                      </span>
-                      <span className="text-sm font-medium text-red-600">
-                        {job.applications}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600 flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        Posted
-                      </span>
-                      <span className="text-sm font-medium">
-                        {new Date(job.postedDate).toLocaleDateString()}
-                      </span>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Calendar className="h-4 w-4" />
+                      Expires{" "}
+                      {new Date(job.expiration_date).toLocaleDateString()}
                     </div>
                   </div>
                 </CardContent>
                 <CardFooter className="flex gap-2">
                   <Button variant="outline" className="flex-1" asChild>
-                    <Link href={`/jobs/${job.id}`}>View Details</Link>
+                    <Link href={`/jobs/${job.public_id}`}>View Details</Link>
                   </Button>
                   <Button
                     variant="outline"
