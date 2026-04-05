@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -10,64 +12,77 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const stats = [
-  { label: "Open roles", value: "18", delta: "+2 vs last week" },
-  { label: "Active applicants", value: "126", delta: "+14 this week" },
-  { label: "Interviews scheduled", value: "24", delta: "8 today" },
-  { label: "Offers out", value: "9", delta: "4 awaiting response" },
-];
-
-const pipeline = [
-  { stage: "Applied", count: 340, percent: 72 },
-  { stage: "Screen", count: 190, percent: 54 },
-  { stage: "Interview", count: 88, percent: 28 },
-  { stage: "Offer", count: 22, percent: 12 },
-];
-
-const recentApplicants = [
-  {
-    name: "Alex Turner",
-    role: "Product Designer",
-    stage: "Interview",
-    submitted: "Today",
-  },
-  {
-    name: "Maria Chen",
-    role: "Data Analyst",
-    stage: "Screen",
-    submitted: "1d ago",
-  },
-  {
-    name: "Samir Patel",
-    role: "Backend Engineer",
-    stage: "Offer",
-    submitted: "2d ago",
-  },
-  {
-    name: "Grace Hill",
-    role: "HR Coordinator",
-    stage: "Applied",
-    submitted: "3d ago",
-  },
-];
+import useOverview from "@/hooks/hr/dashboard/useOverview";
 
 export default function DashboardPage() {
+  const { overviewData, loading, error } = useOverview();
+
+  const appliedCount =
+    overviewData?.pipeline?.pipeline_health?.applied_count ?? 0;
+  const interviewCount =
+    overviewData?.pipeline?.pipeline_health?.interview_count ?? 0;
+  const offerCount = overviewData?.pipeline?.pipeline_health?.offer_count ?? 0;
+  const pipelineTotal = appliedCount + interviewCount + offerCount;
+
+  const toPercent = (count: number) =>
+    pipelineTotal > 0 ? Math.round((count / pipelineTotal) * 100) : 0;
+
+  const pipeline = [
+    { stage: "Applied", count: appliedCount, percent: toPercent(appliedCount) },
+    {
+      stage: "Interview",
+      count: interviewCount,
+      percent: toPercent(interviewCount),
+    },
+    { stage: "Offer", count: offerCount, percent: toPercent(offerCount) },
+  ];
+
+  const upcomingInterviews = overviewData?.interviews ?? [];
+  const recentApplicants = overviewData?.recent_applicants ?? [];
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading dashboard data: {String(error)}</div>;
+  }
+
   return (
     <div className="space-y-8">
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((item) => (
-          <div
-            key={item.label}
-            className="rounded-lg border bg-card p-4 shadow-sm"
-          >
-            <p className="text-sm text-muted-foreground">{item.label}</p>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-3xl font-semibold">{item.value}</span>
-              <Badge variant="secondary">{item.delta}</Badge>
-            </div>
+        <div className="rounded-lg border bg-card p-4 shadow-sm">
+          <p className="text-sm text-red-500">Total jobs</p>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-3xl font-semibold">
+              {overviewData?.stats?.total_jobs ?? 0}
+            </span>
           </div>
-        ))}
+        </div>
+        <div className="rounded-lg border bg-card p-4 shadow-sm">
+          <p className="text-sm text-red-500">Total applications</p>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-3xl font-semibold">
+              {overviewData?.stats?.total_applications ?? 0}
+            </span>
+          </div>
+        </div>
+        <div className="rounded-lg border bg-card p-4 shadow-sm">
+          <p className="text-sm text-red-500">Open jobs</p>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-3xl font-semibold">
+              {overviewData?.stats?.open_jobs ?? 0}
+            </span>
+          </div>
+        </div>
+        <div className="rounded-lg border bg-card p-4 shadow-sm">
+          <p className="text-sm text-red-500">Pending applications</p>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-3xl font-semibold">
+              {overviewData?.stats?.pending_applications ?? 0}
+            </span>
+          </div>
+        </div>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-2">
@@ -77,9 +92,6 @@ export default function DashboardPage() {
               <p className="text-sm text-muted-foreground">Pipeline health</p>
               <h3 className="text-lg font-semibold">This week</h3>
             </div>
-            <Button size="sm" variant="outline">
-              Export
-            </Button>
           </div>
           <Separator className="my-4" />
           <div className="space-y-3">
@@ -114,21 +126,26 @@ export default function DashboardPage() {
           </div>
           <Separator className="my-4" />
           <ul className="space-y-3">
-            {[
-              "10:00 AM · Product Designer",
-              "1:00 PM · Backend Engineer",
-              "3:30 PM · Data Analyst",
-            ].map((slot) => (
-              <li
-                key={slot}
-                className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-2"
-              >
-                <span className="text-sm">{slot}</span>
-                <Button size="sm" variant="ghost">
-                  Details
-                </Button>
+            {upcomingInterviews.length > 0 ? (
+              upcomingInterviews.map((interview: any) => (
+                <li
+                  key={interview.application_id}
+                  className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-2"
+                >
+                  <span className="text-sm">
+                    {new Date(interview.scheduled_at).toLocaleString()} ·{" "}
+                    {interview.name}
+                  </span>
+                  <Button size="sm" variant="ghost">
+                    Details
+                  </Button>
+                </li>
+              ))
+            ) : (
+              <li className="rounded-md bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
+                No upcoming interviews
               </li>
-            ))}
+            )}
           </ul>
         </div>
       </section>
@@ -154,15 +171,15 @@ export default function DashboardPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {recentApplicants.map((applicant) => (
-              <TableRow key={`${applicant.name}-${applicant.role}`}>
+            {recentApplicants.map((applicant: any) => (
+              <TableRow key={`${applicant.name}-${applicant.title}`}>
                 <TableCell className="font-medium">{applicant.name}</TableCell>
-                <TableCell>{applicant.role}</TableCell>
+                <TableCell>{applicant.title}</TableCell>
                 <TableCell>
-                  <Badge variant="secondary">{applicant.stage}</Badge>
+                  <Badge variant="secondary">{applicant.status}</Badge>
                 </TableCell>
                 <TableCell className="text-right text-muted-foreground">
-                  {applicant.submitted}
+                  {new Date(applicant.applied_at).toLocaleDateString()}
                 </TableCell>
               </TableRow>
             ))}
