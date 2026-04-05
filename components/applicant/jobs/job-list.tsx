@@ -86,7 +86,7 @@ export default function JobList() {
                     return (
                       <span
                         key={tag}
-                        className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700"
+                        className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 capitalize"
                       >
                         {tag}
                       </span>
