@@ -1,30 +1,30 @@
 // Dashboard Queries
 const getDashboardOverview = `
-SELECT COUNT(*) FROM applications WHERE profile_id = $1;
+SELECT COUNT(*) FROM job_applications WHERE acc_id = $1;
 `;
 
 const getPendingApplications = `
-SELECT COUNT(*) FROM applications WHERE profile_id = $1 AND status = 'pending';
+SELECT COUNT(*) FROM job_applications WHERE acc_id = $1 AND status = 'pending';
 `;
 
 const getUpcomingInterviews = `
 SELECT COUNT(*)
-FROM interviews i
-JOIN applications a ON i.application_id = a.id
-WHERE a.profile_id = $1 AND i.scheduled_at >= NOW();
+FROM job_interviews i
+JOIN job_applications a ON i.app_id = a.id
+WHERE a.acc_id = $1 AND i.scheduled_at >= NOW();
 `;
 
 // Recent Applications Queries
 const getRecentApplication = `
 SELECT
     a.id,
-    jp.position,
+    jp.title,
     jp.department,
     a.status,
     a.created_at
-FROM applications a
-JOIN job_postings jp ON a.job_id = jp.id
-WHERE a.profile_id = $1
+FROM job_applications a
+JOIN job_posts jp ON a.job_id = jp.id
+WHERE a.acc_id = $1
 ORDER BY a.updated_at DESC
 LIMIT 1;
 `;
@@ -33,20 +33,20 @@ LIMIT 1;
 const getJobs = `
 SELECT 
   jp.public_id,
-  jp.position,
+  jp.title,
   jp.department,
-  jp.expiration_date
-FROM job_postings jp
+  jp.expiry_date
+FROM job_posts jp
 WHERE 
-  jp.expiration_date >= NOW()
-  AND jp.is_open = true
+  jp.expiry_date >= NOW()
+  AND jp.is_active = true
   AND NOT EXISTS (
     SELECT 1
-    FROM applications a
+    FROM job_applications a
     WHERE a.job_id = jp.id
-      AND a.profile_id = $1
+      AND a.acc_id = $1
   )
-ORDER BY jp.expiration_date ASC
+ORDER BY jp.expiry_date ASC
 LIMIT 4;
 `;
 
@@ -54,14 +54,14 @@ LIMIT 4;
 const getInterviews = `
 SELECT
   a.id AS application_id,
-  jp.position,
+  jp.title,
   i.scheduled_at,
-  i.mode,
+  i.interview_mode,
   i.status
-FROM interviews i
-LEFT JOIN applications a ON i.application_id = a.id
-LEFT JOIN job_postings jp ON a.job_id = jp.id
-WHERE a.profile_id = $1 AND i.scheduled_at >= NOW()
+FROM job_interviews i
+LEFT JOIN job_applications a ON i.app_id = a.id
+LEFT JOIN job_posts jp ON a.job_id = jp.id
+WHERE a.acc_id = $1 AND i.scheduled_at >= NOW()
 ORDER BY i.scheduled_at ASC;
 `;
 

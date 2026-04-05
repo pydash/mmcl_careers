@@ -1,16 +1,16 @@
 const getAllJobs = `
 SELECT
   jp.public_id,
-  jp.position,
+  jp.title,
   jp.department,
   jp.employment_type,
-  jp.expiration_date,
-  a.id AS app_id,
-  (a.id IS NOT NULL) AS has_applied
-FROM job_postings jp
-LEFT JOIN applications a
-  ON a.job_id = jp.id
-  AND a.profile_id = $1;
+  jp.expiry_date,
+  ja.id AS app_id,
+  (ja.id IS NOT NULL) AS has_applied
+FROM job_posts jp
+LEFT JOIN job_applications ja
+  ON ja.job_id = jp.id
+  AND ja.acc_id = $1;
 `;
 
 const getJobPostDetails = `
