@@ -93,15 +93,15 @@ export default function LogsPage() {
     <div className="flex min-h-screen bg-gray-50">
       <AdminNavbar />
 
-      <main className="ml-64 flex-1 p-8">
+   
+      <main className="flex-1 lg:ml-64 p-4 md:p-8">
         <div className="mx-auto max-w-7xl space-y-6">
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
             <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
               Activity Logs
             </h1>
             <p className="mt-2 text-sm text-slate-600">
-              Track account management, configuration updates, and security
-              events.
+              Track account management, configuration updates, and security events.
             </p>
           </section>
 
@@ -153,60 +153,63 @@ export default function LogsPage() {
                 <Input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search by ID, actor, action, or module"
+                  placeholder="Search logs..."
                   className="w-full md:max-w-sm"
                 />
               </div>
             </CardHeader>
 
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Log ID</TableHead>
-                    <TableHead>Actor</TableHead>
-                    <TableHead>Action</TableHead>
-                    <TableHead>Module</TableHead>
-                    <TableHead>Level</TableHead>
-                    <TableHead>Timestamp</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredLogs.length > 0 ? (
-                    filteredLogs.map((log) => (
-                      <TableRow key={log.id}>
-                        <TableCell className="font-medium">{log.id}</TableCell>
-                        <TableCell>{log.actor}</TableCell>
-                        <TableCell>{log.action}</TableCell>
-                        <TableCell>{log.module}</TableCell>
-                        <TableCell>
-                          <Badge
-                            className={
-                              log.level === "Critical"
-                                ? "bg-red-100 text-red-700"
-                                : log.level === "Warning"
-                                  ? "bg-amber-100 text-amber-700"
-                                  : "bg-blue-100 text-blue-700"
-                            }
-                          >
-                            {log.level}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{log.timestamp}</TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
+\
+              <div className="w-full overflow-x-auto rounded-md border">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="py-8 text-center text-slate-500"
-                      >
-                        No matching logs found.
-                      </TableCell>
+                      <TableHead className="whitespace-nowrap">Log ID</TableHead>
+                      <TableHead className="whitespace-nowrap">Actor</TableHead>
+                      <TableHead className="whitespace-nowrap">Action</TableHead>
+                      <TableHead className="whitespace-nowrap">Module</TableHead>
+                      <TableHead>Level</TableHead>
+                      <TableHead className="whitespace-nowrap">Timestamp</TableHead>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredLogs.length > 0 ? (
+                      filteredLogs.map((log) => (
+                        <TableRow key={log.id}>
+                          <TableCell className="font-medium whitespace-nowrap">{log.id}</TableCell>
+                          <TableCell className="whitespace-nowrap">{log.actor}</TableCell>
+                          <TableCell className="min-w-[200px]">{log.action}</TableCell>
+                          <TableCell className="whitespace-nowrap">{log.module}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={
+                                log.level === "Critical"
+                                  ? "bg-red-100 text-red-700"
+                                  : log.level === "Warning"
+                                    ? "bg-amber-100 text-amber-700"
+                                    : "bg-blue-100 text-blue-700"
+                              }
+                            >
+                              {log.level}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">{log.timestamp}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={6}
+                          className="py-8 text-center text-slate-500"
+                        >
+                          No matching logs found.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </div>

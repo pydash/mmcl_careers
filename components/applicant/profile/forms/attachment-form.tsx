@@ -49,7 +49,7 @@ export default function AttachmentForm() {
       {records.map((record, index) => (
         <div
           key={index}
-          className="space-y-4 rounded-xl border border-slate-200 p-4 bg-white"
+          className="space-y-4 rounded-xl border border-slate-200 p-4 bg-white shadow-sm"
         >
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-slate-900">
@@ -58,8 +58,9 @@ export default function AttachmentForm() {
             {records.length > 1 && (
               <Button
                 type="button"
-                variant="outline"
-                className="text-red-600 hover:text-red-700"
+                variant="ghost"
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={() => removeRecord(index)}
               >
                 Remove
@@ -97,10 +98,10 @@ export default function AttachmentForm() {
                 <button
                   type="button"
                   onClick={() => fileInputRefs.current[index]?.click()}
-                  className="flex flex-1 items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-500 hover:bg-slate-50"
+                  className="flex flex-1 items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-500 hover:bg-slate-50 transition-colors overflow-hidden"
                 >
                   <Paperclip className="h-4 w-4 shrink-0" />
-                  <span className="truncate">
+                  <span className="truncate text-left">
                     {record.file ? record.file.name : "Choose file..."}
                   </span>
                 </button>
@@ -113,7 +114,7 @@ export default function AttachmentForm() {
                         fileInputRefs.current[index]!.value = "";
                       }
                     }}
-                    className="shrink-0 rounded-md p-1 text-slate-400 hover:text-red-600"
+                    className="shrink-0 rounded-md p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -124,11 +125,19 @@ export default function AttachmentForm() {
         </div>
       ))}
 
-      <div className="flex gap-4 justify-end">
-        <Button type="button" variant="outline" onClick={addRecord}>
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={addRecord}
+          className="w-full sm:w-auto"
+        >
           Add Attachment
         </Button>
-        <Button type="submit" className="bg-red-600 hover:bg-red-700">
+        <Button 
+          type="submit" 
+          className="w-full sm:w-auto bg-red-600 hover:bg-red-700"
+        >
           Save Attachments
         </Button>
       </div>

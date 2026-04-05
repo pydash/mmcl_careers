@@ -23,7 +23,7 @@ const emptyEducationRecord: EducationRecord = {
 
 export default function EducationForm() {
   const [records, setRecords] = useState<EducationRecord[]>([
-    emptyEducationRecord,
+    { ...emptyEducationRecord },
   ]);
 
   const updateRecord = (
@@ -51,7 +51,7 @@ export default function EducationForm() {
       {records.map((record, index) => (
         <div
           key={index}
-          className="space-y-4 rounded-xl bg-white border border-slate-200 p-4"
+          className="space-y-4 rounded-xl bg-white border border-slate-200 p-4 shadow-sm"
         >
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-slate-900">
@@ -60,8 +60,9 @@ export default function EducationForm() {
             {records.length > 1 && (
               <Button
                 type="button"
-                variant="outline"
-                className="text-red-600 hover:text-red-700"
+                variant="ghost"
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={() => removeRecord(index)}
               >
                 Remove
@@ -132,11 +133,19 @@ export default function EducationForm() {
         </div>
       ))}
 
-      <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" onClick={addRecord}>
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={addRecord}
+          className="w-full sm:w-auto"
+        >
           Add Education Record
         </Button>
-        <Button type="submit" className="bg-red-600 hover:bg-red-700">
+        <Button 
+          type="submit" 
+          className="w-full sm:w-auto bg-red-600 hover:bg-red-700"
+        >
           Save Education Information
         </Button>
       </div>

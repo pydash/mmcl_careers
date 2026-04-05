@@ -16,7 +16,7 @@ const emptyGovIdRecord: GovIdRecord = {
 };
 
 export default function GovIdForm() {
-  const [records, setRecords] = useState<GovIdRecord[]>([emptyGovIdRecord]);
+  const [records, setRecords] = useState<GovIdRecord[]>([{ ...emptyGovIdRecord }]);
 
   const updateRecord = (
     index: number,
@@ -43,7 +43,7 @@ export default function GovIdForm() {
       {records.map((record, index) => (
         <div
           key={index}
-          className="space-y-4 rounded-xl border border-slate-200 p-4 bg-white"
+          className="space-y-4 rounded-xl border border-slate-200 p-4 bg-white shadow-sm"
         >
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-slate-900">
@@ -52,8 +52,9 @@ export default function GovIdForm() {
             {records.length > 1 && (
               <Button
                 type="button"
-                variant="outline"
-                className="text-red-600 hover:text-red-700"
+                variant="ghost"
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={() => removeRecord(index)}
               >
                 Remove
@@ -87,11 +88,20 @@ export default function GovIdForm() {
         </div>
       ))}
 
-      <div className="flex gap-4 justify-end">
-        <Button type="button" variant="outline" onClick={addRecord}>
+     
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={addRecord}
+          className="w-full sm:w-auto"
+        >
           Add Government ID
         </Button>
-        <Button type="submit" className="bg-red-600 hover:bg-red-700">
+        <Button 
+          type="submit" 
+          className="w-full sm:w-auto bg-red-600 hover:bg-red-700"
+        >
           Save Government IDs
         </Button>
       </div>

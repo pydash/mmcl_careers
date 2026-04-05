@@ -17,14 +17,14 @@ export default function AttachmentsContent({
             {attachments.map((attachment, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3"
+                className="flex flex-col sm:flex-row sm:items-center justify-between rounded-lg border border-slate-200 bg-white p-3 gap-3"
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-blue-50">
+                <div className="flex items-center gap-3 overflow-hidden">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-blue-50">
                     <FileText className="h-5 w-5 text-blue-600" />
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-slate-900">
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="text-sm font-medium text-slate-900 truncate">
                       {attachment.name}
                     </span>
                     <span className="text-xs text-slate-500">
@@ -33,6 +33,11 @@ export default function AttachmentsContent({
                         : "Unknown size"}
                     </span>
                   </div>
+                </div>
+                
+
+                <div className="flex sm:justify-end">
+                   {/* Placeholder kaSi di pa tapos */}
                 </div>
               </div>
             ))}

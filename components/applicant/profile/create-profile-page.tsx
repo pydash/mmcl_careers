@@ -5,7 +5,6 @@ import EducationForm from "./forms/education-form";
 import ExperienceForm from "./forms/experience-form";
 import CredentialForm from "./forms/credential-form";
 import GovIdForm from "./forms/gov-id-form";
-import SocialMediaContent from "../jobs/apply/social-media-content";
 import SocialMediaForm from "./forms/social-media-form";
 import AttachmentForm from "./forms/attachment-form";
 
@@ -26,7 +25,7 @@ export default function ApplicantCreateProfile() {
     <div className="flex min-h-screen bg-slate-50">
       <ApplicantNavbar />
 
-      <main className="flex-1 ml-64 px-4 py-6 md:px-8 md:py-8 lg:px-10">
+      <main className="flex-1 lg:ml-64 px-4 py-6 md:px-8 md:py-8 lg:px-10">
         <div className="mx-auto max-w-5xl space-y-6">
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
             <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
@@ -43,45 +42,51 @@ export default function ApplicantCreateProfile() {
             </h2>
 
             <Tabs defaultValue={tabValue(tabs[0])} className="w-full">
-              <TabsList className="bg-transparent">
-                {tabs.map((tab) => (
-                  <TabsTrigger
-                    key={tab}
-                    value={tabValue(tab)}
-                    className="rounded-2xl px-4 py-2 text-gray-600 border-black/10 data-[state=active]:text-red-700 data-[state=active]:bg-red-100 data-[state=active]:border-red-200"
-                  >
-                    {tab}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+             
+              <div className="w-full overflow-x-auto pb-2 scrollbar-hide">
+                <TabsList className="bg-transparent h-auto p-0 flex justify-start border-b border-slate-200 rounded-none min-w-max">
+                  {tabs.map((tab) => (
+                    <TabsTrigger
+                      key={tab}
+                      value={tabValue(tab)}
+                      className="rounded-none border-b-2 border-transparent px-4 py-2 text-gray-600 whitespace-nowrap transition-all data-[state=active]:border-red-600 data-[state=active]:bg-transparent data-[state=active]:text-red-700"
+                    >
+                      {tab}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </div>
 
-              <TabsContent value="personal">
-                <PersonalForm />
-              </TabsContent>
+           
+              <div className="mt-6 px-1">
+                <TabsContent value="personal" className="focus-visible:outline-none">
+                  <PersonalForm />
+                </TabsContent>
 
-              <TabsContent value="education">
-                <EducationForm />
-              </TabsContent>
+                <TabsContent value="education" className="focus-visible:outline-none">
+                  <EducationForm />
+                </TabsContent>
 
-              <TabsContent value="experience">
-                <ExperienceForm />
-              </TabsContent>
+                <TabsContent value="experience" className="focus-visible:outline-none">
+                  <ExperienceForm />
+                </TabsContent>
 
-              <TabsContent value="credentials">
-                <CredentialForm />
-              </TabsContent>
+                <TabsContent value="credentials" className="focus-visible:outline-none">
+                  <CredentialForm />
+                </TabsContent>
 
-              <TabsContent value="government-ids">
-                <GovIdForm />
-              </TabsContent>
+                <TabsContent value="government-ids" className="focus-visible:outline-none">
+                  <GovIdForm />
+                </TabsContent>
 
-              <TabsContent value="social-media">
-                <SocialMediaForm />
-              </TabsContent>
+                <TabsContent value="social-media" className="focus-visible:outline-none">
+                  <SocialMediaForm />
+                </TabsContent>
 
-              <TabsContent value="attachments">
-                <AttachmentForm />
-              </TabsContent>
+                <TabsContent value="attachments" className="focus-visible:outline-none">
+                  <AttachmentForm />
+                </TabsContent>
+              </div>
             </Tabs>
           </section>
         </div>

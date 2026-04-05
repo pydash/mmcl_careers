@@ -17,7 +17,7 @@ const emptySocialMediaRecord: SocialMediaRecord = {
 
 export default function SocialMediaForm() {
   const [records, setRecords] = useState<SocialMediaRecord[]>([
-    emptySocialMediaRecord,
+    { ...emptySocialMediaRecord },
   ]);
 
   const updateRecord = (
@@ -45,7 +45,7 @@ export default function SocialMediaForm() {
       {records.map((record, index) => (
         <div
           key={index}
-          className="space-y-4 rounded-xl border border-slate-200 p-4 bg-white"
+          className="space-y-4 rounded-xl border border-slate-200 p-4 bg-white shadow-sm"
         >
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-slate-900">
@@ -54,8 +54,9 @@ export default function SocialMediaForm() {
             {records.length > 1 && (
               <Button
                 type="button"
-                variant="outline"
-                className="text-red-600 hover:text-red-700"
+                variant="ghost"
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
                 onClick={() => removeRecord(index)}
               >
                 Remove
@@ -91,11 +92,20 @@ export default function SocialMediaForm() {
         </div>
       ))}
 
-      <div className="flex gap-4 justify-end">
-        <Button type="button" variant="outline" onClick={addRecord}>
+
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={addRecord}
+          className="w-full sm:w-auto"
+        >
           Add Social Media
         </Button>
-        <Button type="submit" className="bg-red-600 hover:bg-red-700">
+        <Button 
+          type="submit" 
+          className="w-full sm:w-auto bg-red-600 hover:bg-red-700"
+        >
           Save Social Media
         </Button>
       </div>

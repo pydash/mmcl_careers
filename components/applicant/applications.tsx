@@ -73,9 +73,11 @@ export default function ApplicantApplications() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <ApplicantNavbar />
-      <div className="flex-1 ml-64 p-8">
+      
+  
+      <div className="flex-1 lg:ml-64 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
+          <div className="mb-8 mt-16 lg:mt-0">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               My Applications
             </h1>
@@ -84,12 +86,13 @@ export default function ApplicantApplications() {
             </p>
           </div>
 
-          <div className="mb-6 flex gap-2">
+          
+          <div className="mb-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {["All Applications", "Pending", "Interviews", "Submitted"].map(
               (filter) => (
                 <button
                   key={filter}
-                  className="text-xs px-3 py-1.5 rounded-full border border-gray-200 bg-white text-gray-600 hover:border-red-400 hover:text-red-700 transition-colors"
+                  className="text-xs whitespace-nowrap px-4 py-1.5 rounded-full border border-gray-200 bg-white text-gray-600 hover:border-red-400 hover:text-red-700 transition-colors shrink-0"
                 >
                   {filter}
                 </button>
@@ -103,53 +106,58 @@ export default function ApplicantApplications() {
               return (
                 <Card
                   key={app.id}
-                  className="hover:shadow-lg transition-shadow"
+                  className="hover:shadow-lg transition-shadow flex flex-col"
                 >
                   <CardHeader>
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
-                        <CardTitle className="text-base mb-2">
+                        <CardTitle className="text-base mb-1 leading-tight">
                           {app.jobTitle}
                         </CardTitle>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-xs text-gray-500">
                           {app.department}
                         </p>
                       </div>
-                      <StatusIcon className="h-5 w-5 text-gray-400" />
+                      <StatusIcon className="h-5 w-5 text-gray-400 shrink-0" />
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  
+                  <CardContent className="flex-1">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-600">Status</span>
-                        <Badge className={app.statusColor}>{app.status}</Badge>
+                        <span className="text-xs text-gray-500">Status</span>
+                        <Badge className={`${app.statusColor} text-[10px] sm:text-xs font-semibold`}>
+                          {app.status}
+                        </Badge>
                       </div>
+                      
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-600">Applied</span>
-                        <span className="text-xs font-medium">
+                        <span className="text-xs text-gray-500">Applied</span>
+                        <span className="text-xs font-medium text-gray-700">
                           {new Date(app.appliedDate).toLocaleDateString()}
                         </span>
                       </div>
+                      
                       {app.interviewDate && (
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-600">
-                            Interview
-                          </span>
-                          <span className="text-xs font-medium text-blue-600">
+                          <span className="text-xs text-gray-500">Interview</span>
+                          <span className="text-xs font-bold text-blue-600">
                             {new Date(app.interviewDate).toLocaleDateString()}
                           </span>
                         </div>
                       )}
                     </div>
                   </CardContent>
-                  <CardFooter className="flex gap-2">
-                    <Button asChild variant="outline" className="flex-1">
+                  
+                  <CardFooter className="flex flex-col sm:flex-row gap-2">
+                    <Button asChild variant="outline" size="sm" className="w-full sm:flex-1">
                       <Link href={`/applications/${app.id}`}>View Details</Link>
                     </Button>
                     {app.status === "Pending" && (
                       <Button
                         variant="outline"
-                        className="flex-1 text-red-600 hover:text-red-700"
+                        size="sm"
+                        className="w-full sm:flex-1 text-red-600 border-red-100 hover:bg-red-50 hover:text-red-700 hover:border-red-200"
                       >
                         Withdraw
                       </Button>

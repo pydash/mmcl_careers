@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -11,120 +12,102 @@ import {
   Users,
   ScrollText,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function AdminNavbar() {
   const pathname = usePathname();
   const rootPath = `/${pathname.split("/")[1]}`;
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleSidebar = () => setIsOpen(!isOpen);
+
+  const navLinks = [
+    { href: "/dashboard", label: "Dashboard", icon: Home },
+    { href: "/jobs", label: "Jobs", icon: Briefcase },
+    { href: "/applications", label: "Applications", icon: FileText },
+    { href: "/profile", label: "Profile", icon: User },
+    { href: "/settings", label: "Settings", icon: Settings },
+    { href: "/accounts", label: "Accounts", icon: Users },
+    { href: "/logs", label: "Logs", icon: ScrollText },
+  ];
 
   return (
-    <aside className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200 p-4">
-      <div className="mb-4 flex items-center justify-start gap-2">
-        <Link href="/" className="inline-block">
+    <>
+
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 px-4 flex items-center justify-between z-50">
+        <div className="flex items-center gap-2">
           <img
             src="/logo_block.png"
             alt="MMCL Careers"
-            className="h-10 w-auto object-contain"
+            className="h-8 w-auto object-contain"
           />
-        </Link>
-        <span className="text-lg font-semibold">MMCL Careers</span>
+          <span className="text-sm font-semibold">MMCL Careers</span>
+        </div>
+        <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </Button>
       </div>
 
-      <nav className="space-y-1">
-        <Link
-          href="/dashboard"
-          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            rootPath === "/dashboard"
-              ? "bg-red-50 text-red-700 font-medium"
-              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-          }`}
-        >
-          <Home className="h-4 w-4" />
-          <span>Dashboard</span>
-        </Link>
 
-        <Link
-          href="/jobs"
-          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            rootPath === "/jobs"
-              ? "bg-red-50 text-red-700 font-medium"
-              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-          }`}
-        >
-          <Briefcase className="h-4 w-4" />
-          <span>Jobs</span>
-        </Link>
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
 
-        <Link
-          href="/applications"
-          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            rootPath === "/applications"
-              ? "bg-red-50 text-red-700 font-medium"
-              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-          }`}
-        >
-          <FileText className="h-4 w-4" />
-          <span>Applications</span>
-        </Link>
-
-        <Link
-          href="/profile"
-          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            rootPath === "/profile"
-              ? "bg-red-50 text-red-700 font-medium"
-              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-          }`}
-        >
-          <User className="h-4 w-4" />
-          <span>Profile</span>
-        </Link>
-
-        <Link
-          href="/settings"
-          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            rootPath === "/settings"
-              ? "bg-red-50 text-red-700 font-medium"
-              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-          }`}
-        >
-          <Settings className="h-4 w-4" />
-          <span>Settings</span>
-        </Link>
-
-        <Link
-          href="/accounts"
-          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            rootPath === "/accounts"
-              ? "bg-red-50 text-red-700 font-medium"
-              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-          }`}
-        >
-          <Users className="h-4 w-4" />
-          <span>Accounts</span>
-        </Link>
-
-        <Link
-          href="/logs"
-          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            rootPath === "/logs"
-              ? "bg-red-50 text-red-700 font-medium"
-              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-          }`}
-        >
-          <ScrollText className="h-4 w-4" />
-          <span>Logs</span>
-        </Link>
-
-        <div className="mt-8 pt-4 border-t border-gray-200">
-          <Link
-            href="/"
-            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Log Out</span>
+    
+      <aside
+        className={`fixed left-0 top-0 z-40 h-screen bg-white border-r border-gray-200 p-4 transition-transform lg:translate-x-0 lg:w-64 ${
+          isOpen ? "translate-x-0 w-64" : "-translate-x-full"
+        }`}
+      >
+        <div className="mb-4 flex items-center justify-start gap-2">
+          <Link href="/" className="inline-block">
+            <img
+              src="/logo_block.png"
+              alt="MMCL Careers"
+              className="h-10 w-auto object-contain"
+            />
           </Link>
+          <span className="text-lg font-semibold">MMCL Careers</span>
         </div>
-      </nav>
-    </aside>
+
+        <nav className="space-y-1">
+          {navLinks.map((link) => {
+            const Icon = link.icon;
+            const isActive = rootPath === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                  isActive
+                    ? "bg-red-50 text-red-700 font-medium"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{link.label}</span>
+              </Link>
+            );
+          })}
+
+          <div className="mt-8 pt-4 border-t border-gray-200">
+            <Link
+              href="/"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Log Out</span>
+            </Link>
+          </div>
+        </nav>
+      </aside>
+    </>
   );
 }

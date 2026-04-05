@@ -13,18 +13,21 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <AdminNavbar />
-      <main className="flex-1 ml-64 p-8">
+      
+  
+      <main className="flex-1 lg:ml-64 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               Admin Dashboard
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-gray-600 mt-2 text-sm md:text-base">
               Manage job postings, applicants, and recruitment
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600 flex items-center gap-2">
@@ -83,6 +86,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+       
             <Card className="lg:col-span-2">
               <CardHeader>
                 <CardTitle>Recent Applications</CardTitle>
@@ -120,16 +124,16 @@ export default function AdminDashboard() {
                   ].map((app, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-gray-200 last:border-0 gap-2"
                     >
                       <div className="flex-1">
                         <p className="font-medium text-gray-900">{app.name}</p>
                         <p className="text-sm text-gray-600">{app.position}</p>
                       </div>
-                      <div className="text-right">
+                      <div className="flex sm:block justify-between items-center sm:text-right">
                         <p className="text-xs text-gray-500">{app.date}</p>
                         <p
-                          className={`text-xs font-medium mt-1 ${
+                          className={`text-xs font-medium sm:mt-1 ${
                             app.status === "New"
                               ? "text-blue-600"
                               : app.status === "Interview"
@@ -146,12 +150,13 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+        
+            <Card className="h-fit">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
                 <CardDescription>Common admin tasks</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 space-y-0">
                 <Button className="w-full bg-red-600 hover:bg-red-700">
                   Post New Job
                 </Button>

@@ -89,7 +89,8 @@ export default function AdminApplications() {
     <div className="flex min-h-screen bg-slate-50">
       <AdminNavbar />
 
-      <main className="flex-1 ml-64 px-4 py-6 md:px-8 md:py-8 lg:px-10">
+
+      <main className="flex-1 lg:ml-64 px-4 py-6 md:px-8 md:py-8 lg:px-10">
         <div className="mx-auto max-w-6xl space-y-6">
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
             <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
@@ -100,7 +101,7 @@ export default function AdminApplications() {
             </p>
           </section>
 
-          <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <Card className="border-slate-200">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm text-slate-600">
@@ -138,7 +139,7 @@ export default function AdminApplications() {
                 <CardTitle className="text-sm text-slate-600">
                   <span className="inline-flex items-center gap-2">
                     <UserRoundCheck className="h-4 w-4 text-blue-600" />
-                    Shortlisted/Interview
+                    Shortlisted
                   </span>
                 </CardTitle>
               </CardHeader>
@@ -167,7 +168,8 @@ export default function AdminApplications() {
           </section>
 
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-            <div className="mb-4 flex flex-wrap gap-2">
+
+            <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
               {[
                 "All",
                 "Pending",
@@ -180,58 +182,60 @@ export default function AdminApplications() {
                 <button
                   key={filter}
                   type="button"
-                  className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:border-red-300 hover:text-red-700"
+                  className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:border-red-300 hover:text-red-700"
                 >
                   {filter}
                 </button>
               ))}
             </div>
 
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Applicant</TableHead>
-                  <TableHead>Job</TableHead>
-                  <TableHead>Department</TableHead>
-                  <TableHead>Applied On</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {applications.map((application) => (
-                  <TableRow key={application.id}>
-                    <TableCell className="font-semibold text-slate-900">
-                      {application.applicant}
-                    </TableCell>
-                    <TableCell className="text-slate-700">
-                      {application.jobTitle}
-                    </TableCell>
-                    <TableCell className="text-slate-600">
-                      {application.department}
-                    </TableCell>
-                    <TableCell className="text-slate-600">
-                      {getDate(application.appliedOn)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        className={getStatusBadgeClass(application.status)}
-                      >
-                        {application.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Link
-                        href={`/jobs/${application.jobId}/applications/${application.id}`}
-                        className="inline-flex h-8 items-center rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
-                      >
-                        View Details
-                      </Link>
-                    </TableCell>
+            <div className="w-full overflow-x-auto rounded-md border border-slate-100">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="whitespace-nowrap">Applicant</TableHead>
+                    <TableHead className="whitespace-nowrap">Job</TableHead>
+                    <TableHead className="whitespace-nowrap">Department</TableHead>
+                    <TableHead className="whitespace-nowrap">Applied On</TableHead>
+                    <TableHead className="whitespace-nowrap">Status</TableHead>
+                    <TableHead className="text-right whitespace-nowrap">Action</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {applications.map((application) => (
+                    <TableRow key={application.id}>
+                      <TableCell className="font-semibold text-slate-900 whitespace-nowrap">
+                        {application.applicant}
+                      </TableCell>
+                      <TableCell className="text-slate-700 whitespace-nowrap">
+                        {application.jobTitle}
+                      </TableCell>
+                      <TableCell className="text-slate-600 whitespace-nowrap">
+                        {application.department}
+                      </TableCell>
+                      <TableCell className="text-slate-600 whitespace-nowrap">
+                        {getDate(application.appliedOn)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          className={`whitespace-nowrap ${getStatusBadgeClass(application.status)}`}
+                        >
+                          {application.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Link
+                          href={`/jobs/${application.jobId}/applications/${application.id}`}
+                          className="inline-flex h-8 items-center rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-100 whitespace-nowrap"
+                        >
+                          View Details
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </section>
         </div>
       </main>

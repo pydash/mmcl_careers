@@ -31,7 +31,7 @@ const emptyExperienceRecord: ExperienceRecord = {
 
 export default function ExperienceForm() {
   const [records, setRecords] = useState<ExperienceRecord[]>([
-    emptyExperienceRecord,
+    { ...emptyExperienceRecord },
   ]);
 
   const updateRecord = (
@@ -59,7 +59,7 @@ export default function ExperienceForm() {
       {records.map((record, index) => (
         <div
           key={index}
-          className="space-y-4 rounded-xl border border-slate-200 p-4 bg-white"
+          className="space-y-4 rounded-xl border border-slate-200 p-4 bg-white shadow-sm"
         >
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-slate-900">
@@ -68,8 +68,9 @@ export default function ExperienceForm() {
             {records.length > 1 && (
               <Button
                 type="button"
-                variant="outline"
-                className="text-red-600 hover:text-red-700"
+                variant="ghost"
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={() => removeRecord(index)}
               >
                 Remove
@@ -146,20 +147,20 @@ export default function ExperienceForm() {
             </div>
 
             <div className="space-y-2 md:col-span-2">
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
                 <Label htmlFor={`courses_handled-${index}`}>
                   Courses Handled
                 </Label>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger type="button">
                     <Info className="h-4 w-4 text-gray-400" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <div className="flex flex-col">
+                  <TooltipContent side="top" className="max-w-[250px]">
+                    <div className="flex flex-col gap-1 text-xs">
                       <p>
-                        List any courses you handled in this position, separated
-                        by commas. For example: "CS101, CS102".
+                        List courses handled separated by commas.
                       </p>
+                      <p className="text-slate-400 italic">Example: "CS101, CS102"</p>
                       <p>Leave blank if not applicable.</p>
                     </div>
                   </TooltipContent>
@@ -179,11 +180,20 @@ export default function ExperienceForm() {
         </div>
       ))}
 
-      <div className="flex gap-4 justify-end">
-        <Button type="button" variant="outline" onClick={addRecord}>
+ 
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={addRecord}
+          className="w-full sm:w-auto"
+        >
           Add Experience Record
         </Button>
-        <Button type="submit" className="bg-red-600 hover:bg-red-700">
+        <Button 
+          type="submit" 
+          className="w-full sm:w-auto bg-red-600 hover:bg-red-700"
+        >
           Save Experience Information
         </Button>
       </div>

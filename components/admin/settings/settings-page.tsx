@@ -38,7 +38,8 @@ export default function AdminSettings() {
     <div className="flex min-h-screen bg-gray-50">
       <AdminNavbar />
 
-      <main className="ml-64 flex-1 p-8">
+  
+      <main className="flex-1 lg:ml-64 p-4 md:p-8">
         <div className="mx-auto max-w-6xl space-y-6">
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
             <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
@@ -92,7 +93,7 @@ export default function AdminSettings() {
                 </div>
 
                 <div className="mt-6 flex justify-end">
-                  <Button className="bg-red-600 hover:bg-red-700">
+                  <Button className="w-full md:w-auto bg-red-600 hover:bg-red-700">
                     Save Changes
                   </Button>
                 </div>
@@ -103,7 +104,7 @@ export default function AdminSettings() {
               <CardHeader>
                 <CardTitle>Quick Links</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-3 space-y-0">
                 <Button
                   asChild
                   variant="outline"
@@ -138,9 +139,9 @@ export default function AdminSettings() {
                 {notificationPreferences.map((item) => (
                   <div
                     key={item.title}
-                    className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 p-4"
+                    className="flex flex-col sm:flex-row items-start justify-between gap-4 rounded-lg border border-slate-200 p-4"
                   >
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm font-semibold text-slate-900">
                         {item.title}
                       </p>
@@ -150,11 +151,11 @@ export default function AdminSettings() {
                     </div>
 
                     <Badge
-                      className={
+                      className={`w-fit whitespace-nowrap ${
                         item.enabled
                           ? "bg-emerald-100 text-emerald-700"
                           : "bg-slate-100 text-slate-700"
-                      }
+                      }`}
                     >
                       {item.enabled ? "Enabled" : "Disabled"}
                     </Badge>
@@ -175,7 +176,7 @@ export default function AdminSettings() {
                   <p className="mt-1 text-sm text-slate-600">
                     Last updated {adminSettings.lastPasswordUpdate}.
                   </p>
-                  <Button variant="outline" className="mt-3">
+                  <Button variant="outline" className="mt-3 w-full sm:w-auto">
                     Change Password
                   </Button>
                 </div>
@@ -189,7 +190,7 @@ export default function AdminSettings() {
                       ? "Currently enabled for your account."
                       : "Currently disabled for your account."}
                   </p>
-                  <Button variant="outline" className="mt-3">
+                  <Button variant="outline" className="mt-3 w-full sm:w-auto">
                     {adminSettings.twoFactorEnabled
                       ? "Manage 2FA"
                       : "Enable 2FA"}

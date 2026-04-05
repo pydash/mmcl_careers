@@ -77,24 +77,33 @@ export default function AdminJobs() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <AdminNavbar />
-      <div className="flex-1 ml-64 p-8">
+      
+  
+      <div className="flex-1 lg:ml-64 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8 flex items-center justify-between">
+      
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Job Postings</h1>
-              <p className="text-gray-600 mt-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Job Postings</h1>
+              <p className="text-gray-600 mt-2 text-sm md:text-base">
                 Manage and track your open job positions
               </p>
             </div>
-            <PostJobDialog />
+            <div className="w-full sm:w-auto">
+                <PostJobDialog />
+            </div>
           </div>
 
-          <div className="mb-6 flex gap-4">
-            <JobSearchBar />
+
+          <div className="mb-6 flex flex-wrap sm:flex-nowrap gap-4">
+            <div className="flex-1 min-w-[200px]">
+                <JobSearchBar />
+            </div>
             <JobFilterSheet />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {postedJobs.map((job) => (
               <Card key={job.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
@@ -134,12 +143,12 @@ export default function AdminJobs() {
                   </div>
                 </CardContent>
                 <CardFooter className="flex gap-2">
-                  <Button variant="outline" className="flex-1" asChild>
+                  <Button variant="outline" className="flex-1 text-xs md:text-sm" asChild>
                     <Link href={`/jobs/${job.id}`}>View Details</Link>
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1 text-red-600 hover:text-red-700"
+                    className="flex-1 text-xs md:text-sm text-red-600 hover:text-red-700"
                   >
                     Edit
                   </Button>

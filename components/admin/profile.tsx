@@ -29,10 +29,11 @@ export default function AdminProfile() {
     <div className="flex min-h-screen bg-gray-50">
       <AdminNavbar />
 
-      <main className="ml-64 flex-1 p-8">
+   
+      <main className="flex-1 lg:ml-64 p-4 md:p-8">
         <div className="mx-auto max-w-6xl space-y-6">
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <div className="mb-1 flex gap-2">
                   <Badge className="bg-red-100 text-red-700">Admin</Badge>
@@ -46,12 +47,13 @@ export default function AdminProfile() {
                 <p className="text-sm text-slate-600">{adminProfile.role}</p>
               </div>
 
-              <Button asChild variant="outline" size="sm">
+              <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
                 <Link href="/profile/edit">Edit Profile</Link>
               </Button>
             </div>
           </section>
 
+        
           <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <Card className="border-slate-200 lg:col-span-2">
               <CardHeader>
@@ -75,7 +77,7 @@ export default function AdminProfile() {
 
                   <div className="rounded-lg border border-slate-200 p-4">
                     <p className="text-xs text-slate-500">Email</p>
-                    <p className="text-sm font-semibold text-slate-900">
+                    <p className="text-sm font-semibold text-slate-900 break-all">
                       {adminProfile.email}
                     </p>
                   </div>
@@ -126,7 +128,7 @@ export default function AdminProfile() {
 
                   <div className="flex flex-wrap gap-2">
                     {quickPermissions.map((permission) => (
-                      <Badge key={permission} variant="outline">
+                      <Badge key={permission} variant="outline" className="text-[10px] sm:text-xs">
                         {permission}
                       </Badge>
                     ))}
@@ -145,14 +147,14 @@ export default function AdminProfile() {
                 <CardHeader>
                   <CardTitle>Administration</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <Button asChild variant="outline" className="w-full">
+                <CardContent className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-3 space-y-0">
+                  <Button asChild variant="outline" className="w-full justify-center lg:justify-start">
                     <Link href="/accounts">Manage Accounts</Link>
                   </Button>
-                  <Button asChild variant="outline" className="w-full">
+                  <Button asChild variant="outline" className="w-full justify-center lg:justify-start">
                     <Link href="/logs">View Activity Logs</Link>
                   </Button>
-                  <Button asChild variant="outline" className="w-full">
+                  <Button asChild variant="outline" className="w-full justify-center lg:justify-start">
                     <Link href="/dashboard">Open Dashboard</Link>
                   </Button>
                 </CardContent>

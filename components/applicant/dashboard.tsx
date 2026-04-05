@@ -3,15 +3,18 @@
 import ApplicantNavbar from "./navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function ApplicantDashboard() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <ApplicantNavbar />
 
-      <main className="flex-1 ml-64 p-6 md:p-10">
+    
+      <main className="flex-1 lg:ml-64 p-4 md:p-8 lg:p-10">
         <div className="max-w-6xl mx-auto space-y-6">
-          <section>
+       
+          <section className="mt-12 lg:mt-0">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               Welcome back
             </h1>
@@ -21,10 +24,11 @@ export default function ApplicantDashboard() {
             </p>
           </section>
 
+          
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card>
+            <Card className="shadow-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
+                <CardTitle className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Applications Submitted
                 </CardTitle>
               </CardHeader>
@@ -33,9 +37,9 @@ export default function ApplicantDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
+                <CardTitle className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Under Review
                 </CardTitle>
               </CardHeader>
@@ -44,9 +48,9 @@ export default function ApplicantDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow-sm sm:col-span-2 lg:col-span-1">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
+                <CardTitle className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Interview Invites
                 </CardTitle>
               </CardHeader>
@@ -56,46 +60,47 @@ export default function ApplicantDashboard() {
             </Card>
           </section>
 
-          <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <Card className="lg:col-span-2">
+          {/* Activity and Actions Grid */}
+          <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card className="lg:col-span-2 shadow-sm">
               <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
+                <CardTitle className="text-lg">Recent Activity</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm text-gray-700">
-                <div className="flex items-start justify-between border-b border-gray-100 pb-2">
-                  <span>
-                    Application submitted for Faculty – Computer Science
+              <CardContent className="space-y-4 text-sm text-gray-700">
+                <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                  <span className="leading-snug">
+                    Application submitted for <strong>Faculty – Computer Science</strong>
                   </span>
-                  <span className="text-gray-400">2d ago</span>
+                  <span className="text-xs text-gray-400 whitespace-nowrap">2d ago</span>
                 </div>
-                <div className="flex items-start justify-between border-b border-gray-100 pb-2">
-                  <span>
-                    Status updated: Research Assistant is now Under Review
+                <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                  <span className="leading-snug">
+                    Status updated: <strong>Research Assistant</strong> is now Under Review
                   </span>
-                  <span className="text-gray-400">4d ago</span>
+                  <span className="text-xs text-gray-400 whitespace-nowrap">4d ago</span>
                 </div>
-                <div className="flex items-start justify-between">
-                  <span>
-                    Interview invitation received for Guidance Counselor
+                <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                  <span className="leading-snug">
+                    Interview invitation received for <strong>Guidance Counselor</strong>
                   </span>
-                  <span className="text-gray-400">1w ago</span>
+                  <span className="text-xs text-gray-400 whitespace-nowrap">1w ago</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow-sm h-fit">
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle className="text-lg">Quick Actions</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <Button asChild className="w-full bg-red-600 hover:bg-red-700">
-                  <a href="/jobs">Browse Jobs</a>
+              <CardContent className="flex flex-col gap-3">
+                <Button asChild className="w-full bg-red-600 hover:bg-red-700 transition-colors">
+                  <Link href="/jobs">Browse Jobs</Link>
                 </Button>
                 <Button asChild variant="outline" className="w-full">
-                  <a href="/applications">View Applications</a>
+                  <Link href="/applications">View Applications</Link>
                 </Button>
                 <Button asChild variant="outline" className="w-full">
-                  <a href="/settings">Update Profile</a>
+                  <Link href="/profile/edit">Update Profile</Link>
                 </Button>
               </CardContent>
             </Card>

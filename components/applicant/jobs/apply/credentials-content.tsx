@@ -9,13 +9,14 @@ export default function CredentialsContent({
   return (
     <div className="space-y-6">
       {credentials.map((credential, index) => (
-        <div key={index} className="border rounded-lg p-4 bg-white">
+        <div key={index} className="border rounded-lg p-4 bg-white shadow-sm">
+     
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-600">
                 Title
               </label>
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-slate-900 break-words">
                 {credential.title}
               </p>
             </div>
@@ -24,7 +25,7 @@ export default function CredentialsContent({
               <label className="text-xs font-medium text-slate-600">
                 Authority
               </label>
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-slate-900 break-words">
                 {credential.authority}
               </p>
             </div>
@@ -33,7 +34,7 @@ export default function CredentialsContent({
               <label className="text-xs font-medium text-slate-600">
                 Number
               </label>
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-slate-900 break-all">
                 {credential.number}
               </p>
             </div>
@@ -47,6 +48,7 @@ export default function CredentialsContent({
               </p>
             </div>
 
+    
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-600">
                 Date Expired

@@ -44,7 +44,8 @@ export default function ApplicantApplicationDetails() {
     <div className="flex min-h-screen bg-slate-50">
       <ApplicantNavbar />
 
-      <main className="flex-1 ml-64 p-8 md:px-8 md:py-8 lg:px-10">
+ 
+      <main className="flex-1 lg:ml-64 p-4 md:p-8 lg:p-10">
         <div className="mx-auto max-w-7xl space-y-6">
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
             <h1 className="text-xl font-bold text-slate-900">
@@ -61,7 +62,7 @@ export default function ApplicantApplicationDetails() {
                 Job Information
               </h2>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
                   <p className="text-xs font-medium text-slate-500">Title</p>
                   <p className="text-sm font-semibold text-slate-900">
@@ -99,7 +100,7 @@ export default function ApplicantApplicationDetails() {
                     <h3 className="mb-4 text-sm font-semibold text-blue-900">
                       Interview Details
                     </h3>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div className="space-y-1">
                         <p className="text-xs font-medium text-blue-700">
                           Date
@@ -124,7 +125,7 @@ export default function ApplicantApplicationDetails() {
                         </p>
                       </div>
 
-                      <div className="space-y-1 md:col-span-2">
+                      <div className="space-y-1 sm:col-span-2">
                         <p className="text-xs font-medium text-blue-700">
                           Location
                         </p>
@@ -133,7 +134,7 @@ export default function ApplicantApplicationDetails() {
                         </p>
                       </div>
 
-                      <div className="space-y-1 md:col-span-2">
+                      <div className="space-y-1 sm:col-span-2">
                         <p className="text-xs font-medium text-blue-700">
                           Interviewer
                         </p>
@@ -142,7 +143,7 @@ export default function ApplicantApplicationDetails() {
                         </p>
                       </div>
 
-                      <div className="space-y-1 md:col-span-2">
+                      <div className="space-y-1 sm:col-span-2">
                         <p className="text-xs font-medium text-blue-700">
                           Notes
                         </p>
@@ -160,7 +161,7 @@ export default function ApplicantApplicationDetails() {
                     <h3 className="mb-4 text-sm font-semibold text-emerald-900">
                       Offer Details
                     </h3>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div className="space-y-1">
                         <p className="text-xs font-medium text-emerald-700">
                           Offer Date
@@ -179,7 +180,7 @@ export default function ApplicantApplicationDetails() {
                         </p>
                       </div>
 
-                      <div className="space-y-1 md:col-span-2">
+                      <div className="space-y-1 sm:col-span-2">
                         <p className="text-xs font-medium text-emerald-700">
                           Offer Status
                         </p>
@@ -189,13 +190,13 @@ export default function ApplicantApplicationDetails() {
                       </div>
 
                       {applicationData.offer.status === "Pending" && (
-                        <div className="flex gap-2 md:col-span-2">
-                          <Button className="bg-emerald-600 text-white hover:bg-emerald-700">
+                        <div className="flex flex-col sm:flex-row gap-2 sm:col-span-2">
+                          <Button className="w-full sm:w-auto bg-emerald-600 text-white hover:bg-emerald-700">
                             Accept Offer
                           </Button>
                           <Button
                             variant="outline"
-                            className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                            className="w-full sm:w-auto border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
                           >
                             Decline Offer
                           </Button>
@@ -234,7 +235,7 @@ export default function ApplicantApplicationDetails() {
                   <p className="mb-2 text-xs font-medium text-slate-500">
                     Status
                   </p>
-                  <Badge className={statusClass}>
+                  <Badge className={`w-fit ${statusClass}`}>
                     {applicationData.application.status}
                   </Badge>
                 </div>
