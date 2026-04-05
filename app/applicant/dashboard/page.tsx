@@ -40,18 +40,58 @@ export default function DashboardPage() {
     loadProfile();
   }, [router]);
 
-  if (loading) return <p className="p-4">Loading...</p>;
-  if (error) return <p className="p-4">Error loading profile: {error}</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-sm font-medium text-slate-500 animate-pulse">Loading dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 m-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+        Error loading profile: {error}
+      </div>
+    );
+  }
 
   return (
-    <main className="flex-1 overflow-auto">
-      <div className="grid grid-cols-[6fr_4fr] gap-4 p-4">
-        <div className="flex flex-col gap-4">
-          <OverviewCard />
-          <RecentApplications />
-          <ExploreJobs />
+    /* - lg:ml-64 added to main to offset the fixed sidebar on desktop.
+       - mt-16 added for mobile header clearance.
+    */
+    <main className="flex-1 overflow-x-hidden lg:ml-64 mt-16 lg:mt-0 bg-slate-50 min-h-screen">
+      <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
+        
+        {/* Header Section */}
+        <header className="mb-8">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
+            Welcome back, {profile?.email?.split('@')[0] || 'Applicant'}
+          </h1>
+          <p className="text-sm text-slate-500 mt-1 font-medium">
+            Here is what is happening with your career search today.
+          </p>
+        </header>
+
+        {/* Responsive Grid Layout:
+           - 1 Column on mobile/tablet (default)
+           - 2 Columns on large screens (lg:grid-cols-[1fr_350px] or lg:grid-cols-12)
+        */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          {/* Left/Main Column: Overview, Apps, Explore */}
+          <div className="lg:col-span-8 flex flex-col gap-6">
+            <OverviewCard />
+            <RecentApplications />
+            <ExploreJobs />
+          </div>
+
+          {/* Right/Sidebar Column: Interviews */}
+          <aside className="lg:col-span-4 lg:sticky lg:top-8">
+            <InterviewCard />
+          </aside>
+          
         </div>
-        <InterviewCard />
       </div>
     </main>
   );

@@ -15,7 +15,7 @@ export function AppBreadcrumbs() {
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
 
-  // 👇 Detect this specific route pattern
+  // Detect specific route patterns
   const isJobDetails =
     segments.includes("applicant") &&
     segments.includes("jobs") &&
@@ -30,49 +30,72 @@ export function AppBreadcrumbs() {
   if (isJobApply) {
     const jobId = segments[2];
     return (
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/applicant/jobs">Browse Jobs</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+      <div className="px-4 py-3 md:px-0 mt-12 lg:mt-0">
+        <Breadcrumb>
+          <BreadcrumbList className="flex-wrap">
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link 
+                  href="/applicant/jobs" 
+                  className="text-xs md:text-sm font-medium hover:text-red-600 transition-colors"
+                >
+                  Browse Jobs
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
 
-          <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-slate-300" />
 
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={`/applicant/jobs/${jobId}`}>Job Details</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link 
+                  href={`/applicant/jobs/${jobId}`}
+                  className="text-xs md:text-sm font-medium hover:text-red-600 transition-colors"
+                >
+                  Job Details
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
 
-          <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-slate-300" />
 
-          <BreadcrumbItem>
-            <BreadcrumbPage>Application Form</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-xs md:text-sm font-bold text-slate-900">
+                Application Form
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
     );
   }
 
   if (isJobDetails) {
     return (
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/applicant/jobs">Browse Jobs</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+      <div className="px-4 py-3 md:px-0 mt-12 lg:mt-0">
+        <Breadcrumb>
+          <BreadcrumbList className="flex-wrap">
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link 
+                  href="/applicant/jobs"
+                  className="text-xs md:text-sm font-medium hover:text-red-600 transition-colors"
+                >
+                  Browse Jobs
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
 
-          <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-slate-300" />
 
-          <BreadcrumbItem>
-            <BreadcrumbPage>Job Details</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+            <BreadcrumbItem>
+              <BreadcrumbPage className="text-xs md:text-sm font-bold text-slate-900">
+                Job Details
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
     );
   }
 

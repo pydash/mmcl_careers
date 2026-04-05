@@ -6,423 +6,220 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function ReviewTabsContent() {
   const { profile: rawProfile, loading, error } = useProfileDetails();
 
-  console.log("ProfileTabsContent render:", {
-    profile: rawProfile,
-    loading,
-    error,
-  });
-
   // Handle if profile is returned as array (fallback)
   const profile =
     Array.isArray(rawProfile) && rawProfile.length > 0
       ? (rawProfile[0] as any)?.profile
       : rawProfile;
 
+  const LoadingState = () => (
+    <div className="py-8 text-center text-sm font-medium text-slate-500 animate-pulse">
+      Loading profile details...
+    </div>
+  );
+
+  const ErrorState = ({ message }: { message: string }) => (
+    <div className="py-4 text-center text-sm font-medium text-red-600 bg-red-50 rounded-lg border border-red-100">
+      Error: {message}
+    </div>
+  );
+
   return (
-    <Tabs defaultValue="personal">
-      <TabsList className="bg-gray-100">
-        <TabsTrigger value="personal">Personal</TabsTrigger>
-        <TabsTrigger value="education">Education</TabsTrigger>
-        <TabsTrigger value="licenses">Licenses & Certifications</TabsTrigger>
-        <TabsTrigger value="employment">Employment</TabsTrigger>
-      </TabsList>
-      <Separator className="my-2" />
-      <TabsContent value="personal">
-        {loading && <div>Loading profile...</div>}
-        {error && <div className="text-red-500">Error: {error}</div>}
+    <Tabs defaultValue="personal" className="w-full">
+      <div className="w-full overflow-x-auto pb-2 scrollbar-hide">
+        <TabsList className="bg-slate-100 p-1 h-auto flex justify-start sm:justify-center min-w-max rounded-xl">
+          <TabsTrigger value="personal" className="px-4 py-2 text-xs sm:text-sm rounded-lg">Personal</TabsTrigger>
+          <TabsTrigger value="education" className="px-4 py-2 text-xs sm:text-sm rounded-lg">Education</TabsTrigger>
+          <TabsTrigger value="licenses" className="px-4 py-2 text-xs sm:text-sm rounded-lg">Licenses & Certifications</TabsTrigger>
+          <TabsTrigger value="employment" className="px-4 py-2 text-xs sm:text-sm rounded-lg">Employment</TabsTrigger>
+        </TabsList>
+      </div>
+
+      <Separator className="my-4" />
+
+      <TabsContent value="personal" className="focus-visible:outline-none">
+        {loading && <LoadingState />}
+        {error && <ErrorState message={error} />}
         {profile && profile.personal && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <strong className="text-sm text-gray-600">Full Name:</strong>
-                <p className="text-gray-900">
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Full Name</p>
+                <p className="text-sm font-semibold text-slate-900">
                   {profile.personal.first_name} {profile.personal.middle_name}{" "}
                   {profile.personal.last_name}
                 </p>
               </div>
-              <div>
-                <strong className="text-sm text-gray-600">Sex:</strong>
-                <p className="text-gray-900 capitalize">
-                  {profile.personal.sex}
-                </p>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Sex</p>
+                <p className="text-sm font-semibold text-slate-900 capitalize">{profile.personal.sex}</p>
               </div>
-              <div>
-                <strong className="text-sm text-gray-600">Birth Date:</strong>
-                <p className="text-gray-900">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Birth Date</p>
+                <p className="text-sm font-semibold text-slate-900">
                   {new Date(profile.personal.birth_date).toLocaleDateString()}
                 </p>
               </div>
-              <div>
-                <strong className="text-sm text-gray-600">Civil Status:</strong>
-                <p className="text-gray-900 capitalize">
-                  {profile.personal.civil_status}
-                </p>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Civil Status</p>
+                <p className="text-sm font-semibold text-slate-900 capitalize">{profile.personal.civil_status}</p>
               </div>
-              <div>
-                <strong className="text-sm text-gray-600">Citizenship:</strong>
-                <p className="text-gray-900">{profile.personal.citizenship}</p>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Citizenship</p>
+                <p className="text-sm font-semibold text-slate-900">{profile.personal.citizenship}</p>
               </div>
-              <div>
-                <strong className="text-sm text-gray-600">Phone Number:</strong>
-                <p className="text-gray-900">{profile.personal.phone_number}</p>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Phone Number</p>
+                <p className="text-sm font-semibold text-slate-900">{profile.personal.phone_number}</p>
+              </div>
+              <div className="sm:col-span-2 space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Physical Address</p>
+                <p className="text-sm font-semibold text-slate-900 leading-relaxed">{profile.personal.physical_address}</p>
               </div>
             </div>
-            <div>
-              <strong className="text-sm text-gray-600">
-                Physical Address:
-              </strong>
-              <p className="text-gray-900">
-                {profile.personal.physical_address}
-              </p>
-            </div>
-            {profile.personal.honorifics &&
-              profile.personal.honorifics.length > 0 && (
-                <div>
-                  <strong className="text-sm text-gray-600">Honorifics:</strong>
-                  <p className="text-gray-900">
-                    {profile.personal.honorifics.join(", ")}
-                  </p>
-                </div>
-              )}
+
             {profile.personal.about && (
-              <div>
-                <strong className="text-sm text-gray-600">About:</strong>
-                <p className="text-gray-900">{profile.personal.about}</p>
+              <div className="pt-4 border-t border-slate-100 space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">About</p>
+                <p className="text-sm text-slate-700 leading-relaxed">{profile.personal.about}</p>
               </div>
             )}
-            {profile.personal.photo_url && (
-              <div>
-                <strong className="text-sm text-gray-600">Photo:</strong>
-                <p className="text-gray-900">
-                  <a
-                    href={profile.personal.photo_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    View Photo
-                  </a>
-                </p>
-              </div>
-            )}
-            {profile.personal.resume_url && (
-              <div>
-                <strong className="text-sm text-gray-600">Resume:</strong>
-                <p className="text-gray-900">
-                  <a
-                    href={profile.personal.resume_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    View Resume
-                  </a>
-                </p>
-              </div>
-            )}
+
+            <div className="flex flex-wrap gap-4 pt-4 border-t border-slate-100">
+              {profile.personal.photo_url && (
+                <a href={profile.personal.photo_url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-red-600 hover:underline">
+                  View Photo
+                </a>
+              )}
+              {profile.personal.resume_url && (
+                <a href={profile.personal.resume_url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-red-600 hover:underline">
+                  View Resume (PDF)
+                </a>
+              )}
+            </div>
           </div>
         )}
       </TabsContent>
-      <TabsContent value="education">
-        {loading && <div>Loading profile...</div>}
-        {error && <div className="text-red-500">Error: {error}</div>}
+
+      <TabsContent value="education" className="focus-visible:outline-none">
+        {loading && <LoadingState />}
+        {error && <ErrorState message={error} />}
         {profile && profile.education && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <strong className="text-sm text-gray-600">Institution:</strong>
-                <p className="text-gray-900">{profile.education.institution}</p>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-1 sm:col-span-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Institution</p>
+                <p className="text-sm font-semibold text-slate-900">{profile.education.institution}</p>
               </div>
-              <div>
-                <strong className="text-sm text-gray-600">Course:</strong>
-                <p className="text-gray-900">{profile.education.course}</p>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Course & Degree</p>
+                <p className="text-sm font-semibold text-slate-900">{profile.education.course} - {profile.education.degree}</p>
               </div>
-              <div>
-                <strong className="text-sm text-gray-600">Degree:</strong>
-                <p className="text-gray-900">{profile.education.degree}</p>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Status</p>
+                <p className="text-sm font-semibold text-slate-900 capitalize">{profile.education.status}</p>
               </div>
-              <div>
-                <strong className="text-sm text-gray-600">Status:</strong>
-                <p className="text-gray-900 capitalize">
-                  {profile.education.status}
-                </p>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Units Earned</p>
+                <p className="text-sm font-semibold text-slate-900">{profile.education.units_earned}</p>
               </div>
-              <div>
-                <strong className="text-sm text-gray-600">Units Earned:</strong>
-                <p className="text-gray-900">
-                  {profile.education.units_earned}
-                </p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">
-                  Year Finished:
-                </strong>
-                <p className="text-gray-900">
-                  {profile.education.year_finished}
-                </p>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Year Finished</p>
+                <p className="text-sm font-semibold text-slate-900">{profile.education.year_finished}</p>
               </div>
             </div>
-            {profile.education.honors &&
-              profile.education.honors.length > 0 && (
-                <div>
-                  <strong className="text-sm text-gray-600">Honors:</strong>
-                  <p className="text-gray-900">
-                    {profile.education.honors.join(", ")}
-                  </p>
-                </div>
-              )}
+            {profile.education.honors?.length > 0 && (
+              <div className="pt-4 border-t border-slate-100 space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Honors</p>
+                <p className="text-sm font-semibold text-slate-900">{profile.education.honors.join(", ")}</p>
+              </div>
+            )}
           </div>
         )}
       </TabsContent>
-      <TabsContent value="licenses">
-        {loading && <div>Loading profile...</div>}
-        {error && <div className="text-red-500">Error: {error}</div>}
+
+      <TabsContent value="licenses" className="focus-visible:outline-none">
+        {loading && <LoadingState />}
+        {error && <ErrorState message={error} />}
         {profile && profile.license && (
           <div className="space-y-4">
             {profile.license.length > 0 ? (
-              profile.license.map((license: any, index: number) => (
-                <div
-                  key={license.id}
-                  className="border rounded-lg p-4 bg-white"
-                >
-                  <h3 className="font-semibold text-sm text-gray-900 mb-3">
-                    {license.title}
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <strong className="text-sm text-gray-600">Number:</strong>
-                      <p className="text-gray-900">{license.number}</p>
+              profile.license.map((license: any) => (
+                <div key={license.id} className="border border-slate-200 rounded-xl p-4 bg-white shadow-sm">
+                  <h3 className="font-bold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">{license.title}</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">License Number</p>
+                      <p className="text-sm font-mono font-semibold text-slate-900">{license.number}</p>
                     </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Issuing Organization:
-                      </strong>
-                      <p className="text-gray-900">
-                        {license.issuing_organization}
-                      </p>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Issuing Body</p>
+                      <p className="text-sm font-semibold text-slate-900">{license.issuing_organization}</p>
                     </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Date Issued:
-                      </strong>
-                      <p className="text-gray-900">
-                        {new Date(license.date_issued).toLocaleDateString()}
-                      </p>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Issue Date</p>
+                      <p className="text-sm font-semibold text-slate-900">{new Date(license.date_issued).toLocaleDateString()}</p>
                     </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Expiry Date:
-                      </strong>
-                      <p className="text-gray-900">
-                        {new Date(license.expiry_date).toLocaleDateString()}
-                      </p>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Expiry Date</p>
+                      <p className="text-sm font-semibold text-slate-900">{new Date(license.expiry_date).toLocaleDateString()}</p>
                     </div>
-                    {license.image_url && (
-                      <div>
-                        <strong className="text-sm text-gray-600">
-                          Image:
-                        </strong>
-                        <p className="text-gray-900">
-                          <a
-                            href={license.image_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            View Image
-                          </a>
-                        </p>
-                      </div>
-                    )}
                   </div>
+                  {license.image_url && (
+                    <div className="mt-4 pt-3 border-t border-slate-50">
+                      <a href={license.image_url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-red-600 hover:underline">
+                        View Credential Image
+                      </a>
+                    </div>
+                  )}
                 </div>
               ))
             ) : (
-              <p className="text-gray-500">
-                No licenses or certifications found.
-              </p>
+              <p className="text-center py-6 text-sm text-slate-500 italic">No licenses or certifications found.</p>
             )}
           </div>
         )}
       </TabsContent>
-      <TabsContent value="employment">
-        {loading && <div>Loading profile...</div>}
-        {error && <div className="text-red-500">Error: {error}</div>}
+
+      <TabsContent value="employment" className="focus-visible:outline-none">
+        {loading && <LoadingState />}
+        {error && <ErrorState message={error} />}
         {profile && profile.employment && (
           <div className="space-y-4">
             {profile.employment.length > 0 ? (
-              profile.employment.map((job: any, index: number) => (
-                <div key={job.id} className="border rounded-lg p-4 bg-white">
-                  <h3 className="font-semibold text-sm text-gray-900 mb-3">
-                    {job.job_title}
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Company Name:
-                      </strong>
-                      <p className="text-gray-900">{job.company_name}</p>
+              profile.employment.map((job: any) => (
+                <div key={job.id} className="border border-slate-200 rounded-xl p-4 bg-white shadow-sm">
+                  <h3 className="font-bold text-sm text-slate-900 mb-4 pb-2 border-b border-slate-100">{job.job_title}</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Company</p>
+                      <p className="text-sm font-semibold text-slate-900">{job.company_name}</p>
                     </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Industry:
-                      </strong>
-                      <p className="text-gray-900">{job.industry}</p>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Industry</p>
+                      <p className="text-sm font-semibold text-slate-900">{job.industry}</p>
                     </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Position Specialization:
-                      </strong>
-                      <p className="text-gray-900">
-                        {job.position_specialization}
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Salary</p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {job.monthly_salary ? `₱${Number(job.monthly_salary).toLocaleString()}` : "Not Disclosed"}
                       </p>
                     </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Monthly Salary:
-                      </strong>
-                      <p className="text-gray-900">
-                        {job.monthly_salary !== null &&
-                        job.monthly_salary !== undefined
-                          ? `₱${Number(job.monthly_salary).toLocaleString()}`
-                          : "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <strong className="text-sm text-gray-600">
-                        Employment Period:
-                      </strong>
-                      <p className="text-gray-900">
-                        {new Date(job.date_started).toLocaleDateString()} -{" "}
-                        {new Date(job.date_ended).toLocaleDateString()}
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Period</p>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {new Date(job.date_started).toLocaleDateString()} - {new Date(job.date_ended).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500">No employment history found.</p>
+              <p className="text-center py-6 text-sm text-slate-500 italic">No employment history found.</p>
             )}
           </div>
         )}
       </TabsContent>
-      {/* <TabsContent value="extras">
-        {loading && <div>Loading profile...</div>}
-        {error && <div className="text-red-500">Error: {error}</div>}
-        {profile && profile.extras && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <strong className="text-sm text-gray-600">
-                  Onsite Willing:
-                </strong>
-                <p className="text-gray-900 capitalize">
-                  {profile.extras.onsite_willing}
-                </p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">
-                  WFH Capability:
-                </strong>
-                <p className="text-gray-900 capitalize">
-                  {profile.extras.wfh_capability}
-                </p>
-              </div>
-              <div>
-                <strong className="text-sm text-gray-600">
-                  Start Date Preference:
-                </strong>
-                <p className="text-gray-900">
-                  {new Date(
-                    profile.extras.start_date_preference,
-                  ).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-            {profile.extras.skills && profile.extras.skills.length > 0 && (
-              <div>
-                <strong className="text-sm text-gray-600">Skills:</strong>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {profile.extras.skills.map((skill: string, index: number) => (
-                    <span
-                      key={index}
-                      className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {profile.extras.sources && profile.extras.sources.length > 0 && (
-              <div>
-                <strong className="text-sm text-gray-600">Sources:</strong>
-                <p className="text-gray-900">
-                  {profile.extras.sources.join(", ")}
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-      </TabsContent> */}
-      {/* <TabsContent value="attachments">
-        {loading && <div>Loading profile...</div>}
-        {error && <div className="text-red-500">Error: {error}</div>}
-        {profile && profile.attachments && (
-          <div className="space-y-4">
-            {profile.attachments.length > 0 ? (
-              profile.attachments
-                .filter(Boolean)
-                .map((attachment: any, index: number) => (
-                  <div
-                    key={attachment.id}
-                    className="border rounded-lg p-4 bg-white"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-2">
-                          {attachment.file_name}
-                        </h3>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div>
-                            <strong className="text-gray-600">Type:</strong>
-                            <p className="text-gray-900">
-                              {attachment.file_type}
-                            </p>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">Size:</strong>
-                            <p className="text-gray-900">
-                              {(attachment.file_size / 1024).toFixed(2)} KB
-                            </p>
-                          </div>
-                          <div>
-                            <strong className="text-gray-600">Uploaded:</strong>
-                            <p className="text-gray-900">
-                              {new Date(
-                                attachment.created_at,
-                              ).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <a
-                        href={attachment.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ml-4 text-blue-600 hover:underline text-sm font-medium"
-                      >
-                        View File
-                      </a>
-                    </div>
-                  </div>
-                ))
-            ) : (
-              <p className="text-gray-500">No attachments found.</p>
-            )}
-          </div>
-        )}
-      </TabsContent> */}
     </Tabs>
   );
 }
