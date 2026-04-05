@@ -21,17 +21,10 @@ function getDaysAgo(dateTimeWithTimezone: string): number {
 }
 
 function getDate(dateTimeWithTimezone: string): string {
-  const datePartMatch = /^(\d{4})-(\d{2})-(\d{2})/.exec(dateTimeWithTimezone);
+  const normalized = dateTimeWithTimezone.replace(/(\.\d{3})\d+/, "$1");
+  const date = new Date(normalized);
 
-  if (!datePartMatch) {
-    throw new Error("Invalid datetime string passed to getDate");
-  }
-
-  const [, year, month, day] = datePartMatch;
-  const monthIndex = Number(month) - 1;
-  const dayNumber = Number(day);
-
-  if (monthIndex < 0 || monthIndex > 11 || dayNumber < 1 || dayNumber > 31) {
+  if (Number.isNaN(date.getTime())) {
     throw new Error("Invalid datetime string passed to getDate");
   }
 
@@ -50,7 +43,7 @@ function getDate(dateTimeWithTimezone: string): string {
     "December",
   ];
 
-  return `${monthNames[monthIndex]} ${dayNumber}, ${year}`;
+  return `${monthNames[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
 }
 
 function getDateFromShortDate(shortDate: string): string {
