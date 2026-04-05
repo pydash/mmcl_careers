@@ -10,15 +10,12 @@ export default function JobList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  // Filter jobs by title, tags, and salary range
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
-      // Search by title
       const matchesSearch = job.title
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
-      // Filter by tags (if any selected, job must have at least one selected tag)
       const matchesTags =
         selectedTags.length === 0 ||
         job.tags?.some((tag) => selectedTags.includes(tag));
@@ -28,25 +25,41 @@ export default function JobList() {
   }, [jobs, searchQuery, selectedTags]);
 
   if (loading) {
-    return <div>Loading jobs...</div>;
+    return (
+      <div className="flex items-center justify-center p-12 text-sm font-medium text-slate-500 animate-pulse">
+        Loading jobs...
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error loading jobs: {error}</div>;
+    return (
+      <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm font-medium">
+        Error loading jobs: {error}
+      </div>
+    );
   }
 
   return (
-    <div>
-      <div className="flex gap-4 mb-6">
-        <JobSearchbar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
-        <JobFilter selectedTags={selectedTags} onTagsChange={setSelectedTags} />
+    <div className="space-y-6">
+      {/* Search and Filter: Stacked on mobile, row on desktop */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex-1">
+          <JobSearchbar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+        </div>
+        <div className="w-full sm:w-auto">
+          <JobFilter selectedTags={selectedTags} onTagsChange={setSelectedTags} />
+        </div>
       </div>
+
       <div className="flex flex-col gap-4">
         {filteredJobs.length === 0 ? (
-          <div>No jobs available.</div>
+          <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-2xl text-slate-500 font-medium">
+            No jobs available matching your criteria.
+          </div>
         ) : (
           filteredJobs.map((job) => {
             const isActive = job.is_active === true;
@@ -56,54 +69,65 @@ export default function JobList() {
             const href = hasApplied
               ? `/applicant/applications/${job.public_id}`
               : `/applicant/jobs/${job.public_id}`;
+              
             return (
               <Link
                 key={job.id}
                 href={href}
-                className={`w-full border border-gray-200 p-6 transition-colors block ${
+                className={`w-full border border-slate-200 p-5 md:p-6 rounded-2xl transition-all block bg-white shadow-sm ${
                   isActive
-                    ? "hover:border-gray-400 cursor-pointer"
+                    ? "hover:border-red-300 hover:shadow-md cursor-pointer active:scale-[0.99]"
                     : "opacity-60 cursor-not-allowed pointer-events-none"
                 }`}
                 aria-disabled={!isActive}
                 tabIndex={isActive ? 0 : -1}
                 prefetch
               >
-                <div className="flex mb-2 flex-wrap gap-2">
+                <div className="flex mb-3 flex-wrap gap-2">
                   {job.tags?.map((tag, index) => {
-                    // If tag is boolean (has_applied), only render if true
                     if (typeof tag === "boolean") {
                       return tag ? (
                         <span
                           key={`applied-${index}`}
-                          className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-700"
+                          className="inline-block px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-green-100 text-green-700"
                         >
                           Applied
                         </span>
                       ) : null;
                     }
-                    // For string tags (department, employment_type)
                     return (
                       <span
                         key={tag}
-                        className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 capitalize"
+                        className="inline-block px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-700 capitalize"
                       >
                         {tag}
                       </span>
                     );
                   })}
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900">
+
+                <h3 className="text-lg md:text-xl font-black text-slate-900 leading-tight">
                   {job.title}
                 </h3>
-                <Separator className="my-2" />
-                <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                  <p>
-                    Apply until:{" "}
-                    {new Date(job.expiry_date).toLocaleDateString()}
-                  </p>
-                  <Separator orientation="vertical" className="h-4" />
-                  <p>{isActive ? "Open" : "Closed"}</p>
+
+                <Separator className="my-4 bg-slate-100" />
+
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm font-medium">
+                  <div className="flex items-center gap-1.5 text-slate-500">
+                    <span className="text-slate-400">Apply until:</span>
+                    <span className="text-slate-900">
+                      {new Date(job.expiry_date).toLocaleDateString()}
+                    </span>
+                  </div>
+                  
+                  <Separator orientation="vertical" className="hidden sm:block h-4 bg-slate-200" />
+                  
+                  <div className="flex items-center gap-1.5">
+                    <div className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-emerald-500" : "bg-slate-400"}`} />
+                    <span className={isActive ? "text-emerald-700" : "text-slate-500"}>
+                      {isActive ? "Accepting Applications" : "Position Closed"}
+                    </span>
+                  </div>
                 </div>
               </Link>
             );

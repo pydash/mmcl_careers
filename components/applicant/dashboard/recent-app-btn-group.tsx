@@ -11,8 +11,12 @@ export default function RecentApplicationsButtonGroup({
   applicationId,
 }: RecentApplicationsButtonGroupProps) {
   return (
-    <Link href={`/applicant/applications/${applicationId}`}>
-      <Button variant="default" size="sm" className="bg-blue-950 hover:bg-blue-800">
+    <Link href={`/applicant/applications/${applicationId}`} className="w-full sm:w-auto">
+      <Button 
+        variant="default" 
+        size="sm" 
+        className="w-full sm:w-auto bg-blue-950 hover:bg-blue-800 transition-colors font-semibold"
+      >
         View Application
       </Button>
     </Link>
