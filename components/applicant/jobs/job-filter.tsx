@@ -20,8 +20,14 @@ interface JobFilterProps {
 
 const COLLEGES_TAGS = ["CCIS", "CAS", "MITL", "MIA", "ETYCB", "SHS"];
 const OFFICES_TAGS = ["Human Resources", "ITSO", "Registrar", "Clinic"];
-const TYPE_TAGS = ["Full-time", "Part-time"];
-const availableTags = [...COLLEGES_TAGS, ...OFFICES_TAGS, ...TYPE_TAGS];
+const TYPE_TAGS = ["Full time", "Part time"];
+const TEACHING_TYPE_TAGS = ["Teaching", "Non-teaching"];
+const availableTags = [
+  ...COLLEGES_TAGS,
+  ...OFFICES_TAGS,
+  ...TYPE_TAGS,
+  ...TEACHING_TYPE_TAGS,
+];
 
 export default function JobFilter({
   selectedTags,
@@ -35,7 +41,10 @@ export default function JobFilter({
   const officeTags = ["Human Resources", "ITSO", "Registrar", "Clinic"].filter(
     (tag) => availableTags.includes(tag),
   );
-  const typeTags = ["Full-time", "Part-time"].filter((tag) =>
+  const typeTags = ["Full time", "Part time"].filter((tag) =>
+    availableTags.includes(tag),
+  );
+  const teachingTypeTags = ["Teaching", "Non-teaching"].filter((tag) =>
     availableTags.includes(tag),
   );
 
@@ -116,6 +125,25 @@ export default function JobFilter({
             </div>
             <div className="flex flex-wrap gap-2">
               {typeTags.map((tag) => (
+                <Badge
+                  key={tag}
+                  variant={selectedTags.includes(tag) ? "default" : "outline"}
+                  className={`cursor-pointer rounded-none ${
+                    selectedTags.includes(tag)
+                      ? "bg-red-500 border-red-500 text-white hover:bg-red-500"
+                      : ""
+                  }`}
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+            <div className="flex justify-between items-center pt-2">
+              <h3 className="font-semibold text-sm">Teaching Type</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {teachingTypeTags.map((tag) => (
                 <Badge
                   key={tag}
                   variant={selectedTags.includes(tag) ? "default" : "outline"}
