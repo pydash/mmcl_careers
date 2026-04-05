@@ -9,6 +9,7 @@ SELECT
   json_build_array(
     jp.department,
     jp.employment_type,
+    NULL,
     CASE
       WHEN EXISTS (
         SELECT 1
