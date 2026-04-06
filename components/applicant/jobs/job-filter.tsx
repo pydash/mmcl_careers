@@ -21,7 +21,7 @@ interface JobFilterProps {
 const COLLEGES_TAGS = ["CCIS", "CAS", "MITL", "MIA", "ETYCB", "SHS"];
 const OFFICES_TAGS = ["Human Resources", "ITSO", "Registrar", "Clinic"];
 const TYPE_TAGS = ["Full time", "Part time"];
-const TEACHING_TYPE_TAGS = ["Teaching", "Non-teaching"];
+const TEACHING_TYPE_TAGS = ["Teaching", "Non Teaching"];
 const availableTags = [
   ...COLLEGES_TAGS,
   ...OFFICES_TAGS,
@@ -44,7 +44,7 @@ export default function JobFilter({
   const typeTags = ["Full time", "Part time"].filter((tag) =>
     availableTags.includes(tag),
   );
-  const teachingTypeTags = ["Teaching", "Non-teaching"].filter((tag) =>
+  const teachingTypeTags = ["Teaching", "Non Teaching"].filter((tag) =>
     availableTags.includes(tag),
   );
 
