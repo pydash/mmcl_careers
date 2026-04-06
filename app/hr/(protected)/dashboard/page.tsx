@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -89,8 +90,7 @@ export default function DashboardPage() {
         <div className="rounded-lg border bg-card p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Pipeline health</p>
-              <h3 className="text-lg font-semibold">This week</h3>
+              <h3 className="text-lg font-semibold">Pipeline Health</h3>
             </div>
           </div>
           <Separator className="my-4" />
@@ -120,9 +120,6 @@ export default function DashboardPage() {
               </p>
               <h3 className="text-lg font-semibold">Today</h3>
             </div>
-            <Button size="sm" variant="default">
-              Schedule
-            </Button>
           </div>
           <Separator className="my-4" />
           <ul className="space-y-3">
@@ -147,6 +144,30 @@ export default function DashboardPage() {
               </li>
             )}
           </ul>
+        </div>
+      </section>
+
+      <section className="rounded-lg border bg-card p-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground">Quick actions</p>
+            <h3 className="text-lg font-semibold">Shortcuts</h3>
+          </div>
+        </div>
+        <Separator className="my-4" />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Button asChild className="w-full bg-red-600 hover:bg-red-700">
+            <Link href="/hr/jobs/post-a-job">Post New Job</Link>
+          </Button>
+          <Button asChild variant="outline" className="w-full">
+            <Link href="/hr/applicants">Review Applicants</Link>
+          </Button>
+          <Button asChild variant="outline" className="w-full">
+            <Link href="/hr/analytics">View Analytics</Link>
+          </Button>
+          <Button asChild variant="outline" className="w-full">
+            <Link href="/hr/profile">Open Profile</Link>
+          </Button>
         </div>
       </section>
 

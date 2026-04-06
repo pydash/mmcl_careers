@@ -21,7 +21,7 @@ const quickPermissions = [
   "Manage Users",
   "Approve Job Posts",
   "View Audit Logs",
-  "Configure System Settings",
+  "Configure Access Policies",
 ];
 
 export default function AdminProfile() {
@@ -136,7 +136,7 @@ export default function AdminProfile() {
                     asChild
                     className="w-full bg-red-600 hover:bg-red-700"
                   >
-                    <Link href="/settings">Manage Settings</Link>
+                    <Link href="/profile/edit">Edit Profile</Link>
                   </Button>
                 </CardContent>
               </Card>

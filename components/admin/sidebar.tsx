@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   BriefcaseBusiness,
   ClipboardPen,
-  Settings,
   ChartPie,
   Users,
   ClipboardClock,
@@ -30,7 +29,6 @@ export default function Sidebar() {
     { title: "Analytics", href: "/admin/analytics", icon: ChartPie },
     { title: "Accounts", href: "/admin/accounts", icon: Users },
     { title: "Logs", href: "/admin/logs", icon: ClipboardClock },
-    { title: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -46,9 +44,9 @@ export default function Sidebar() {
           <span className="text-slate-300">|</span>
           <span className="font-bold text-slate-900 text-sm">{app_title}</span>
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={toggleSidebar}
           className="text-slate-600 hover:bg-slate-100"
           aria-label="Toggle Navigation"
@@ -59,7 +57,7 @@ export default function Sidebar() {
 
       {/* Mobile Overlay: Darkens content when sidebar is active */}
       {isOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-40 transition-opacity duration-300"
           onClick={toggleSidebar}
         />
@@ -73,12 +71,12 @@ export default function Sidebar() {
       >
         <div className="h-full flex flex-col">
           {/* Internal Sidebar Component */}
-          <SidebarComponent 
-            title={app_title} 
-            items={items} 
-            onItemClick={() => setIsOpen(false)} 
+          <SidebarComponent
+            title={app_title}
+            items={items}
+            onItemClick={() => setIsOpen(false)}
           />
-          
+
           {/* Admin Tag for Sidebar Footer or Header area if supported by SidebarComponent */}
           <div className="mt-auto p-4 border-t border-slate-100 hidden lg:block">
             <div className="bg-slate-900 text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-center">

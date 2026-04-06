@@ -17,9 +17,6 @@ import { getDate } from "@/utils/formatDate";
 import { useState, useEffect } from "react";
 import { JobViewButton } from "@/components/hr/jobs/job-view-button";
 import Link from "next/link";
-import AllJobsCard from "@/components/admin/jobs/all-jobs-card";
-import ActiveJobsCard from "@/components/admin/jobs/active-jobs-card";
-import ClosedJobsCard from "@/components/admin/jobs/closed-jobs-card";
 
 export default function JobsPage() {
   const [mounted, setMounted] = useState(false);
@@ -82,23 +79,14 @@ export default function JobsPage() {
         <div className="flex border-b-2 border-b-muted pb-4">
           <div>
             <TabsList className="bg-0">
-              <TabsTrigger
-                value="all"
-                className="shadow-none! data-[state=active]:border rounded-none"
-              >
+              <TabsTrigger value="all" className="shadow-none!">
                 All
               </TabsTrigger>
-              <TabsTrigger
-                value="active"
-                className="shadow-none! data-[state=active]:border rounded-none"
-              >
+              <TabsTrigger value="active" className="shadow-none!">
                 Active
               </TabsTrigger>
-              <TabsTrigger
-                value="closed"
-                className="shadow-none! data-[state=active]:border rounded-none"
-              >
-                Closed
+              <TabsTrigger value="inactive" className="shadow-none!">
+                Inactive
               </TabsTrigger>
             </TabsList>
           </div>
@@ -109,13 +97,25 @@ export default function JobsPage() {
           </div>
         </div>
         <TabsContent value="all">
-          <AllJobsCard />
+          {loading && (
+            <div className="mt-4 text-muted-foreground">Loading jobs...</div>
+          )}
+          {error && <div className="mt-4 text-destructive">Error: {error}</div>}
+          {!loading && !error && <JobsTable jobsList={jobs} />}
         </TabsContent>
         <TabsContent value="active">
-          <ActiveJobsCard />
+          {loading && (
+            <div className="mt-4 text-muted-foreground">Loading jobs...</div>
+          )}
+          {error && <div className="mt-4 text-destructive">Error: {error}</div>}
+          {!loading && !error && <JobsTable jobsList={activeJobs} />}
         </TabsContent>
-        <TabsContent value="closed">
-          <ClosedJobsCard />
+        <TabsContent value="inactive">
+          {loading && (
+            <div className="mt-4 text-muted-foreground">Loading jobs...</div>
+          )}
+          {error && <div className="mt-4 text-destructive">Error: {error}</div>}
+          {!loading && !error && <JobsTable jobsList={inactiveJobs} />}
         </TabsContent>
       </Tabs>
     </>

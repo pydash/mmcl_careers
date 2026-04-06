@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   BriefcaseBusiness,
   ClipboardPen,
-  Settings,
   ChartPie,
   User,
   Menu,
@@ -28,7 +27,6 @@ export default function Sidebar() {
     },
     { title: "Profile", href: "/hr/profile", icon: User },
     { title: "Analytics", href: "/hr/analytics", icon: ChartPie },
-    { title: "Settings", href: "/hr/settings", icon: Settings },
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -37,10 +35,12 @@ export default function Sidebar() {
     <>
       {/* Mobile Header: Visible only on small screens to provide access to the menu */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 px-4 flex items-center justify-between z-40">
-        <span className="font-black text-red-600 tracking-tight">{app_title}</span>
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <span className="font-black text-red-600 tracking-tight">
+          {app_title}
+        </span>
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={toggleSidebar}
           className="text-slate-600"
           aria-label="Toggle Menu"
@@ -51,7 +51,7 @@ export default function Sidebar() {
 
       {/* Backdrop: Closes sidebar when clicking outside on mobile */}
       {isOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 transition-opacity"
           onClick={toggleSidebar}
         />
@@ -66,11 +66,11 @@ export default function Sidebar() {
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <SidebarComponent 
-          title={app_title} 
-          items={items} 
+        <SidebarComponent
+          title={app_title}
+          items={items}
           // Closes the menu automatically when a navigation item is selected on mobile
-          onItemClick={() => setIsOpen(false)} 
+          onItemClick={() => setIsOpen(false)}
         />
       </aside>
     </>

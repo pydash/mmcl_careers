@@ -6,7 +6,6 @@ import {
   Briefcase,
   FileText,
   Home,
-  Settings,
   User,
   Users,
   ScrollText,
@@ -77,18 +76,6 @@ export default function AdminNavbar() {
         >
           <User className="h-4 w-4" />
           <span>Profile</span>
-        </Link>
-
-        <Link
-          href="/settings"
-          className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
-            rootPath === "/settings"
-              ? "bg-red-50 text-red-700 font-medium"
-              : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-          }`}
-        >
-          <Settings className="h-4 w-4" />
-          <span>Settings</span>
         </Link>
 
         <Link

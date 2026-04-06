@@ -22,7 +22,6 @@ const menuItems = [
   { title: "Manage Applicants", href: "/hr/applicants" },
   { title: "Analytics", href: "/hr/analytics" },
   { title: "Profile", href: "/hr/profile" },
-  { title: "Settings", href: "/hr/settings" },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {

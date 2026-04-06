@@ -18,12 +18,22 @@ export async function GET(
 
     const { id } = await params;
     const result = await db.query(
-      `SELECT title, department, employment_type, description, responsibilities, requirements,
-        salary_min, salary_max, posted_by, jp.created_at, is_active,
-        CONCAT_WS(' ', up.first_name, up.middle_name, up.last_name) AS posted_by
-       FROM job_posts jp
-       LEFT JOIN user_profiles up ON jp.posted_by = up.id
-       WHERE public_id = $1`,
+      `SELECT 
+          title, 
+          department, 
+          employment_type, 
+          description, 
+          responsibilities, 
+          requirements,
+          salary_min, 
+          salary_max, 
+          posted_by, 
+          jp.created_at, 
+          is_active,
+          CONCAT_WS(' ', up.first_name, up.middle_name, up.last_name) AS posted_by
+        FROM job_posts jp
+        LEFT JOIN user_profiles up ON jp.posted_by = up.id
+        WHERE jp.id = $1`,
       [id],
     );
 

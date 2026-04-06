@@ -21,14 +21,14 @@ export async function GET() {
       `SELECT COUNT(*) AS open_jobs FROM job_posts WHERE is_active = true`,
     );
     const pendingApplicationsResult = await db.query(
-      `SELECT COUNT(*) AS pending_applications FROM job_applications WHERE status = 'pending'`,
+      `SELECT COUNT(*) AS pending_applications FROM job_applications WHERE status = 'Pending'`,
     );
 
     const pipeline_health = await db.query(
       `SELECT json_build_object(
-                'applied_count', (SELECT COUNT(*) FROM job_applications WHERE status = 'pending'),
-                'interview_count', (SELECT COUNT(*) FROM job_applications WHERE status = 'interview'),
-                'offer_count', (SELECT COUNT(*) FROM job_applications WHERE status = 'offer')
+                'applied_count', (SELECT COUNT(*) FROM job_applications WHERE status = 'Pending'),
+                'interview_count', (SELECT COUNT(*) FROM job_applications WHERE status = 'Interview'),
+                'offer_count', (SELECT COUNT(*) FROM job_applications WHERE status = 'Offer')
             ) AS pipeline_health`,
     );
 

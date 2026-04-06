@@ -160,7 +160,7 @@ export default function HrProfile() {
                       asChild
                       className="w-full bg-red-600 hover:bg-red-700"
                     >
-                      <Link href="/settings">Manage Settings</Link>
+                      <Link href="/profile/edit">Edit Profile</Link>
                     </Button>
                   </div>
                 </CardContent>

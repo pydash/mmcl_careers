@@ -232,7 +232,7 @@ export default function AdminAccounts() {
 
               <div className="mt-4 flex justify-end">
                 <Button asChild variant="outline">
-                  <Link href="/settings">Back to Settings</Link>
+                  <Link href="/admin/dashboard">Back to Dashboard</Link>
                 </Button>
               </div>
             </CardContent>

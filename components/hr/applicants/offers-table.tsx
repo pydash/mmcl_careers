@@ -28,7 +28,6 @@ export function OffersTable() {
               <TableHead>Application No.</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Job Title</TableHead>
-              <TableHead>Date Offer Sent</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Email</TableHead>
             </TableRow>
@@ -37,7 +36,7 @@ export function OffersTable() {
             {offers.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={5}
                   className="text-center text-muted-foreground"
                 >
                   No Offers found
@@ -51,7 +50,6 @@ export function OffersTable() {
                     {offer.first_name} {offer.last_name}
                   </TableCell>
                   <TableCell>{offer.title.trim()}</TableCell>
-                  <TableCell>{getDate(offer.offered_at)}</TableCell>
                   <TableCell>{offer.status}</TableCell>
                   <TableCell>{offer.email}</TableCell>
                   {/* <TableCell><JobViewButton jobId={job.id} /></TableCell> */}
