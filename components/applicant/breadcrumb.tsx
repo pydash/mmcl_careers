@@ -35,8 +35,8 @@ export function AppBreadcrumbs() {
           <BreadcrumbList className="flex-wrap">
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link 
-                  href="/applicant/jobs" 
+                <Link
+                  href="/applicant/jobs"
                   className="text-xs md:text-sm font-medium hover:text-red-600 transition-colors"
                 >
                   Browse Jobs
@@ -48,7 +48,7 @@ export function AppBreadcrumbs() {
 
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link 
+                <Link
                   href={`/applicant/jobs/${jobId}`}
                   className="text-xs md:text-sm font-medium hover:text-red-600 transition-colors"
                 >
@@ -60,7 +60,7 @@ export function AppBreadcrumbs() {
             <BreadcrumbSeparator className="text-slate-300" />
 
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-xs md:text-sm font-bold text-slate-900">
+              <BreadcrumbPage className="text-xs font-medium md:text-sm text-slate-900">
                 Application Form
               </BreadcrumbPage>
             </BreadcrumbItem>
@@ -77,7 +77,7 @@ export function AppBreadcrumbs() {
           <BreadcrumbList className="flex-wrap">
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link 
+                <Link
                   href="/applicant/jobs"
                   className="text-xs md:text-sm font-medium hover:text-red-600 transition-colors"
                 >
@@ -89,7 +89,7 @@ export function AppBreadcrumbs() {
             <BreadcrumbSeparator className="text-slate-300" />
 
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-xs md:text-sm font-bold text-slate-900">
+              <BreadcrumbPage className="text-xs md:text-sm font-medium text-slate-900">
                 Job Details
               </BreadcrumbPage>
             </BreadcrumbItem>
