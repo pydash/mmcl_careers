@@ -6,6 +6,12 @@ SELECT
   jp.description,
   jp.salary_min,
   jp.salary_max,
+  jp.open_vacancies,
+  (
+    SELECT COUNT(ja.acc_id)
+    FROM job_applications ja
+    WHERE ja.job_id = jp.id
+  ) AS applications_count,
   json_build_array(
     jp.department,
     jp.employment_type,
