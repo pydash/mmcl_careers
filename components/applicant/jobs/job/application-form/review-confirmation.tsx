@@ -1,5 +1,7 @@
+// UI components
 import { Checkbox } from "@/components/ui/checkbox";
 
+// Props contract for confirmation checkbox state
 type ReviewConfirmationProps = {
   confirmed: boolean;
   onConfirmedChange?: (value: boolean) => void;
@@ -9,8 +11,15 @@ export default function ReviewConfirmation({
   confirmed,
   onConfirmedChange,
 }: ReviewConfirmationProps) {
+  // Normalize checkbox payload to strict boolean for parent callback
+  const handleConfirmationChange = (checked: boolean | "indeterminate") => {
+    onConfirmedChange?.(checked === true);
+  };
+
   return (
-    <div className="flex flex-col gap-4 p-4 md:p-6 rounded-xl bg-slate-50 border border-slate-200 shadow-sm">
+    // Main confirmation card
+    <div className="flex flex-col gap-4 p-4 md:p-6 bg-slate-50 border border-slate-200">
+      {/* Instructional copy */}
       <div className="space-y-1">
         <h2 className="font-bold text-sm md:text-base text-slate-900">
           Please review your details carefully before submitting.
@@ -21,15 +30,16 @@ export default function ReviewConfirmation({
         </p>
       </div>
 
-      <div className="flex items-start space-x-3 pt-2">
+      {/* Confirmation control */}
+      <div className="flex items-center gap-4">
         <Checkbox
           id="confirm"
-          className="mt-1 border-slate-300 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
+          className="border-slate-300 data-[state=checked]:bg-blue-600 rounded-none p-2"
           checked={confirmed}
-          onCheckedChange={(checked) => onConfirmedChange?.(checked === true)}
+          onCheckedChange={handleConfirmationChange}
         />
-        <label 
-          htmlFor="confirm" 
+        <label
+          htmlFor="confirm"
           className="text-sm font-medium text-slate-700 leading-tight cursor-pointer select-none"
         >
           I confirm that all information provided is accurate and complete to

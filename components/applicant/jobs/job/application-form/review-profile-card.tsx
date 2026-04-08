@@ -1,35 +1,44 @@
+// Next.js
 import Link from "next/link";
 
+// Local components
 import ReviewTabsContent from "./review-tabs-content";
 
-import { Separator } from "@/components/ui/separator";
+// UI components
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export default function ReviewProfileCard() {
   return (
-    <>
-      <div className="flex flex-col bg-gray-50 p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h1 className="font-bold text-xl text-slate-900 tracking-tight">Review Profile</h1>
-          <Button variant="outline" size="sm" className="w-full sm:w-auto border-slate-300 text-slate-700 font-semibold" asChild>
-            <Link href="/applicant/profile/edit">
-              Edit Profile
-            </Link>
-          </Button>
-        </div>
-        
-        <div className="mt-6 overflow-hidden">
-          <ReviewTabsContent />
-        </div>
-        
-        <Separator className="my-6" />
-        
-        <div className="flex flex-col gap-2">
-          <p className="text-xs text-slate-500 font-medium italic">
-            Verify all sections above before final submission.
-          </p>
-        </div>
+    // Main container for profile review before job application submission
+    <div className="flex flex-col border border-slate-200 bg-gray-50 p-4 md:p-6">
+      {/* Header: title + quick navigation to edit profile */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <h1 className="text-xl font-bold tracking-tight text-slate-900">
+          Review Profile
+        </h1>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full rounded-none border-slate-300 text-slate-700 shadow-none sm:w-auto"
+          asChild
+        >
+          <Link href="/applicant/profile/edit">Edit Profile</Link>
+        </Button>
       </div>
-    </>
+
+      {/* Main content: tabbed preview of applicant profile sections */}
+      <div className="mt-6 overflow-hidden">
+        <ReviewTabsContent />
+      </div>
+
+      {/* Visual divider between content and reminder */}
+      <Separator className="my-6" />
+
+      {/* Footer reminder */}
+      <p className="text-xs font-medium text-slate-500">
+        Verify all sections before submission
+      </p>
+    </div>
   );
 }

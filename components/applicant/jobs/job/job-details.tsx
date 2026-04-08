@@ -9,6 +9,7 @@ import { Job } from "@/models/Job";
 import { Badge } from "@/components/ui/badge";
 
 import { useJobDetails } from "@/hooks/applicant/jobs/useJobDetails";
+import { getDate } from "@/utils/formatDate";
 
 export default function JobDetails({ job_pub_id }: { job_pub_id: string }) {
   const { job, loading, error } = useJobDetails(job_pub_id);
@@ -43,14 +44,14 @@ export default function JobDetails({ job_pub_id }: { job_pub_id: string }) {
     <div className="flex flex-col gap-8">
       {/* Title Section */}
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+        <h1 className="text-2xl md:text-4xl font-bold text-slate-900 tracking-tight leading-tight">
           {job.title}
         </h1>
         <div className="flex gap-2 flex-wrap">
           {job.tags?.map((tag, index) => (
-            <Badge 
-              key={index} 
-              variant="default" 
+            <Badge
+              key={index}
+              variant="default"
               className="bg-red-50 text-red-700 hover:bg-red-100 border-none px-3 py-1 text-[10px] font-bold uppercase tracking-wider"
             >
               {tag}
@@ -60,29 +61,35 @@ export default function JobDetails({ job_pub_id }: { job_pub_id: string }) {
       </div>
 
       {/* Key Details Grid: Responsive Columns */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-gray-50 rounded-2xl border border-slate-200">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-gray-50 border border-slate-200">
         <div className="flex flex-col gap-1">
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Department</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+            Department
+          </p>
           <p className="text-sm font-bold text-slate-900">{job.department}</p>
         </div>
         <div className="flex flex-col gap-1">
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
             Employment Type
           </p>
-          <p className="text-sm font-bold text-slate-900">{job.employment_type}</p>
+          <p className="text-sm font-bold text-slate-900">
+            {job.employment_type}
+          </p>
         </div>
         <div className="flex flex-col gap-1">
           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
             Deadline
           </p>
           <p className="text-sm font-bold text-red-600">
-            {new Date(job.expiry_date).toLocaleDateString()}
+            {getDate(job.expiry_date)}
           </p>
         </div>
         <div className="flex flex-col gap-1">
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Posted On</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+            Posted On
+          </p>
           <p className="text-sm font-bold text-slate-900">
-            {new Date(job.posted_at).toLocaleDateString()}
+            {getDate(job.posted_at)}
           </p>
         </div>
       </div>
@@ -92,19 +99,21 @@ export default function JobDetails({ job_pub_id }: { job_pub_id: string }) {
       {/* Main Content Areas */}
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-3">
-          <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Description</h2>
+          <h2 className="text-md font-medium text-slate-900">Description</h2>
           <p className="text-sm md:text-base text-slate-700 leading-relaxed whitespace-pre-wrap">
             {job.description}
           </p>
         </div>
         <div className="flex flex-col gap-3">
-          <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Responsibilities</h2>
+          <h2 className="text-md font-medium text-slate-900">
+            Responsibilities
+          </h2>
           <p className="text-sm md:text-base text-slate-700 leading-relaxed whitespace-pre-wrap">
             {job.responsibilities}
           </p>
         </div>
         <div className="flex flex-col gap-3">
-          <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Requirements</h2>
+          <h2 className="text-md font-medium text-slate-900">Requirements</h2>
           <p className="text-sm md:text-base text-slate-700 leading-relaxed whitespace-pre-wrap">
             {job.requirements}
           </p>
@@ -117,17 +126,17 @@ export default function JobDetails({ job_pub_id }: { job_pub_id: string }) {
       <div className="flex flex-col sm:flex-row gap-3">
         <Button
           variant="default"
-          className="w-full sm:w-auto h-12 px-8 bg-red-600 hover:bg-red-700 text-white font-bold transition-all active:scale-95"
+          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white rounded-none"
           asChild
         >
           <Link href={`/applicant/jobs/${job.public_id}/apply`}>Apply Now</Link>
         </Button>
         <Button
           variant="outline"
-          className="w-full sm:w-auto h-12 px-8 border-slate-300 text-slate-600 font-bold hover:bg-slate-100 transition-all active:scale-95"
+          className="w-full sm:w-auto text-black hover:bg-slate-100 rounded-none"
           asChild
         >
-          <Link href={`/applicant/jobs`}>Back to Board</Link>
+          <Link href={`/applicant/jobs`}>Back</Link>
         </Button>
       </div>
     </div>
