@@ -1,25 +1,31 @@
 import { NextResponse } from "next/server";
+import db from "@/lib/db";
 import { cookies } from "next/headers";
 
 export async function GET() {
   try {
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get("session_token")?.value;
-    const sessionUserId = cookieStore.get("session_user_id")?.value;
-
-    if (!sessionToken || !sessionUserId) {
-      return NextResponse.json(
-        { error: "Unauthorized - No session" },
-        { status: 401 }
-      );
+    if (!sessionToken) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    return NextResponse.json({ authenticated: true, userId: sessionUserId });
+    const result = await db.query(
+      `SELECT 
+          user_id
+      FROM sessions
+      WHERE session_token = $1;`,
+      [sessionToken],
+    );
+
+    const userId = result?.rows?.[0]?.user_id;
+
+    return NextResponse.json(userId);
   } catch (error) {
     console.error("Session check error:", error);
     return NextResponse.json(
       { error: "Session check failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
