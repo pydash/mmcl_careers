@@ -24,7 +24,7 @@ export default function EmptyProfile() {
       <EmptyContent>
         <div className="flex gap-4">
           <Button asChild>
-            <a href="/applicant/profile/create-profile">Create Profile</a>
+            <a href="/applicant/profile/create">Create Profile</a>
           </Button>
         </div>
       </EmptyContent>

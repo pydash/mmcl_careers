@@ -4,12 +4,11 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { formatCurrency } from "@/utils/formatCurrency";
-import { Job } from "@/models/Job";
+import { getPesoCurrency } from "@/lib/currency.helpers";
 import { Badge } from "@/components/ui/badge";
 
 import { useJobDetails } from "@/hooks/applicant/jobs/useJobDetails";
-import { getDate } from "@/utils/formatDate";
+import { getDate } from "@/lib/datetime.helpers";
 
 export default function JobDetails({ job_pub_id }: { job_pub_id: string }) {
   const { job, loading, error } = useJobDetails(job_pub_id);

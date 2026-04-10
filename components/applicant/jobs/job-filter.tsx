@@ -22,11 +22,13 @@ const COLLEGES_TAGS = ["CCIS", "CAS", "MITL", "MIA", "ETYCB", "SHS"];
 const OFFICES_TAGS = ["HR", "ITSO", "Registrar", "Clinic"];
 const TYPE_TAGS = ["Full time", "Part time"];
 const TEACHING_TYPE_TAGS = ["Teaching", "Non Teaching"];
+const JOB_STATUS_TAGS = ["Open", "Closed"];
 const availableTags = [
   ...COLLEGES_TAGS,
   ...OFFICES_TAGS,
   ...TYPE_TAGS,
   ...TEACHING_TYPE_TAGS,
+  ...JOB_STATUS_TAGS,
 ];
 
 export default function JobFilter({
@@ -45,6 +47,9 @@ export default function JobFilter({
     availableTags.includes(tag),
   );
   const teachingTypeTags = ["Teaching", "Non Teaching"].filter((tag) =>
+    availableTags.includes(tag),
+  );
+  const jobStatusTags = ["Open", "Closed"].filter((tag) =>
     availableTags.includes(tag),
   );
 
@@ -144,6 +149,26 @@ export default function JobFilter({
             </div>
             <div className="flex flex-wrap gap-2">
               {teachingTypeTags.map((tag) => (
+                <Badge
+                  key={tag}
+                  variant={selectedTags.includes(tag) ? "default" : "outline"}
+                  className={`cursor-pointer rounded-none ${
+                    selectedTags.includes(tag)
+                      ? "bg-red-500 border-red-500 text-white hover:bg-red-500"
+                      : ""
+                  }`}
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+
+            <div className="flex justify-between items-center pt-2">
+              <h3 className="font-semibold text-sm">Job Status</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {jobStatusTags.map((tag) => (
                 <Badge
                   key={tag}
                   variant={selectedTags.includes(tag) ? "default" : "outline"}
