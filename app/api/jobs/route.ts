@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserRole } from "@/lib/auth";
+import { getSessionToken } from "@/lib/auth";
 import db from "@/lib/db";
 import { Job } from "@/models/job";
 import { getAllJobs } from "@/lib/query/get-jobs";
 
 export async function GET(request: NextRequest) {
   try {
-    const userRole = await getUserRole();
-    if (!userRole) {
+    const sessionToken = await getSessionToken();
+    if (!sessionToken) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
