@@ -4,16 +4,10 @@ import { useState, useEffect } from "react";
 import { Job } from "@/models/job";
 import { JobsService } from "@/services/jobs.service";
 
-interface UseJobsReturn {
-  loading: boolean;
-  error: Error | null;
-  jobs: Job[];
-}
-
-export default function useJobs(): UseJobsReturn {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+export default function useJobs() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -22,10 +16,9 @@ export default function useJobs(): UseJobsReturn {
         setError(null);
         const data = await JobsService.getAllJobs();
         setJobs(data);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err : new Error("Failed to fetch jobs"),
-        );
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        setError(message);
       } finally {
         setLoading(false);
       }
@@ -34,9 +27,5 @@ export default function useJobs(): UseJobsReturn {
     fetchJobs();
   }, []);
 
-  return {
-    loading,
-    error,
-    jobs,
-  };
+  return { jobs, loading, error };
 }

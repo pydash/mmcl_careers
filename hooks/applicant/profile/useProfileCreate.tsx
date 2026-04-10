@@ -1,6 +1,5 @@
 "use client";
 
-import { Profile } from "@/models/applicant/Profile";
 import { fetchProfileCreate } from "@/services/applicant/profile/profileCreate.service";
 import { useState } from "react";
 
