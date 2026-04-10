@@ -21,11 +21,15 @@ function getDaysAgo(dateTimeWithTimezone: string): number {
 }
 
 function getDate(dateTimeWithTimezone: string): string {
+  if (!dateTimeWithTimezone) {
+    return "N/A";
+  }
+
   const normalized = dateTimeWithTimezone.replace(/(\.\d{3})\d+/, "$1");
   const date = new Date(normalized);
 
   if (Number.isNaN(date.getTime())) {
-    throw new Error("Invalid datetime string passed to getDate");
+    return "N/A";
   }
 
   const monthNames = [
