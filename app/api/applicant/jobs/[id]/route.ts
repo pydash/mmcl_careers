@@ -1,24 +1,28 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import db from "@/lib/db";
-import { Job } from "@/models/Job";
 import { getJobPostDetails } from "@/lib/queries/applicant/jobs/job_post_detail";
+import { getSessionToken } from "@/lib/auth";
 
 export async function GET(
-  request: NextRequest,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
+    const sessionToken = await getSessionToken();
 
-    const result = await db
-      .query<Job>(getJobPostDetails, [id])
-      .then((res: any) => res.rows);
+    if (!sessionToken) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    if (!result || result.length === 0) {
+    const result = await db.query(getJobPostDetails, [id]);
+    const jobDetails = result?.rows?.[0];
+
+    if (!jobDetails) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    return NextResponse.json(result[0]);
+    return NextResponse.json(jobDetails);
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch job details" },
