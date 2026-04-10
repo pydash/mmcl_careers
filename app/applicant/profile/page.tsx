@@ -3,7 +3,6 @@
 import { useProfileGetter } from "@/hooks/applicant/profile/useProfileGetter";
 import EmptyProfile from "@/components/applicant/profile/empty-profile";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toTitleCase } from "@/lib/text.helpers";
@@ -151,9 +150,9 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Summary */}
+            {/* About me */}
             <div className="border p-4 hover:bg-gray-50">
-              <p className="text-xs text-muted-foreground mb-2">Summary</p>
+              <p className="text-xs text-muted-foreground mb-2">About me</p>
               <p className="text-sm text-muted-foreground">
                 {profile.personal.about || "No summary provided."}
               </p>
@@ -184,7 +183,7 @@ export default function ProfilePage() {
 
         <TabsContent value="education">
           <section className="grid grid-cols-2 gap-4">
-            {Array.isArray(profile.education) ? (
+            {profile.education?.length ? (
               profile.education.map((edu: any, index: number) => (
                 <div
                   key={`${edu.institution}-${index}`}
@@ -313,7 +312,7 @@ export default function ProfilePage() {
         </TabsContent>
 
         <TabsContent value="govids">
-          <section className="grid grid-cols-1 gap-4">
+          <section className="grid grid-cols-2 gap-4">
             {profile.gov_ids?.length ? (
               profile.gov_ids.map((govId: any, index: number) => (
                 <div
@@ -338,7 +337,7 @@ export default function ProfilePage() {
         </TabsContent>
 
         <TabsContent value="attachments">
-          <section className="grid grid-cols-1 gap-4">
+          <section className="grid grid-cols-2 gap-4">
             {profile.attachments?.length ? (
               profile.attachments.map((attachment: any, index: number) => (
                 <div

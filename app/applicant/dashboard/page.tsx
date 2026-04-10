@@ -1,24 +1,42 @@
 "use client";
 
+// React
 import { useEffect, useState } from "react";
+
+// Next.js
 import { useRouter } from "next/navigation";
 
+// Dashboard sections
 import OverviewCard from "@/components/applicant/dashboard/overview-card";
 import RecentApplications from "@/components/applicant/dashboard/recent-applications";
 import ExploreJobs from "@/components/applicant/dashboard/explore-jobs";
 import InterviewCard from "@/components/applicant/dashboard/interview-card";
 
+type SessionProfile = {
+  email: string | null;
+};
+
+const getErrorMessage = (error: unknown) => {
+  if (error instanceof Error) return error.message;
+  return "Unknown error";
+};
+
 export default function DashboardPage() {
+  // Router for auth redirect
   const router = useRouter();
-  const [profile, setProfile] = useState<{ email: string | null } | null>(null);
+
+  // Page state
+  const [profile, setProfile] = useState<SessionProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadProfile = async () => {
+    // Load active session for dashboard personalization
+    const loadSessionProfile = async () => {
       try {
         const res = await fetch("/api/session", { cache: "no-store" });
 
+        // Not authenticated -> send user to login page
         if (res.status === 401) {
           router.push("/login");
           return;
@@ -31,23 +49,27 @@ export default function DashboardPage() {
         const data = await res.json();
         setProfile({ email: data.email ?? null });
         setLoading(false);
-      } catch (err: any) {
-        setError(err?.message ?? "Unknown error");
+      } catch (error) {
+        setError(getErrorMessage(error));
         setLoading(false);
       }
     };
 
-    loadProfile();
+    loadSessionProfile();
   }, [router]);
 
+  // Loading state UI
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <p className="text-sm font-medium text-slate-500 animate-pulse">Loading dashboard...</p>
+      <div className="flex items-center justify-center min-h-100">
+        <p className="text-sm font-medium text-slate-500 animate-pulse">
+          Loading dashboard...
+        </p>
       </div>
     );
   }
 
+  // Error state UI
   if (error) {
     return (
       <div className="p-4 m-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
@@ -57,42 +79,34 @@ export default function DashboardPage() {
   }
 
   return (
-    /* - lg:ml-64 added to main to offset the fixed sidebar on desktop.
-       - mt-16 added for mobile header clearance.
-    */
-    <main className="flex-1 overflow-x-hidden lg:ml-64 mt-16 lg:mt-0 bg-slate-50 min-h-screen">
-      <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
-        
-        {/* Header Section */}
+    // Main dashboard surface
+    <section className="w-full ">
+      <div className="mx-auto w-full max-w-7xl p-4 md:p-6 lg:p-8">
+        {/* Header: personalized greeting and context text */}
         <header className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
-            Welcome back, {profile?.email?.split('@')[0] || 'Applicant'}
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">
+            Welcome back
           </h1>
-          <p className="text-sm text-slate-500 mt-1 font-medium">
+          <p className="mt-1 text-sm text-slate-500">
             Here is what is happening with your career search today.
           </p>
         </header>
 
-        {/* Responsive Grid Layout:
-           - 1 Column on mobile/tablet (default)
-           - 2 Columns on large screens (lg:grid-cols-[1fr_350px] or lg:grid-cols-12)
-        */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
-          {/* Left/Main Column: Overview, Apps, Explore */}
-          <div className="lg:col-span-8 flex flex-col gap-6">
+        {/* Responsive content grid: main feed + interview sidebar */}
+        <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
+          {/* Left/Main Column */}
+          <div className="flex flex-col gap-6 xl:col-span-8">
             <OverviewCard />
             <RecentApplications />
             <ExploreJobs />
           </div>
 
-          {/* Right/Sidebar Column: Interviews */}
-          <aside className="lg:col-span-4 lg:sticky lg:top-8">
+          {/* Right Column */}
+          <aside className="xl:col-span-4 xl:sticky xl:top-6">
             <InterviewCard />
           </aside>
-          
         </div>
       </div>
-    </main>
+    </section>
   );
 }

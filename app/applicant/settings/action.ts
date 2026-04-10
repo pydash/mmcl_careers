@@ -1,7 +1,7 @@
 "use server";
 
 import db from "@/lib/db";
-import { hashPassword } from "@/utils/hashPass";
+// import {hash} from "bcryptjs"
 import { cookies } from "next/headers";
 
 type SettingsState = { error?: string | null };
@@ -57,7 +57,8 @@ export async function updateAccount(
 
   try {
     if (password && password.length > 0) {
-      const hashed = await hashPassword(password);
+      // const hashed = await hashPassword(password);
+      const hashed = "hashed_password_placeholder"; // Replace with actual hashing logic
 
       await db.query(
         `UPDATE user_accounts
