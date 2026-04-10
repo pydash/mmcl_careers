@@ -1,21 +1,20 @@
 export const ALL_APPLICATIONS_QUERY = `
 SELECT
-    ja.id,
+    a.id,
+    a.job_id,
     ua.id AS userid,
-    up.first_name,
-    up.last_name,
+    CONCAT( up.first_name, ' ', up.last_name ) AS name,
     ua.email,
-    ja.job_id,
     jp.title,
-    ja.applied_at,
-    ja.status,
-    ja.notes
-FROM job_applications ja
+    a.applied_at,
+    a.status,
+    a.notes
+FROM applications a
 LEFT JOIN job_posts jp
-    ON ja.job_id = jp.id
+    ON a.job_id = jp.id
 LEFT JOIN user_accounts ua
-    ON ja.acc_id = ua.id
+    ON a.profile_id = ua.id
 LEFT JOIN user_profiles up
     ON ua.id = up.id
-ORDER BY ja.id;
+ORDER BY a.id;
 `;

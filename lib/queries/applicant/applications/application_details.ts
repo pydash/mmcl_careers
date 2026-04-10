@@ -1,11 +1,11 @@
 export const getApplicationDetails = `
 SELECT
-    ja.id,
+    a.id,
     jp.title,
-    ja.status,
-    ja.applied_at,
-    ja.notes,
-    ja.pitch
-FROM job_applications ja
-LEFT JOIN job_posts jp ON ja.job_id = jp.id
-WHERE ja.id = $1::integer`;
+    a.status,
+    a.applied_at,
+    a.pitch,
+    a.notes
+FROM applications a
+LEFT JOIN job_posts jp ON a.job_id = jp.id
+WHERE a.id = $1::integer`;

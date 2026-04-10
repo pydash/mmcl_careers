@@ -25,8 +25,8 @@ SELECT jsonb_build_object(
 
   'gov_ids', COALESCE(
     jsonb_build_object(
-      'id_type', gid.id_type,
-      'id_number', gid.id_number,
+      'id_type', gid.type,
+      'id_number', gid.number,
       'issued_by', gid.issued_by,
       'issued_date', gid.issued_date,
       'expiry_date', gid.expiry_date
@@ -62,8 +62,8 @@ SELECT jsonb_build_object(
 FROM (SELECT 1) AS dummy
 
 LEFT JOIN user_profiles up ON up.id = $1
-LEFT JOIN gov_ids gid ON up.id = gid.acc_id
-LEFT JOIN user_attachments ua ON up.id = ua.acc_id
+LEFT JOIN government_ids gid ON up.id = gid.profile_id
+LEFT JOIN user_attachments ua ON up.id = ua.profile_id
 LEFT JOIN user_extras ue ON up.id = ue.id
 LEFT JOIN LATERAL (
   SELECT jsonb_agg(
@@ -79,15 +79,15 @@ LEFT JOIN LATERAL (
     ORDER BY eb.year_finished DESC NULLS LAST
   ) AS education
   FROM educational_backgrounds eb
-  WHERE eb.id = $1
+  WHERE eb.profile_id = $1
 ) ed ON TRUE
 
 LEFT JOIN LATERAL (
   SELECT jsonb_agg(
     jsonb_build_object(
-      'job_title', eh.job_title,
-      'position_specialization', eh.position_specialization,
-      'company_name', eh.company_name,
+      'job_title', eh.position,
+      'position_specialization', eh.specialization,
+      'company_name', eh.company,
       'industry', eh.industry,
       'monthly_salary', eh.monthly_salary,
       'date_started', eh.date_started,
@@ -96,7 +96,7 @@ LEFT JOIN LATERAL (
     ORDER BY eh.date_started DESC
   ) AS employment
   FROM employment_histories eh
-  WHERE eh.acc_id = $1
+  WHERE eh.profile_id = $1
 ) eh ON TRUE
 
 LEFT JOIN LATERAL (
@@ -112,7 +112,7 @@ LEFT JOIN LATERAL (
     ORDER BY lc.date_issued DESC
   ) AS licenses
   FROM license_certifications lc
-  WHERE lc.acc_id = $1
+  WHERE lc.profile_id = $1
 ) lc ON TRUE
 
 LEFT JOIN LATERAL (
