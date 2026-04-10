@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useAllJobs } from "@/hooks/hr/jobs/useAllJobs";
-import { getDate } from "@/utils/formatDate";
+import { getDate } from "@/lib/datetime.helpers";
 import { useState, useEffect } from "react";
 import { JobViewButton } from "@/components/hr/jobs/job-view-button";
 import Link from "next/link";
