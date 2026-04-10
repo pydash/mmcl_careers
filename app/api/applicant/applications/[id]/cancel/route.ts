@@ -1,47 +1,46 @@
 import { NextResponse } from "next/server";
-import { Pool } from "pg";
-
-// Create a PostgreSQL pool (Neon)
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false, // required for Neon
-  },
-});
+import db from "@/lib/db";
+import { getSessionToken } from "@/lib/auth";
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const applicationId = params.id;
+    const { id: applicationId } = await params;
+    const sessionToken = await getSessionToken();
 
-    const query = `
+    if (!sessionToken) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const result = await db.query(
+      `
       UPDATE applications
-      SET status = 'cancelled'
+      SET status = 'Cancelled'
       WHERE id = $1
-      RETURNING *;
-    `;
+      RETURNING *
+    `,
+      [applicationId],
+    );
 
-    const result = await pool.query(query, [applicationId]);
+    const application = result?.rows?.[0];
 
-    if (result.rowCount === 0) {
+    if (!application) {
       return NextResponse.json(
         { error: "Application not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json({
       message: "Application cancelled successfully",
-      application: result.rows[0],
+      application,
     });
   } catch (error) {
-    console.error("Cancel error:", error);
-
     return NextResponse.json(
       { error: "Failed to cancel application" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
