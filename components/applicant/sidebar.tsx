@@ -35,10 +35,10 @@ export default function Sidebar() {
     <>
       {/* Mobile Header: Visible only on small screens */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 px-4 flex items-center justify-between z-40">
-        <span className="font-black text-red-600 tracking-tight">{app_title}</span>
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <span className="font-bold text-red-600 ">{app_title}</span>
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={toggleSidebar}
           className="text-slate-600"
         >
@@ -48,7 +48,7 @@ export default function Sidebar() {
 
       {/* Mobile Overlay: Darkens background when sidebar is open */}
       {isOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 transition-opacity"
           onClick={toggleSidebar}
         />
@@ -64,11 +64,10 @@ export default function Sidebar() {
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <SidebarComponent 
-          title={app_title} 
-          items={items} 
+        <SidebarComponent
+          title={app_title}
+          items={items}
           // Optional: Pass a callback to close sidebar when a link is clicked on mobile
-          
         />
       </aside>
     </>

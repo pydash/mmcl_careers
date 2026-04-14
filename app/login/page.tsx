@@ -1,11 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useActionState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-
-import { login } from "./action";
 
 import {
   Field,
@@ -22,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Alert } from "@/components/ui/alert";
 
-const initialState = { error: "" };
+import { login } from "@/services/auth.service";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,7 +30,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [error, setError] = useState("");
-  const [state, formAction] = useActionState(login, initialState);
 
   // Function to show error with animation
   const showError = (message: string) => {
@@ -51,14 +47,25 @@ export default function LoginPage() {
     setShowPassword((prev) => !prev);
   };
 
-  // Handle state changes from the action
-  useEffect(() => {
-    if (state?.error) {
-      showError(state.error);
-    } else if (state && state.error === null) {
-      router.push("/applicant/jobs");
+  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const { email, password } = formData;
+
+    try {
+      const result = await login(email, password);
+      const { error, role } = result;
+
+      if (error) {
+        showError(error);
+        return;
+      }
+      router.push(`/${role}/jobs`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Login failed";
+      showError(message);
     }
-  }, [state, router]);
+  };
 
   return (
     <>
@@ -80,7 +87,7 @@ export default function LoginPage() {
       <main className="h-dvh flex flex-col items-center justify-center bg-blue-950">
         <form
           className="p-8 shadow-md shadow-accent-foreground w-full max-w-md bg-white"
-          action={formAction}
+          onSubmit={handleFormSubmit}
         >
           <div className="flex justify-center">
             <Image

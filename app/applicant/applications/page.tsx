@@ -65,8 +65,8 @@ export default function ApplicationsPage() {
         filteredApplications.map((application) => (
           <Link
             key={application.id}
+            className={`w-full border p-6 transition-colors cursor-pointer block ${application.status.toLowerCase() === "cancelled" ? "opacity-60 cursor-not-allowed pointer-events-none" : "border-gray-200 hover:border-gray-400"}`}
             href={`/applicant/applications/${application.id}`}
-            className="w-full border border-gray-200 p-6 hover:border-gray-400 transition-colors cursor-pointer block"
             prefetch
           >
             <div className="flex mb-2 flex-wrap gap-2">

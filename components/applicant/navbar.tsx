@@ -10,10 +10,26 @@ import {
   User,
   LogOut,
 } from "lucide-react";
+import { useRouter } from "next/router";
+
+import { logout } from "@/services/auth.service";
+import { Button } from "../ui/button";
 
 export default function ApplicantNavbar() {
+  const router = useRouter();
   const pathname = usePathname();
   const rootPath = `/${pathname.split("/")[1]}`;
+
+  const handleLogout = async () => {
+    try {
+      const result = await logout();
+      if (result.success) {
+        router.push("/login");
+      }
+    } catch (error) {
+      alert("Logout failed");
+    }
+  };
 
   return (
     <aside className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200 p-4">
@@ -89,13 +105,13 @@ export default function ApplicantNavbar() {
         </Link>
 
         <div className="mt-8 pt-4 border-t border-gray-200">
-          <Link
-            href="/"
+          <Button
             className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+            onClick={() => handleLogout()}
           >
             <LogOut className="h-4 w-4" />
             <span>Log Out</span>
-          </Link>
+          </Button>
         </div>
       </nav>
     </aside>

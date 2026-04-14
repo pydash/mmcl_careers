@@ -10,6 +10,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { logout } from "@/services/auth.service";
 
 interface NavItem {
   title: string;
@@ -28,12 +29,12 @@ export function Sidebar({ title, items }: SidebarProps) {
   const router = useRouter();
   const handleLogout = async () => {
     try {
-      const response = await fetch("/api/auth/logout", { method: "POST" });
-      if (response.ok) {
+      const response = await logout();
+      if (response.success) {
         router.push("/login");
       }
     } catch (error) {
-      console.error("Logout failed:", error);
+      alert("Logout failed");
     }
   };
 
