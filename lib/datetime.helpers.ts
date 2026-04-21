@@ -20,7 +20,7 @@ function getDaysAgo(dateTimeWithTimezone: string): number {
   return Math.max(0, Math.floor(diffInMs / MS_PER_DAY));
 }
 
-function getDate(dateTimeWithTimezone: string): string {
+function getDate(dateTimeWithTimezone: string | null | undefined): string {
   if (!dateTimeWithTimezone) {
     return "N/A";
   }
