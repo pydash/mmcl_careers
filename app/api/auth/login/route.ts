@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     const { email, password } = body;
 
     const user = await db.query(
-      "SELECT id, email, password_hash FROM user_accounts WHERE email = $1",
+      "SELECT id, email, password_hash, role FROM user_accounts WHERE email = $1",
       [email],
     );
 
@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
     const maxAge = 60 * 60 * 24 * 1; // 1 day
 
     await db.query(
-      "INSERT INTO sessions (user_id, session_token, expires_at) VALUES ($1, $2, NOW() + INTERVAL '1 day')",
-      [userData.id, token],
+      "INSERT INTO sessions (user_id, role, session_token, expires_at) VALUES ($1, $2, $3, NOW() + INTERVAL '1 day')",
+      [userData.id, userData.role, token],
     );
 
     const userRole = await db
