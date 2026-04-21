@@ -1,22 +1,75 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { JobViewButton } from "@/components/hr/jobs/job-view-button";
 import { useAllJobs } from "@/hooks/hr/jobs/useAllJobs";
 import { getDate } from "@/lib/datetime.helpers";
-import { useState, useEffect } from "react";
-import { JobViewButton } from "@/components/hr/jobs/job-view-button";
-import Link from "next/link";
+
+type JobItem = {
+  id: number;
+  public_id: string;
+  title: string;
+  date_posted?: string | null;
+  total_applicants?: number | null;
+  status?: "Open" | "Closed" | null;
+};
+
+function JobCard({ job }: { job: JobItem }) {
+  const isOpen = Boolean(job.status === "Open");
+
+  return (
+    <Link
+      href={`/hr/jobs/${job.public_id}`}
+      className="w-full border border-gray-200 p-6 transition-colors hover:border-gray-400"
+    >
+      <div className="mb-3 flex flex-wrap gap-2">
+        <span
+          className={`inline-block px-2 py-1 text-xs font-medium ${
+            isOpen ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+          }`}
+        >
+          {isOpen ? "Open" : "Closed"}
+        </span>
+      </div>
+
+      <h3 className="text-lg font-semibold text-gray-900">{job.title}</h3>
+
+      <Separator className="my-2" />
+
+      <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
+        <p>
+          Posted on:{" "}
+          <span className="text-gray-900">
+            {getDate(job.date_posted ?? "")}
+          </span>
+        </p>
+        <div className="flex items-center gap-3">
+          <p>{job.total_applicants ?? 0} applicants</p>
+          <JobViewButton jobId={job.id} />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function JobCardsList({ jobsList }: { jobsList: JobItem[] }) {
+  if (jobsList.length === 0) {
+    return <div className="mt-4 text-muted-foreground">No jobs found</div>;
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {jobsList.map((job) => (
+        <JobCard key={job.id} job={job} />
+      ))}
+    </div>
+  );
+}
 
 export default function JobsPage() {
   const [mounted, setMounted] = useState(false);
@@ -30,94 +83,58 @@ export default function JobsPage() {
     return null;
   }
 
-  const activeJobs = jobs.filter((job: any) => job.is_active);
-  const inactiveJobs = jobs.filter((job: any) => !job.is_active);
-
-  const JobsTable = ({ jobsList }: { jobsList: any[] }) => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Job ID</TableHead>
-          <TableHead>Job Title</TableHead>
-          <TableHead>Date Posted</TableHead>
-          <TableHead>Total Applicants</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead></TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {jobsList.length === 0 ? (
-          <TableRow>
-            <TableCell
-              colSpan={6}
-              className="text-center text-muted-foreground"
-            >
-              No jobs found
-            </TableCell>
-          </TableRow>
-        ) : (
-          jobsList.map((job: any) => (
-            <TableRow key={job.id}>
-              <TableCell>{job.id}</TableCell>
-              <TableCell>{job.title.trim()}</TableCell>
-              <TableCell>{getDate(job.date_posted)}</TableCell>
-              <TableCell>{job.total_applicants}</TableCell>
-              <TableCell>{job.is_active ? "Active" : "Inactive"}</TableCell>
-              <TableCell>
-                <JobViewButton jobId={job.id} />
-              </TableCell>
-            </TableRow>
-          ))
-        )}
-      </TableBody>
-    </Table>
-  );
+  const openJobs = jobs.filter((job: JobItem) => job.status === "Open");
+  const closedJobs = jobs.filter((job: JobItem) => job.status !== "Open");
 
   return (
-    <>
-      <Tabs defaultValue="all">
-        <div className="flex border-b-2 border-b-muted pb-4">
-          <div>
-            <TabsList className="bg-0">
-              <TabsTrigger value="all" className="shadow-none!">
-                All
-              </TabsTrigger>
-              <TabsTrigger value="active" className="shadow-none!">
-                Active
-              </TabsTrigger>
-              <TabsTrigger value="inactive" className="shadow-none!">
-                Inactive
-              </TabsTrigger>
-            </TabsList>
-          </div>
-          <div className="ml-auto">
-            <Button variant="default">
-              <Link href="/hr/jobs/post-a-job">Post a job</Link>
-            </Button>
-          </div>
+    <Tabs defaultValue="all">
+      <div className="flex flex-col gap-4 border-b-2 border-b-muted pb-4 sm:flex-row sm:items-center">
+        <TabsList className="bg-0">
+          <TabsTrigger value="all" className="shadow-none!">
+            All
+          </TabsTrigger>
+          <TabsTrigger value="open" className="shadow-none!">
+            Open
+          </TabsTrigger>
+          <TabsTrigger value="closed" className="shadow-none!">
+            Closed
+          </TabsTrigger>
+        </TabsList>
+
+        <div className="sm:ml-auto">
+          <Button variant="default" asChild>
+            <Link href="/hr/jobs/post-a-job">Post a job</Link>
+          </Button>
         </div>
-        <TabsContent value="all">
-          {loading && (
-            <div className="mt-4 text-muted-foreground">Loading jobs...</div>
-          )}
-          {error && <div className="mt-4 text-destructive">Error: {error}</div>}
-          {!loading && !error && <JobsTable jobsList={jobs} />}
-        </TabsContent>
-        <TabsContent value="active">
-          {loading && (
-            <div className="mt-4 text-muted-foreground">Loading jobs...</div>
-          )}
-          {error && <div className="mt-4 text-destructive">Error: {error}</div>}
-          {!loading && !error && <JobsTable jobsList={activeJobs} />}
-        </TabsContent>
-        <TabsContent value="inactive">
-          {loading && (
-            <div className="mt-4 text-muted-foreground">Loading jobs...</div>
-          )}
-          {error && <div className="mt-4 text-destructive">Error: {error}</div>}
-          {!loading && !error && <JobsTable jobsList={inactiveJobs} />}
-        </TabsContent>
-      </Tabs>
-    </>
+      </div>
+
+      <TabsContent value="all" className="mt-4">
+        {loading && (
+          <div className="text-muted-foreground">Loading jobs...</div>
+        )}
+        {error && <div className="text-destructive">Error: {error}</div>}
+        {!loading && !error && <JobCardsList jobsList={jobs as JobItem[]} />}
+      </TabsContent>
+
+      <TabsContent value="open" className="mt-4">
+        {loading && (
+          <div className="text-muted-foreground">Loading jobs...</div>
+        )}
+        {error && <div className="text-destructive">Error: {error}</div>}
+        {!loading && !error && (
+          <JobCardsList jobsList={openJobs as JobItem[]} />
+        )}
+      </TabsContent>
+
+      <TabsContent value="closed" className="mt-4">
+        {loading && (
+          <div className="text-muted-foreground">Loading jobs...</div>
+        )}
+        {error && <div className="text-destructive">Error: {error}</div>}
+        {!loading && !error && (
+          <JobCardsList jobsList={closedJobs as JobItem[]} />
+        )}
+      </TabsContent>
+    </Tabs>
   );
 }
