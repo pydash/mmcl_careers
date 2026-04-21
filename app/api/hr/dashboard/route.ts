@@ -5,9 +5,9 @@ import db from "@/lib/db";
 export async function GET() {
   try {
     const cookieStore = await cookies();
-    const userId = cookieStore.get("session_user_id")?.value;
+    const sessionToken = cookieStore.get("session_token")?.value;
 
-    if (!userId) {
+    if (!sessionToken) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -15,55 +15,55 @@ export async function GET() {
       `SELECT COUNT(*) AS total_jobs FROM job_posts`,
     );
     const totalApplicationsResult = await db.query(
-      `SELECT COUNT(*) AS total_applications FROM job_applications`,
+      `SELECT COUNT(*) AS total_applications FROM applications`,
     );
     const openJobsResult = await db.query(
-      `SELECT COUNT(*) AS open_jobs FROM job_posts WHERE is_active = true`,
+      `SELECT COUNT(*) AS open_jobs FROM job_posts WHERE status = 'Open'`,
     );
     const pendingApplicationsResult = await db.query(
-      `SELECT COUNT(*) AS pending_applications FROM job_applications WHERE status = 'Pending'`,
+      `SELECT COUNT(*) AS pending_applications FROM applications WHERE status = 'Pending'`,
     );
 
     const pipeline_health = await db.query(
       `SELECT json_build_object(
-                'applied_count', (SELECT COUNT(*) FROM job_applications WHERE status = 'Pending'),
-                'interview_count', (SELECT COUNT(*) FROM job_applications WHERE status = 'Interview'),
-                'offer_count', (SELECT COUNT(*) FROM job_applications WHERE status = 'Offer')
+                'applied_count', (SELECT COUNT(*) FROM applications WHERE status = 'Pending'),
+                'interview_count', (SELECT COUNT(*) FROM applications WHERE status = 'Interview'),
+                'offer_count', (SELECT COUNT(*) FROM applications WHERE status = 'Offer')
             ) AS pipeline_health`,
     );
 
     const interviews = await db.query(
       `SELECT
-            ja.id AS application_id,
-            ja.status,
+            a.id AS application_id,
+            a.status,
             up.first_name || ' ' || up.middle_name || ' ' || up.last_name AS name,
             ji.scheduled_at
-        FROM job_applications ja
-        LEFT JOIN job_posts jp ON ja.job_id = jp.id
-        LEFT JOIN job_interviews ji ON ji.app_id = ja.id
-        LEFT JOIN user_accounts ua ON ua.id = ja.acc_id
+        FROM applications a
+        LEFT JOIN job_posts jp ON a.job_id = jp.id
+        LEFT JOIN interviews ji ON ji.app_id = a.id
+        LEFT JOIN user_accounts ua ON ua.id = a.profile_id
         LEFT JOIN user_profiles up ON up.id = ua.id
-        WHERE ja.status = 'interview'
-        ORDER BY ja.applied_at DESC
+        WHERE a.status = 'interview'
+        ORDER BY a.applied_at DESC
         LIMIT 3
         `,
     );
 
     const recent_applicants = await db.query(
       `SELECT
-            ja.id,
-            ja.status,
+            a.id,
+            a.status,
             up.first_name || ' ' || up.middle_name || ' ' || up.last_name AS name,
             jp.title,
-            ja.applied_at
-        FROM job_applications ja
-        LEFT JOIN job_posts jp ON ja.job_id = jp.id
-        LEFT JOIN user_accounts ua ON ua.id = ja.acc_id
+            a.applied_at
+        FROM applications a
+        LEFT JOIN job_posts jp ON a.job_id = jp.id
+        LEFT JOIN user_accounts ua ON ua.id = a.profile_id
         LEFT JOIN user_profiles up ON up.id = ua.id
-        WHERE ja.status = 'pending'
-        ORDER BY ja.applied_at DESC
+        WHERE a.status = 'pending'
+        ORDER BY a.applied_at DESC
         LIMIT 5
-        `,
+    `,
     );
 
     const dashboardData = {
