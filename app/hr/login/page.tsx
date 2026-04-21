@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useActionState } from "react";
+// Hooks
+import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 
-import { login } from "./action";
+// Services
+import { login } from "@/services/auth.service";
 
+// UI Components
 import {
   Field,
   FieldDescription,
@@ -18,13 +19,10 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Alert } from "@/components/ui/alert";
-
-const initialState = { error: "" };
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,7 +33,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [error, setError] = useState("");
-  const [state, formAction] = useActionState(login, initialState);
 
   const showError = (message: string) => {
     // Mount hidden first, then trigger show to animate in
@@ -52,13 +49,31 @@ export default function LoginPage() {
     setShowPassword((prev) => !prev);
   };
 
-  useEffect(() => {
-    if (state?.error) {
-      showError(state.error);
-    } else if (state && state.error === null) {
-      router.push("/hr/dashboard");
+  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const { email, password } = formData;
+
+    try {
+      const result = await login(email, password);
+      const { error, role } = result;
+
+      if (error) {
+        showError(error);
+        return;
+      }
+
+      if (role !== "hr") {
+        showError("Unauthorized: Only HR users can access this dashboard");
+        return;
+      } else {
+        router.push("/hr/dashboard");
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Login failed";
+      showError(message);
     }
-  }, [state, router]);
+  };
 
   return (
     <>
@@ -80,7 +95,7 @@ export default function LoginPage() {
       <main className="h-dvh flex flex-col items-center justify-center bg-blue-950">
         <form
           className="p-8 shadow-md shadow-accent-foreground w-full max-w-md bg-white"
-          action={formAction}
+          onSubmit={handleFormSubmit}
         >
           <div className="flex justify-center">
             <Image

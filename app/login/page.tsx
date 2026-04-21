@@ -60,7 +60,16 @@ export default function LoginPage() {
         showError(error);
         return;
       }
-      router.push(`/${role}/jobs`);
+
+      if (role === "hr") {
+        router.push("/hr/dashboard");
+      } else if (role === "applicant") {
+        router.push("/applicant/dashboard");
+      } else if (role === "admin") {
+        router.push("/admin/dashboard");
+      } else {
+        showError("Unknown user role");
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Login failed";
       showError(message);
