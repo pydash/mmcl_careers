@@ -6,19 +6,16 @@ import { ALL_JOBS_QUERY } from "@/lib/queries/hr/all_jobs_query";
 export async function GET(request: Request) {
   try {
     const cookieStore = await cookies();
-    const userId = cookieStore.get("session_user_id")?.value;
+    const sessionToken = cookieStore.get("session_token")?.value;
 
-    if (!userId) {
+    if (!sessionToken) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const applications = await db
-      .query(ALL_JOBS_QUERY)
-      .then((res: any) => res.rows);
+    const result = await db.query(ALL_JOBS_QUERY).then((res: any) => res.rows);
 
-    return NextResponse.json(applications);
+    return NextResponse.json(result);
   } catch (error) {
-    console.error("Error fetching jobs", error);
     return NextResponse.json(
       { error: "Failed to fetch jobs" },
       { status: 500 },
@@ -30,7 +27,18 @@ export async function POST(request: Request) {
   {
     try {
       const cookieStore = await cookies();
-      const userId = cookieStore.get("session_user_id")?.value;
+      const sessionToken = cookieStore.get("session_token")?.value;
+
+      if (!sessionToken) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const userId = await db
+        .query(
+          "SELECT user_id FROM sessions WHERE session_token = $1 AND expires_at > NOW()",
+          [sessionToken],
+        )
+        .then((res: any) => res.rows[0]?.user_id);
 
       if (!userId) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -80,7 +88,6 @@ export async function POST(request: Request) {
         { status: 201 },
       );
     } catch (error) {
-      console.error("Error posting job", error);
       return NextResponse.json(
         { error: "Failed to post job" },
         { status: 500 },
