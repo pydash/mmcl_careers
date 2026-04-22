@@ -52,7 +52,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-lg border bg-card p-4 shadow-sm">
+        <div className="border bg-card p-4">
           <p className="text-sm text-red-500">Total jobs</p>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-3xl font-semibold">
@@ -60,7 +60,7 @@ export default function DashboardPage() {
             </span>
           </div>
         </div>
-        <div className="rounded-lg border bg-card p-4 shadow-sm">
+        <div className="border bg-card p-4">
           <p className="text-sm text-red-500">Total applications</p>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-3xl font-semibold">
@@ -68,7 +68,7 @@ export default function DashboardPage() {
             </span>
           </div>
         </div>
-        <div className="rounded-lg border bg-card p-4 shadow-sm">
+        <div className="border bg-card p-4">
           <p className="text-sm text-red-500">Open jobs</p>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-3xl font-semibold">
@@ -76,7 +76,7 @@ export default function DashboardPage() {
             </span>
           </div>
         </div>
-        <div className="rounded-lg border bg-card p-4 shadow-sm">
+        <div className="border bg-card p-4">
           <p className="text-sm text-red-500">Pending applications</p>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-3xl font-semibold">
@@ -87,7 +87,7 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-lg border bg-card p-4 shadow-sm">
+        <div className="border bg-card p-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold">Pipeline Health</h3>
@@ -112,7 +112,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border bg-card p-4 shadow-sm">
+        <div className="border bg-card p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">
@@ -147,7 +147,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="rounded-lg border bg-card p-4 shadow-sm">
+      <section className="border bg-card p-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted-foreground">Quick actions</p>
@@ -171,7 +171,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="rounded-lg border bg-card p-4 shadow-sm">
+      <section className="border bg-card p-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted-foreground">Recent applicants</p>
