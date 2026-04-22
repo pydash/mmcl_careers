@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -75,6 +75,37 @@ export default function LoginPage() {
       showError(message);
     }
   };
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/auth/check", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (res.ok) {
+          const payload = await res.json();
+          const { role } = payload;
+
+          if (role === "hr") {
+            router.push("/hr/dashboard");
+          } else if (role === "applicant") {
+            router.push("/applicant/dashboard");
+          } else if (role === "admin") {
+            router.push("/admin/dashboard");
+          }
+        }
+      } catch (err) {
+        // Not logged in, do nothing
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   return (
     <>
