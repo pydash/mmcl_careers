@@ -9,51 +9,32 @@ import {
 export type JobDetails = {
   id: number;
   title: string;
-  description: string | null;
+  description: string;
   department?: string | null;
-  employment_type?: string | null;
+  employment_type: string;
   responsibilities?: string | null;
   requirements?: string | null;
-  salary_min?: string | null;
-  salary_max?: string | null;
-  posted_by?: string | null;
-  is_active: boolean;
+  salary?: number | null;
+  expiry_date?: string | null;
+  posted_by: string;
+  status: string;
   created_at: string;
+  application_count: number;
 };
 
-export function useJobDetails(jobId: string | number) {
-  const [jobDetails, setJobDetails] = useState<JobDetails | null>(null);
+export function useJobDetails(jobId: string) {
+  const [details, setDetails] = useState<JobDetails | null>(null);
   const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (jobId === undefined || jobId === null) return;
     setLoading(true);
     setError(null);
     fetchJobDetails(String(jobId))
-      .then((data) => setJobDetails(data))
+      .then((data) => setDetails(data))
       .catch((e: any) => setError(e?.message ?? "Failed to load job"))
       .finally(() => setLoading(false));
   }, [jobId]);
 
-  const save = useCallback(
-    async (updates: Partial<JobDetails>) => {
-      setSaving(true);
-      setError(null);
-      try {
-        const updated = await updateJobDetails(String(jobId), updates);
-        setJobDetails(updated);
-        return updated;
-      } catch (e: any) {
-        setError(e?.message ?? "Failed to save job");
-        throw e;
-      } finally {
-        setSaving(false);
-      }
-    },
-    [jobId],
-  );
-
-  return { jobDetails, loading, error, saving, save };
+  return { details, loading, error };
 }
