@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import db from "@/lib/db";
 import { ALL_JOBS_QUERY } from "@/lib/queries/hr/all_jobs_query";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get("session_token")?.value;
