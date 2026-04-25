@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
           a.id, 
           jp.title AS position, 
           a.status, 
-          a.applied_at
+          a.created_at AS applied_at
         FROM applications a 
         LEFT JOIN job_posts jp ON a.job_id = jp.id 
         WHERE a.profile_id = $1 

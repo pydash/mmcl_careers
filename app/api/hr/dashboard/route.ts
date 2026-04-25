@@ -44,7 +44,7 @@ export async function GET() {
         LEFT JOIN user_accounts ua ON ua.id = a.profile_id
         LEFT JOIN user_profiles up ON up.id = ua.id
         WHERE a.status = 'interview'
-        ORDER BY a.applied_at DESC
+        ORDER BY a.created_at DESC
         LIMIT 3
         `,
     );
@@ -55,13 +55,13 @@ export async function GET() {
             a.status,
             up.first_name || ' ' || up.middle_name || ' ' || up.last_name AS name,
             jp.title,
-            a.applied_at
+            a.created_at AS applied_at
         FROM applications a
         LEFT JOIN job_posts jp ON a.job_id = jp.id
         LEFT JOIN user_accounts ua ON ua.id = a.profile_id
         LEFT JOIN user_profiles up ON up.id = ua.id
         WHERE a.status = 'pending'
-        ORDER BY a.applied_at DESC
+        ORDER BY a.created_at DESC
         LIMIT 5
     `,
     );
