@@ -47,47 +47,65 @@ export async function POST(request: Request) {
       const data = await request.json();
 
       const {
-        is_active,
         title,
-        job_type,
         department,
-        deadline_date,
+        employment_type,
+        teaching_type,
         description,
         responsibilities,
         requirements,
-        salary_min,
-        salary_max,
+        status,
+        expiry_date,
+        salary,
       } = data;
 
-      const insertQuery = `
-      INSERT INTO job_posts
-      (public_id, is_active, title, employment_type, department, expiry_date, description, responsibilities, requirements, salary_min, salary_max, posted_by)
-      VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-      RETURNING id
-    `;
+      const user_name = await db
+        .query(
+          "SELECT CONCAT(first_name, ' ', last_name) AS name FROM user_profiles WHERE id = $1",
+          [userId],
+        )
+        .then((res: any) => res.rows[0]?.name);
 
-      const values = [
-        is_active,
-        title,
-        job_type,
-        department,
-        deadline_date,
-        description,
-        responsibilities,
-        requirements,
-        salary_min,
-        salary_max,
-        userId,
-      ];
+      const public_id = crypto.randomUUID();
 
-      const result = await db.query(insertQuery, values);
-      const newJobId = result.rows[0].id;
+      const result = await db
+        .query(
+          `
+          INSERT INTO job_posts
+          (title, department, employment_type, teaching_type, description, responsibilities, requirements, status, expiry_date, salary, posted_by, public_id)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+          RETURNING id
+        `,
+          [
+            title,
+            department,
+            employment_type,
+            teaching_type,
+            description,
+            responsibilities,
+            requirements,
+            status,
+            expiry_date,
+            salary,
+            user_name,
+            public_id,
+          ],
+        )
+        .then((res: any) => res.rows[0]?.id);
+
+      if (!result) {
+        return NextResponse.json(
+          { error: "Failed to create job post" },
+          { status: 500 },
+        );
+      }
 
       return NextResponse.json(
-        { success: true, jobId: newJobId },
+        { success: true, jobId: result },
         { status: 201 },
       );
     } catch (error) {
+      console.error("Error posting job:", error);
       return NextResponse.json(
         { error: "Failed to post job" },
         { status: 500 },

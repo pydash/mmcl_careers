@@ -23,6 +23,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 import { usePostJob } from "@/hooks/hr/jobs/usePostJob";
 
 export default function PostJobPage() {
@@ -38,55 +44,25 @@ export default function PostJobPage() {
     handleSubmit,
   } = usePostJob();
 
-  const calculateTotalPoints = () => {
-    const fields = [
-      formData.bachelor_degree_points,
-      formData.master_degree_points,
-      formData.phd_points,
-      formData.work_exp_1,
-      formData.work_exp_2,
-      formData.work_exp_3,
-      formData.published_paper_points,
-      formData.research_project_points,
-    ];
-    return fields.reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-  };
-
   const areRequiredFieldsFilled = () => {
     if (isCompensationEnabled) {
-      if (!formData.salary_min || !formData.salary_max) return false;
+      if (!formData.salary) return false;
     }
 
     return (
+      // Fields that are required
       formData.title.trim() !== "" &&
       formData.description.trim() !== "" &&
-      formData.responsibilities.trim() !== "" &&
-      formData.requirements.trim() !== "" &&
-      formData.deadline_date !== "" &&
-      formData.job_type !== "" &&
-      formData.department !== "" &&
-      formData.is_active !== ""
+      formData.status !== null
     );
   };
 
-  const totalPoints = calculateTotalPoints();
-  const pointsExceeded = totalPoints > 100;
-  const pointsNotComplete = totalPoints !== 100;
   const requiredFieldsFilled = areRequiredFieldsFilled();
-  const isSubmitDisabled =
-    isLoading || !requiredFieldsFilled || pointsNotComplete;
+  const isSubmitDisabled = isLoading || !requiredFieldsFilled;
 
   return (
     <>
-      <main className="w-full px-4 py-8 md:px-6 lg:px-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold tracking-tight">Post a Job</h1>
-          <p className="text-muted-foreground mt-2">
-            Create a new job posting for your organization
-          </p>
-        </div>
-        <Separator className="mb-8" />
-
+      <div className="px-4 py-8 md:p-2">
         {error && (
           <div className="mb-6">
             <Alert variant="destructive">
@@ -113,32 +89,13 @@ export default function PostJobPage() {
                 Enter the basic information about the job position
               </FieldDescription>
 
-              <Field>
-                <div className="flex items-center gap-3 rounded-md border border-input bg-muted/20 px-3 py-3">
-                  <Checkbox
-                    id="is_active"
-                    checked={formData.is_active === "true"}
-                    onCheckedChange={(checked) =>
-                      handleSelectChange(
-                        "is_active",
-                        checked === true ? "true" : "false",
-                      )
-                    }
-                    disabled={isLoading}
-                  />
-                  <div className="space-y-0.5">
-                    <Label htmlFor="is_active">Job status on save</Label>
-                    <p className="text-xs text-muted-foreground">
-                      Keep this checked to publish as active.
-                    </p>
-                  </div>
-                </div>
-              </Field>
-
               <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                <Field>
+                <Field className="col-span-2">
                   <FieldLabel>
-                    <Label htmlFor="title">Job Title</Label>
+                    <Label htmlFor="title">
+                      Job Title
+                      <span className="text-red-500 ml-1">*</span>
+                    </Label>
                   </FieldLabel>
                   <Input
                     type="text"
@@ -148,27 +105,8 @@ export default function PostJobPage() {
                     onChange={handleInputChange}
                     required
                     disabled={isLoading}
+                    className="rounded-none shadow-none"
                   />
-                </Field>
-
-                <Field>
-                  <FieldLabel>
-                    <Label htmlFor="job_type">Job Type</Label>
-                  </FieldLabel>
-                  <Select
-                    value={formData.job_type}
-                    onValueChange={(value) =>
-                      handleSelectChange("job_type", value)
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select job type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="full_time">Full Time</SelectItem>
-                      <SelectItem value="part_time">Part Time</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </Field>
 
                 <Field>
@@ -179,53 +117,144 @@ export default function PostJobPage() {
                     type="text"
                     id="department"
                     name="department"
-                    placeholder="e.g. CAS"
-                    value={formData.department}
+                    value={formData.department ?? undefined}
                     onChange={handleInputChange}
-                    required
                     disabled={isLoading}
+                    className="rounded-none shadow-none"
                   />
                 </Field>
 
                 <Field>
                   <FieldLabel>
-                    <Label htmlFor="deadline_date">Application Deadline</Label>
+                    <Label htmlFor="employment_type">Employment Type</Label>
+                  </FieldLabel>
+                  <Select
+                    value={formData.employment_type ?? undefined}
+                    onValueChange={(value) =>
+                      handleSelectChange("employment_type", value)
+                    }
+                  >
+                    <SelectTrigger className="rounded-none shadow-none">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Full time">Full time</SelectItem>
+                      <SelectItem value="Part time">Part time</SelectItem>
+                      <SelectItem value="-">-</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+
+                <Field>
+                  <FieldLabel>
+                    <Label htmlFor="teaching_type">Teaching Type</Label>
+                  </FieldLabel>
+                  <Select
+                    value={formData.teaching_type ?? undefined}
+                    onValueChange={(value) =>
+                      handleSelectChange("teaching_type", value)
+                    }
+                  >
+                    <SelectTrigger className="rounded-none shadow-none">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Teaching">Teaching</SelectItem>
+                      <SelectItem value="Non-Teaching">Non-Teaching</SelectItem>
+                      <SelectItem value="-">-</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+
+                <Field>
+                  <FieldLabel className="flex items-center gap-2">
+                    <Label htmlFor="salary">Salary</Label>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="size-3.5" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        - Specified amount or range {"(20000 - 30000 or 20000)"}{" "}
+                        <br />- Optional. Leave blank if not applicable
+                      </TooltipContent>
+                    </Tooltip>
+                  </FieldLabel>
+                  <Input
+                    type="text"
+                    id="salary"
+                    name="salary"
+                    value={formData.salary ?? undefined}
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                    className="rounded-none shadow-none"
+                  />
+                </Field>
+
+                <Field>
+                  <FieldLabel>
+                    <Label htmlFor="expiry_date">Expiration Date</Label>
                   </FieldLabel>
                   <Input
                     type="date"
-                    id="deadline_date"
-                    name="deadline_date"
-                    value={formData.deadline_date}
+                    id="expiry_date"
+                    name="expiry_date"
+                    value={formData.expiry_date ?? undefined}
                     onChange={handleInputChange}
-                    required
                     disabled={isLoading}
+                    className="rounded-none shadow-none"
                   />
+                </Field>
+
+                <Field>
+                  <FieldLabel>
+                    <Label htmlFor="status">
+                      Status
+                      <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                  </FieldLabel>
+                  <div className="flex items-center space-x-3 border px-2 py-1">
+                    <Checkbox
+                      id="status"
+                      className="rounded-none shadow-none"
+                      checked={formData.status === "Open"}
+                      onCheckedChange={(checked) =>
+                        handleSelectChange(
+                          "status",
+                          checked === true ? "Open" : "Closed",
+                        )
+                      }
+                      disabled={isLoading}
+                    />
+                    <div>
+                      <Label htmlFor="status">
+                        Set as "Open" after posting
+                      </Label>
+                    </div>
+                  </div>
                 </Field>
               </div>
             </FieldSet>
           </FieldGroup>
 
+          <Separator className="my-8" />
+
           <FieldGroup>
             <FieldSet>
-              <FieldLegend>Job Description</FieldLegend>
-              <FieldDescription>
-                Provide detailed information about the position
-              </FieldDescription>
-
               <Field>
                 <FieldLabel>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">
+                    Description<span className="text-red-500 ml-1">*</span>
+                  </Label>
                 </FieldLabel>
                 <textarea
                   id="description"
                   name="description"
-                  placeholder="Provide a comprehensive description of the role..."
                   value={formData.description}
                   onChange={handleInputChange}
                   required
                   disabled={isLoading}
                   rows={6}
-                  className="flex min-h-30 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="border p-2 text-sm focus-visible:outline-1 resize-none"
                 />
               </Field>
 
@@ -236,13 +265,11 @@ export default function PostJobPage() {
                 <textarea
                   id="responsibilities"
                   name="responsibilities"
-                  placeholder="List the key responsibilities..."
-                  value={formData.responsibilities}
+                  value={formData.responsibilities ?? undefined}
                   onChange={handleInputChange}
-                  required
                   disabled={isLoading}
                   rows={6}
-                  className="flex min-h-30 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="border p-2 text-sm focus-visible:outline-1 resize-none"
                 />
               </Field>
 
@@ -253,253 +280,38 @@ export default function PostJobPage() {
                 <textarea
                   id="requirements"
                   name="requirements"
-                  placeholder="Specify the qualifications and skills required..."
-                  value={formData.requirements}
+                  value={formData.requirements ?? undefined}
                   onChange={handleInputChange}
-                  required
                   disabled={isLoading}
                   rows={6}
-                  className="flex min-h-30 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="border p-2 text-sm focus-visible:outline-1 resize-none"
                 />
               </Field>
             </FieldSet>
           </FieldGroup>
 
-          <FieldGroup>
-            <FieldSet>
-              <FieldLegend>Compensation</FieldLegend>
-              <FieldDescription>
-                Set the salary range for this position
-              </FieldDescription>
-
-              <Field>
-                <div className="flex items-center gap-3">
-                  <Checkbox
-                    id="has_compensation"
-                    checked={isCompensationEnabled}
-                    onCheckedChange={(checked) => {
-                      const isChecked = checked === true;
-                      setIsCompensationEnabled(isChecked);
-                      if (!isChecked) {
-                        handleInputChange("salary_min", "");
-                        handleInputChange("salary_max", "");
-                      }
-                    }}
-                    disabled={isLoading}
-                  />
-                  <Label htmlFor="has_compensation">
-                    Add compensation for this job
-                  </Label>
-                </div>
-              </Field>
-
-              {isCompensationEnabled && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Field>
-                    <FieldLabel>
-                      <Label htmlFor="salary_min">Minimum Salary</Label>
-                    </FieldLabel>
-                    <Input
-                      type="number"
-                      id="salary_min"
-                      name="salary_min"
-                      placeholder="e.g. 50000"
-                      value={formData.salary_min}
-                      onChange={handleInputChange}
-                      required
-                      disabled={isLoading}
-                    />
-                  </Field>
-
-                  <Field>
-                    <FieldLabel>
-                      <Label htmlFor="salary_max">Maximum Salary</Label>
-                    </FieldLabel>
-                    <Input
-                      type="number"
-                      id="salary_max"
-                      name="salary_max"
-                      placeholder="e.g. 80000"
-                      value={formData.salary_max}
-                      onChange={handleInputChange}
-                      required
-                      disabled={isLoading}
-                    />
-                  </Field>
-                </div>
-              )}
-            </FieldSet>
-          </FieldGroup>
-
-          <FieldGroup>
-            <FieldSet>
-              <FieldLegend>Pointing System</FieldLegend>
-              <FieldDescription>
-                Define the criteria and point values for evaluating applicants
-              </FieldDescription>
-
-              <div className="mt-1 flex items-center gap-2 text-sm">
-                <span className="text-muted-foreground">Total Points:</span>
-                <span
-                  className={`px-2 py-0.5 rounded-md border font-semibold ${
-                    pointsNotComplete
-                      ? "border-red-500 bg-red-50 text-red-700"
-                      : "border-green-500 bg-green-50 text-green-700"
-                  }`}
-                >
-                  {totalPoints}/100
-                </span>
-              </div>
-
-              <Field>
-                <div className="border border-gray-300 rounded-lg p-6 bg-white space-y-6">
-                  <div>
-                    <div className="mb-2 text-base font-semibold">
-                      Educational Background
-                    </div>
-                    <div className="mt-4 space-y-4">
-                      <div className="flex items-center gap-4">
-                        <Label className="w-40">Bachelor's Degree</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter points e.g. 10"
-                          value={formData.bachelor_degree_points || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "bachelor_degree_points",
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center gap-4">
-                        <Label className="w-40">Master's Degree</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter points e.g. 10"
-                          value={formData.master_degree_points || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "master_degree_points",
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center gap-4">
-                        <Label className="w-40">PhD</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter points e.g. 10"
-                          value={formData.phd_points || ""}
-                          onChange={(e) =>
-                            handleInputChange("phd_points", e.target.value)
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="mb-2 text-base font-semibold">
-                      Work Experience
-                    </div>
-                    <div className="mt-4 space-y-4">
-                      <div className="flex items-center gap-4">
-                        <Label className="w-40">1–2 Years</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter points e.g. 10"
-                          value={formData.work_exp_1 || ""}
-                          onChange={(e) =>
-                            handleInputChange("work_exp_1", e.target.value)
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center gap-4">
-                        <Label className="w-40">3–5 Years</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter points e.g. 10"
-                          value={formData.work_exp_2 || ""}
-                          onChange={(e) =>
-                            handleInputChange("work_exp_2", e.target.value)
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center gap-4">
-                        <Label className="w-40">6+ Years</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter points e.g. 10"
-                          value={formData.work_exp_3 || ""}
-                          onChange={(e) =>
-                            handleInputChange("work_exp_3", e.target.value)
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="mb-2 text-base font-semibold">
-                      Extracurricular
-                    </div>
-                    <div className="mt-4 space-y-4">
-                      <div className="flex items-center gap-4">
-                        <Label className="w-40">Published Paper</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter points e.g. 10"
-                          value={formData.published_paper_points || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "published_paper_points",
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center gap-4">
-                        <Label className="w-40">Research Project</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter points e.g. 10"
-                          value={formData.research_project_points || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "research_project_points",
-                              e.target.value,
-                            )
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Field>
-            </FieldSet>
-          </FieldGroup>
+          <Separator className="my-8" />
 
           <div className="flex items-center justify-end gap-4 pt-4">
             <Button
               type="button"
               variant="outline"
+              className="rounded-none shadow-none"
               disabled={isLoading}
               onClick={() => router.back()}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitDisabled}>
+            <Button
+              type="submit"
+              disabled={isSubmitDisabled}
+              className="rounded-none shadow-none bg-blue-500 hover:bg-blue-600"
+            >
               {isLoading ? "Posting..." : "Post Job"}
             </Button>
           </div>
         </form>
-      </main>
+      </div>
     </>
   );
 }

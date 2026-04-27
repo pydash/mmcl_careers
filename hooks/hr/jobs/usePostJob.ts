@@ -1,42 +1,28 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { postJob } from "@/services/hr/jobs/postJob";
-import { type PostJobData } from "@/models/PostJob";
-import { type JobFormData, initialJobFormData } from "@/models/JobForm";
+import { JobForm } from "@/models/Job";
+
+const initialJobFormData: JobForm = {
+  title: "",
+  department: "",
+  employment_type: "Full time",
+  description: "",
+  requirements: "",
+  responsibilities: "",
+  salary: null,
+  status: "Open",
+  expiry_date: null,
+  teaching_type: "Teaching",
+  open_vacancies: null,
+};
 
 export function usePostJob() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [formData, setFormData] = useState<JobFormData>(initialJobFormData);
-
-  const calculateTotalPoints = (
-    data: JobFormData,
-    fieldName: string,
-    newValue: string,
-  ): number => {
-    const pointFields = [
-      "bachelor_degree_points",
-      "master_degree_points",
-      "phd_points",
-      "work_exp_1",
-      "work_exp_2",
-      "work_exp_3",
-      "published_paper_points",
-      "research_project_points",
-    ];
-
-    let total = 0;
-    for (const field of pointFields) {
-      if (field === fieldName) {
-        total += parseInt(newValue) || 0;
-      } else {
-        total += parseInt((data as any)[field]) || 0;
-      }
-    }
-    return total;
-  };
+  const [formData, setFormData] = useState<JobForm>(initialJobFormData);
 
   const handleInputChange = (
     nameOrEvent:
@@ -55,26 +41,6 @@ export function usePostJob() {
       fieldValue = nameOrEvent.target.value;
     }
 
-    // Check if this is a pointing system field
-    const pointFields = [
-      "bachelor_degree_points",
-      "master_degree_points",
-      "phd_points",
-      "work_exp_1",
-      "work_exp_2",
-      "work_exp_3",
-      "published_paper_points",
-      "research_project_points",
-    ];
-
-    if (pointFields.includes(fieldName)) {
-      // Validate that total points don't exceed 100
-      const totalPoints = calculateTotalPoints(formData, fieldName, fieldValue);
-      if (totalPoints > 100) {
-        return; // Prevent the update if it exceeds 100
-      }
-    }
-
     setFormData((prev) => ({
       ...prev,
       [fieldName]: fieldValue,
@@ -88,35 +54,12 @@ export function usePostJob() {
     }));
   };
 
-  const validateForm = (): void => {
+  const validateForm = () => {
     if (!formData.title.trim()) {
       throw new Error("Job title is required");
     }
     if (!formData.description.trim()) {
       throw new Error("Job description is required");
-    }
-    if (!formData.responsibilities.trim()) {
-      throw new Error("Responsibilities are required");
-    }
-    if (!formData.requirements.trim()) {
-      throw new Error("Requirements are required");
-    }
-    if (!formData.deadline_date) {
-      throw new Error("Application deadline is required");
-    }
-
-    // Validate salary only if provided
-    if (formData.salary_min || formData.salary_max) {
-      const salaryMin = parseInt(formData.salary_min);
-      const salaryMax = parseInt(formData.salary_max);
-
-      if (isNaN(salaryMin) || isNaN(salaryMax)) {
-        throw new Error("Salary values must be valid numbers");
-      }
-
-      if (salaryMin > salaryMax) {
-        throw new Error("Minimum salary cannot be greater than maximum salary");
-      }
     }
   };
 
@@ -128,17 +71,16 @@ export function usePostJob() {
     try {
       validateForm();
 
-      const jobData: PostJobData = {
-        is_active: formData.is_active === "true",
+      const jobData: JobForm = {
+        status: formData.status,
         title: formData.title.trim(),
-        job_type: formData.job_type,
+        employment_type: formData.employment_type,
         department: formData.department,
-        deadline_date: formData.deadline_date,
+        expiry_date: formData.expiry_date,
         description: formData.description.trim(),
-        responsibilities: formData.responsibilities.trim(),
-        requirements: formData.requirements.trim(),
-        salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
-        salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
+        responsibilities: formData.responsibilities?.trim(),
+        requirements: formData.requirements?.trim(),
+        salary: formData.salary ? formData.salary : null,
       };
 
       await postJob(jobData);

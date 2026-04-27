@@ -1,6 +1,12 @@
-import { type PostJobData, type PostJobResponse } from "@/models/PostJob";
+import { JobFormData } from "@/models/Job";
 
-export async function postJob(data: PostJobData): Promise<PostJobResponse> {
+type PostJobResponse = {
+  success: boolean;
+  jobId?: string;
+  error?: string;
+};
+
+export async function postJob(data: JobFormData): Promise<PostJobResponse> {
   const response = await fetch("/api/hr/jobs", {
     method: "POST",
     headers: {

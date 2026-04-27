@@ -1,10 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import {
-  fetchJobDetails,
-  updateJobDetails,
-} from "@/services/hr/jobs/jobDetails.service";
+import { useState, useEffect } from "react";
+import { fetchJobDetails } from "@/services/hr/jobs/jobDetails.service";
 
 export type JobDetails = {
   id: number;
@@ -14,7 +11,7 @@ export type JobDetails = {
   employment_type: string;
   responsibilities?: string | null;
   requirements?: string | null;
-  salary?: number | null;
+  salary?: string | null;
   expiry_date?: string | null;
   posted_by: string;
   status: string;
