@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toTitleCase } from "@/lib/text.helpers";
 import { getDate } from "@/lib/datetime.helpers";
+import { GovID } from "@/models/applicant/Profile";
 
 export default function ProfilePage() {
   const { profile, loading, error } = useProfileGetter();
@@ -80,7 +81,7 @@ export default function ProfilePage() {
             <div className="border p-4 hover:bg-gray-50">
               <p className="text-xs text-muted-foreground mb-1">Name</p>
               <p className="font-semibold text-xl">
-                {profile.personal.honorifics} {profile.personal.first_name}{" "}
+                {profile.personal.honorifics} {profile.personal.first_name}
                 {profile.personal.middle_name} {profile.personal.last_name}
               </p>
             </div>
@@ -167,7 +168,7 @@ export default function ProfilePage() {
                     <li key={`${social.platform}-${index}`}>
                       <span className="text-muted-foreground">
                         {social.platform}:
-                      </span>{" "}
+                      </span>
                       {social.url}
                     </li>
                   ))}
@@ -195,19 +196,19 @@ export default function ProfilePage() {
                   </p>
                   <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                     <p>
-                      <span className="text-muted-foreground">Status:</span>{" "}
+                      <span className="text-muted-foreground">Status: </span>
                       {toTitleCase(edu.status) || "—"}
                     </p>
                     <p>
                       <span className="text-muted-foreground">
-                        Units Earned:
-                      </span>{" "}
+                        Units Earned:{" "}
+                      </span>
                       {edu.units_earned ?? "—"}
                     </p>
                     <p>
                       <span className="text-muted-foreground">
-                        Year Finished:
-                      </span>{" "}
+                        Year Finished:{" "}
+                      </span>
                       {edu.year_finished ?? "—"}
                     </p>
                   </div>
@@ -243,22 +244,27 @@ export default function ProfilePage() {
                   </p>
                   <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
                     <p>
-                      <span className="text-muted-foreground">Started:</span>{" "}
-                      {getDate(job.date_started)}
-                    </p>
-                    <p>
-                      <span className="text-muted-foreground">Ended:</span>{" "}
-                      {job.date_ended ? getDate(job.date_ended) : "Present"}
+                      <span className="text-muted-foreground">Period: </span>
+                      {getDate(job.date_started)} -{" "}
+                      {getDate(job.date_ended) || "Present"}
                     </p>
                     <p>
                       <span className="text-muted-foreground">
-                        Specialization:
-                      </span>{" "}
+                        Specialization:{" "}
+                      </span>
                       {job.position_specialization || "—"}
                     </p>
                     <p>
-                      <span className="text-muted-foreground">Salary:</span>{" "}
+                      <span className="text-muted-foreground">Salary: </span>
                       {job.monthly_salary ?? "—"}
+                    </p>
+                    <p>
+                      <span className="text-muted-foreground">
+                        Courses Handled:{" "}
+                      </span>
+                      {job.courses_handled
+                        ?.map((course: string) => course)
+                        .join(", ") || "—"}
                     </p>
                   </div>
                 </div>
@@ -285,19 +291,19 @@ export default function ProfilePage() {
                   </p>
                   <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                     <p>
-                      <span className="text-muted-foreground">Number:</span>{" "}
+                      <span className="text-muted-foreground">Number:</span>
                       {license.number || "—"}
                     </p>
                     <p>
-                      <span className="text-muted-foreground">Issued:</span>{" "}
+                      <span className="text-muted-foreground">Issued:</span>
                       {getDate(license.date_issued)}
                     </p>
                     <p>
-                      <span className="text-muted-foreground">Expiry:</span>{" "}
+                      <span className="text-muted-foreground">Expiry:</span>
                       {getDate(license.expiry_date)}
                     </p>
                     <p>
-                      <span className="text-muted-foreground">Image URL:</span>{" "}
+                      <span className="text-muted-foreground">Image URL:</span>
                       {license.image_url || "—"}
                     </p>
                   </div>
@@ -314,18 +320,27 @@ export default function ProfilePage() {
         <TabsContent value="govids">
           <section className="grid grid-cols-2 gap-4">
             {profile.gov_ids?.length ? (
-              profile.gov_ids.map((govId: any, index: number) => (
+              profile.gov_ids.map((govId: GovID, index: number) => (
                 <div
-                  key={`${govId.type}-${index}`}
-                  className="border p-4 hover:bg-gray-50"
+                  key={index}
+                  className="border p-4 hover:bg-gray-50 space-y-2"
                 >
-                  <p className="text-sm font-semibold">{govId.type}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Number: {govId.number || "—"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Issued on {getDate(govId.issued_at)}
-                  </p>
+                  <p className="text-sm font-semibold">{govId.id_type}</p>
+                  <div>
+                    <span className="text-sm text-muted-foreground">
+                      Number:{" "}
+                    </span>
+                    <span className="text-sm">{govId.id_number || "—"}</span>
+                  </div>
+                  <div>
+                    <span className="text-sm text-muted-foreground">
+                      Validity:{" "}
+                    </span>
+                    <span className="text-sm">
+                      {getDate(govId.issued_date)} -{" "}
+                      {getDate(govId.expiry_date)}
+                    </span>
+                  </div>
                 </div>
               ))
             ) : (

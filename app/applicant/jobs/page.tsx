@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 
 import Link from "next/link";
 import useJobPostItemList from "@/hooks/jobs/useJobs";
@@ -10,6 +9,7 @@ import JobSearchbar from "@/components/applicant/jobs/job-searchbar";
 import JobFilter from "@/components/applicant/jobs/job-filter";
 
 import { Separator } from "@/components/ui/separator";
+import { getDate } from "@/lib/datetime.helpers";
 
 export default function JobsPage() {
   const { jobs, loading, error } = useJobPostItemList();
@@ -17,6 +17,10 @@ export default function JobsPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const isPastDeadline = (expiryDate: string) => {
+    if (expiryDate === null) {
+      return false; // Treat null expiry date as not expired
+    }
+
     const now = new Date();
     const expiry = new Date(expiryDate);
     return now > expiry;
@@ -69,8 +73,8 @@ export default function JobsPage() {
           <div>No jobs found.</div>
         ) : (
           filteredJobs.map((job) => {
-            const isExpired = isPastDeadline(job.expiry_date);
-            const isActive = job.status === "Open";
+            const isExpired = isPastDeadline(job.expiry_date?.toString() || "");
+            const isOpen = job.status === "Open";
             const hasApplied = Array.isArray(job.tags)
               ? job.tags.some((t: unknown) => typeof t === "boolean" && t)
               : false;
@@ -83,12 +87,12 @@ export default function JobsPage() {
                 key={job.id}
                 href={href}
                 className={`w-full border border-gray-200 p-6 hover:border-gray-400 transition-colors cursor-pointer block ${
-                  isActive && !isExpired
+                  isOpen && !isExpired
                     ? ""
                     : "opacity-60 cursor-not-allowed pointer-events-none"
                 }`}
-                aria-disabled={!isActive}
-                tabIndex={isActive ? 0 : -1}
+                aria-disabled={!isOpen}
+                tabIndex={isOpen ? 0 : -1}
                 prefetch
               >
                 <div className="flex mb-3 flex-wrap gap-2">
@@ -124,19 +128,17 @@ export default function JobsPage() {
                   <p>
                     Apply until:{" "}
                     <span className="text-gray-900">
-                      {new Date(job.expiry_date).toLocaleDateString()}
+                      {getDate(job.expiry_date)}
                     </span>
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center mt-2">
                     <p
-                      className={`text-sm font-medium ${isActive ? "text-green-600" : "text-red-600"}`}
+                      className={`text-sm font-medium ${isOpen ? "text-green-600" : "text-red-600"}`}
                     >
-                      {isActive ? "Open" : "Closed"}
+                      {isOpen ? "Open" : "Closed"}
                     </p>
-                    <p>
-                      {job.applications_count ?? 0}/{job.open_vacancies ?? 0}{" "}
-                      applications received
-                    </p>
+                    <Separator orientation="vertical" className="h-4" />
+                    <p>{job.applications_count ?? 0} applications received</p>
                   </div>
                 </div>
               </Link>
