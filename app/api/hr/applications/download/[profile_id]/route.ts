@@ -34,7 +34,7 @@ export async function GET(
             'date_applied', a.created_at
             )
             FROM applications a
-            LEFT JOIN job_posts jp ON a.job_id = jp.id
+            JOIN job_posts jp ON a.job_id = jp.id
             WHERE a.job_id = $2 AND a.profile_id = $1
         ),
         'personal', (
@@ -51,9 +51,7 @@ export async function GET(
             'about', up.about
             )
             FROM user_profiles up
-            LEFT JOIN applications a ON up.id = a.profile_id
-            LEFT JOIN job_posts jp ON a.job_id = jp.id
-            WHERE jp.id = $2 AND up.id = $1
+            WHERE up.id = $1
         ),
         'education', COALESCE(
             (SELECT json_agg(
