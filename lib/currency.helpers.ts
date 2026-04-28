@@ -15,4 +15,20 @@ function getPesoCurrencyShort(amount: number | null | undefined): string {
   return `₱${thousands}k`;
 }
 
-export { getPesoCurrency, getPesoCurrencyShort };
+function formatSalaryRange(salary: string | null | undefined): string {
+  if (!salary) {
+    return "N/A";
+  }
+
+  const [minStr, maxStr] = salary.split("-").map((s) => s.trim());
+  const min = parseFloat(minStr);
+  const max = parseFloat(maxStr);
+
+  if (isNaN(min) || isNaN(max)) {
+    return salary; // Return original string if parsing fails
+  }
+
+  return `${getPesoCurrency(min)} - ${getPesoCurrency(max)}`;
+}
+
+export { getPesoCurrency, getPesoCurrencyShort, formatSalaryRange };
