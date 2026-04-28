@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import db from "@/lib/db";
-import { ALL_JOBS_QUERY } from "@/lib/queries/hr/all_jobs_query";
 
 export async function GET() {
   try {
@@ -12,7 +11,23 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const result = await db.query(ALL_JOBS_QUERY).then((res: any) => res.rows);
+    const result = await db
+      .query(
+        `
+      SELECT
+        jp.id,
+        jp.public_id,
+        jp.title,
+        jp.created_at AS date_posted,
+        COUNT(a.id) AS total_applicants,
+        jp.status
+      FROM job_posts jp
+      LEFT JOIN applications a ON a.job_id = jp.id
+      GROUP BY jp.id, jp.title
+      ORDER BY jp.created_at DESC;
+      `,
+      )
+      .then((res: any) => res.rows);
 
     return NextResponse.json(result);
   } catch (error) {
