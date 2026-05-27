@@ -1,7 +1,14 @@
-import { sql } from "@/lib/db";
+// External
 import bcrypt from "bcrypt";
+
+// Internal
+import { sql } from "@/lib/db";
 import { signToken } from "@/lib/jwt";
 
+/**
+ * POST /api/auth/login
+ * Authenticate user and set a session cookie with a signed JWT.
+ */
 export async function POST(req: Request) {
   const { email, password } = await req.json();
 
@@ -9,7 +16,7 @@ export async function POST(req: Request) {
     return Response.json({ error: "Empty credentials" }, { status: 400 });
   }
 
-  // 1. find user
+  // 1) find user
   const users = await sql`
     SELECT * FROM user_accounts WHERE email = ${email}
   `;
@@ -19,20 +26,21 @@ export async function POST(req: Request) {
     return Response.json({ error: "Invalid credentials" }, { status: 400 });
   }
 
-  // 2. compare password
+  // 2) compare password
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) {
     return Response.json({ error: "Invalid credentials" }, { status: 400 });
   }
 
-  // 3. create JWT
+  // 3) create JWT — include both `id` and `userId` for compatibility
   const token = signToken({
+    id: user.id,
     userId: user.id,
     email: user.email,
     role: user.role,
   });
 
-  // 4. set cookie
+  // 4) set cookie
   return new Response(JSON.stringify({ message: "Logged in" }), {
     status: 200,
     headers: {

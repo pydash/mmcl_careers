@@ -50,6 +50,20 @@ function getDate(dateTimeWithTimezone: string | null | undefined): string {
   return `${monthNames[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
 }
 
+function getTime(dateTimeWithTimezone: string | null | undefined): string {
+  if (!dateTimeWithTimezone) return "N/A";
+
+  const date = new Date(dateTimeWithTimezone);
+
+  if (isNaN(date.getTime())) return "Invalid Date";
+
+  return date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
 function getDateFromShortDate(shortDate: string): string {
   const datePartMatch = /^(\d{2})-(\d{4})$/.exec(shortDate);
 
@@ -98,4 +112,24 @@ function getDateTime(datetime: string): string {
   });
 }
 
-export { getDaysAgo, getDate, getDateFromShortDate, getDateTime };
+function getYYYYMMDD(date: string | undefined | null): string {
+  if (!date) {
+    return "N/A";
+  }
+
+  const dateObj = new Date(date);
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const day = String(dateObj.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+export {
+  getDaysAgo,
+  getDate,
+  getTime,
+  getDateFromShortDate,
+  getDateTime,
+  getYYYYMMDD,
+};

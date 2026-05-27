@@ -1,8 +1,16 @@
-import { Pool } from "pg";
+// Framework / runtime
+import dotenv from "dotenv";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true,
-});
+// External libraries
+import { neon } from "@neondatabase/serverless";
 
-export default pool;
+// Load local environment for scripts (Next.js will load .env.local in dev)
+dotenv.config({ path: ".env.local" });
+
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error("Database URL missing");
+}
+
+export const sql = neon(databaseUrl);

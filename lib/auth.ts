@@ -1,67 +1,72 @@
+// Next.js server helpers
 import { cookies } from "next/headers";
-import db from "@/lib/db";
 
-async function getSessionToken(): Promise<string | null> {
+// External
+import jwt from "jsonwebtoken";
+
+/**
+ * Minimal, forgiving payload shape used across the app.
+ * Keep optional fields so tokens signed with either `id` or `userId` are accepted.
+ */
+interface CustomJwtPayload {
+  id?: string;
+  userId?: string;
+  email?: string;
+  role?: string;
+  iat?: number;
+  exp?: number;
+}
+
+/**
+ * Decode and normalize a JWT token. Returns `null` if verification fails.
+ */
+function decodeAuthToken(token: string): CustomJwtPayload | null {
   try {
-    const cookieStore = await cookies();
-    const session_token = await cookieStore.get("session_token");
-    if (!session_token) {
-      return null;
-    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
 
-    return session_token.value || null;
-  } catch (error) {
+    if (!decoded || typeof decoded === "string") return null;
+
+    return decoded as CustomJwtPayload;
+  } catch (err) {
+    console.error("JWT verification failed", err);
     return null;
   }
 }
 
-async function getUserId(): Promise<string | null> {
-  try {
-    const sessionToken = await getSessionToken();
-    if (!sessionToken) {
-      return null;
-    }
+export async function getUserFromRequest() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  if (!token) return null;
 
-    const result = await db.query(
-      `SELECT user_id FROM sessions WHERE session_token = $1;`,
-      [sessionToken],
-    );
-
-    const userId = result?.rows?.[0]?.user_id;
-    if (!userId) {
-      return null;
-    }
-
-    return userId;
-  } catch (error) {
-    console.error("Error occurred while fetching user ID:", error);
-    return null;
-  }
+  return decodeAuthToken(token);
 }
 
-async function getUserRole(): Promise<string | null> {
-  try {
-    const userId = await getUserId();
-    if (!userId) {
-      return null;
-    }
+export async function getUserId(): Promise<string | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
-    const result = await db.query(
-      `SELECT role FROM user_accounts WHERE id = $1;`,
-      [userId],
-    );
+  if (!token) return null;
 
-    const userRole = result?.rows?.[0]?.role;
-    if (!userRole) {
-      return null;
-    }
-
-    return userRole;
-  } catch (error) {
-    return error instanceof Error
-      ? error.message
-      : "Error occurred while fetching user role";
-  }
+  const decoded = decodeAuthToken(token);
+  return decoded ? (decoded.id ?? decoded.userId ?? null) : null;
 }
 
-export { getSessionToken, getUserId, getUserRole };
+export async function getUserRole(): Promise<string | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) return null;
+
+  const decoded = decodeAuthToken(token);
+  return decoded?.role ?? null;
+}
+
+export async function getUserEmail(): Promise<string | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  if (!token) return null;
+
+  const decoded = decodeAuthToken(token);
+  return decoded?.email ?? null;
+}
