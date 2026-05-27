@@ -1,212 +1,124 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-  FieldSeparator,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { Alert } from "@/components/ui/alert";
-
-import { login } from "@/services/auth.service";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  // Function to show error with animation
-  const showError = (message: string) => {
-    setShowAlert(false);
-    setError(message);
-    setTimeout(() => setShowAlert(true), 0);
+  async function login(e: FormEvent) {
+    e.preventDefault();
 
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 5000);
-  };
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-  // Function to toggle password visibility
-  const toggleShowPassword = () => {
-    setShowPassword((prev) => !prev);
-  };
-
-  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const { email, password } = formData;
-
-    try {
-      const result = await login(email, password);
-      const { error, role } = result;
-
-      if (error) {
-        showError(error);
-        return;
-      }
-
-      if (role === "hr") {
-        router.push("/hr/dashboard");
-      } else if (role === "applicant") {
-        router.push("/applicant/dashboard");
-      } else if (role === "admin") {
-        router.push("/admin/dashboard");
-      } else {
-        showError("Unknown user role");
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Login failed";
-      showError(message);
+    if (res.ok) {
+      router.push("/dashboard");
     }
-  };
-
-  useEffect(() => {
-    // Check if user is already logged in
-    const checkAuth = async () => {
-      try {
-        const res = await fetch("/api/auth/check", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (res.ok) {
-          const payload = await res.json();
-          const { role } = payload;
-
-          if (role === "hr") {
-            router.push("/hr/dashboard");
-          } else if (role === "applicant") {
-            router.push("/applicant/dashboard");
-          } else if (role === "admin") {
-            router.push("/admin/dashboard");
-          }
-        }
-      } catch (err) {
-        // Not logged in, do nothing
-      }
-    };
-
-    checkAuth();
-  }, [router]);
+  }
 
   return (
-    <>
-      {error && (
-        <div
-          className={`fixed inset-x-0 top-4 z-50 mx-auto w-full max-w-md transition-all duration-300 ease-in-out ${
-            showAlert && error
-              ? "translate-y-0 opacity-100"
-              : "-translate-y-full opacity-0"
-          }`}
-          aria-live="assertive"
-        >
-          <Alert variant="destructive" className="bg-white">
-            <p>{error}</p>
-          </Alert>
-        </div>
-      )}
+    <main className="min-h-screen bg-gray-50 px-4 py-6 flex items-center">
+      <div className="max-w-5xl mx-auto grid lg:grid-cols-2 border border-gray-200 bg-white shadow-sm">
+        {/* Left Section */}
+        <div className="bg-blue-950 p-8 flex flex-col justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-white">
+              Welcome Back
+            </p>
 
-      <main className="h-dvh flex flex-col items-center justify-center bg-blue-950">
-        <form
-          className="p-8 shadow-md shadow-accent-foreground w-full max-w-md bg-white"
-          onSubmit={handleFormSubmit}
-        >
-          <div className="flex justify-center">
-            <Image
-              src="/MMCL_Logo_Horizontal.png"
-              alt="MMCL Logo"
-              width={150}
-              height={150}
-            />
+            <h1 className="mt-4 text-3xl lg:text-4xl font-bold leading-tight text-white">
+              Login to Continue Your Journey
+            </h1>
+
+            <p className="mt-5 text-white leading-7 text-base">
+              Access your account to explore job listings, track applications,
+              and manage your profile all in one place.
+            </p>
           </div>
-          <FieldGroup>
-            <FieldSet>
-              <FieldLegend>Log in</FieldLegend>
-              <FieldDescription>
-                Please enter your email and password to log in
-              </FieldDescription>
-              <Field>
-                <FieldLabel>
-                  <Label htmlFor="email">Email</Label>
-                </FieldLabel>
-                <Input
+
+          <div className="mt-10 border-t border-white pt-5">
+            <p className="text-white text-sm">Don’t have an account?</p>
+
+            <Link
+              href="/register"
+              className="inline-flex mt-3 bg-red-600 hover:bg-red-700 text-white px-5 py-2 text-sm font-medium transition"
+            >
+              Create Account
+            </Link>
+          </div>
+        </div>
+
+        {/* Right Section */}
+        <div className="p-8">
+          <div className="max-w-md">
+            <p className="text-xs uppercase tracking-wide text-gray-500">
+              Login Form
+            </p>
+
+            <h2 className="mt-3 text-3xl font-bold text-gray-900">
+              Sign In to Your Account
+            </h2>
+
+            <form className="mt-6 space-y-4" onSubmit={login}>
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email Address
+                </label>
+
+                <input
                   type="email"
-                  id="email"
                   name="email"
-                  placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-blue-950"
                 />
-              </Field>
-              <Field>
-                <FieldLabel>
-                  <Label htmlFor="password">Password</Label>
-                </FieldLabel>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    name="password"
-                    placeholder="Enter password"
-                    value={formData.password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={toggleShowPassword}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    tabIndex={-1}
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+
+                <input
+                  type="password"
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="w-full border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:border-blue-950"
+                />
+
+                <div className="mt-2 text-right">
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm text-blue-950 hover:underline"
                   >
-                    {showPassword ? (
-                      <AiOutlineEye size={20} />
-                    ) : (
-                      <AiOutlineEyeInvisible size={20} />
-                    )}
-                  </button>
+                    Forgot password?
+                  </Link>
                 </div>
-              </Field>
-              <FieldSeparator />
-              <Button
+              </div>
+
+              {/* Submit */}
+              <button
                 type="submit"
-                variant="default"
-                className="w-full bg-red-600 hover:bg-red-500"
+                className="w-full bg-red-600 hover:bg-red-700 text-white py-3 text-sm font-semibold transition"
               >
-                Log In
-              </Button>
-            </FieldSet>
-            <Field>
-              <FieldDescription className="text-center">
-                Don't have an account?{" "}
-                <a href="/signup" className="text-blue-600 hover:underline">
-                  Sign up
-                </a>
-              </FieldDescription>
-            </Field>
-          </FieldGroup>
-        </form>
-      </main>
-    </>
+                Sign In
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
