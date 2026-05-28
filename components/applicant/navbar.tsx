@@ -133,9 +133,9 @@ export default function ApplicantNavbar() {
               <X className="w-6 h-6" />
             ) : (
               <div className="flex flex-col gap-2">
-                <span className="block w-6 h-[2px] bg-black"></span>
-                <span className="block w-6 h-[2px] bg-black"></span>
-                <span className="block w-6 h-[2px] bg-black"></span>
+                <span className="block w-6 h-0.5 bg-black"></span>
+                <span className="block w-6 h-0.5 bg-black"></span>
+                <span className="block w-6 h-0.5 bg-black"></span>
               </div>
             )}
           </button>
@@ -144,12 +144,12 @@ export default function ApplicantNavbar() {
         {/* Dropdown Menu */}
         {open && (
           <nav className="border-t border-gray-200 bg-white px-4 py-3 space-y-1">
-            {navItems.map((item) => {
+            {navItems.map((item, index) => {
               const Icon = item.icon;
 
               return (
                 <Link
-                  key={item.href}
+                  key={index}
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2.5 text-sm transition-colors ${

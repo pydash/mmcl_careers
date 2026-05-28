@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { getDashboard } from "@/services/applicant/dashboard.service";
 import type { ApplicantDashboardResponse } from "@/types/dashboard";
