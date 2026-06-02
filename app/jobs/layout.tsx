@@ -8,8 +8,9 @@ export default async function ApplicantJobsLayout({
   const role = await getUserRole();
 
   if (!role) {
-    return <PublicJobsPage />;
+    return <>{children}</>;
   }
+
   if (role === "APPLICANT") {
     return (
       <>
@@ -20,4 +21,6 @@ export default async function ApplicantJobsLayout({
       </>
     );
   }
+
+  return <>{children}</>;
 }

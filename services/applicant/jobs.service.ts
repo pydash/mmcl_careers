@@ -38,3 +38,18 @@ export async function getJobs({
 
   return res.json();
 }
+
+export async function createJobApplication(
+  id: string,
+  payload: { pitch: string },
+) {
+  const response = await fetch(`/api/applicant/jobs/${id}/apply`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  return response.json();
+}
