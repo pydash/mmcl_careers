@@ -1,32 +1,29 @@
-import { NextResponse } from "next/server";
-import db from "@/lib/db";
-import { getJobPostDetails } from "@/lib/queries/applicant/jobs/job_post_detail";
-import { getSessionToken } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { sql } from "@/lib/db";
+import { getUserRole } from "@/lib/auth";
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
-    const sessionToken = await getSessionToken();
+    const role = await getUserRole();
 
-    if (!sessionToken) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!role || role !== "APPLICANT") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const result = await db.query(getJobPostDetails, [id]);
-    const jobDetails = result?.rows?.[0];
+    const job = await sql`
+      SELECT *
+      FROM job_posts
+      WHERE public_id = ${id}
+    `;
 
-    if (!jobDetails) {
-      return NextResponse.json({ error: "Job not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(jobDetails);
+    return NextResponse.json(job[0], { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch job details" },
-      { status: 500 },
-    );
+    console.error("Error fetching job:", error);
+
+    return NextResponse.json({ error: "Failed to fetch job" }, { status: 500 });
   }
 }

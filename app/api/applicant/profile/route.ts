@@ -1,29 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db";
-import { getProfileDetails } from "@/lib/queries/applicant/profile/profile_details";
-import { getUserId } from "@/lib/auth";
+import { sql } from "@/lib/db";
+import { getUserId, getUserRole } from "@/lib/auth";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const userId = await getUserId();
+    const id = await getUserId();
+    const role = await getUserRole();
 
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!id || role !== "APPLICANT")
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-    const result = await db
-      .query(getProfileDetails, [userId])
-      .then((res: any) => res.rows[0].response);
+    const result = await sql`
+    SELECT jsonb_build_object(
+        'profile', to_jsonb(up) - 'created_at' - 'updated_at' - 'id',
+        'educational_backgrounds', (
+            SELECT COALESCE(jsonb_agg(to_jsonb(eb) - 'created_at' - 'profile_id'), '[]'::jsonb)
+            FROM educational_backgrounds eb
+            WHERE eb.profile_id = up.id
+        ),
+        'employment_histories', (
+            SELECT COALESCE(jsonb_agg(to_jsonb(eh) - 'created_at' - 'profile_id'), '[]'::jsonb)
+            FROM employment_histories eh
+            WHERE eh.profile_id = up.id
+        ),
+        'credentials', (
+            SELECT COALESCE(jsonb_agg(to_jsonb(cr) - 'created_at' - 'profile_id'), '[]'::jsonb)
+            FROM credentials cr
+            WHERE cr.profile_id = up.id
+        ),
+        'government_ids', (
+            SELECT COALESCE(jsonb_agg(to_jsonb(gi) - 'created_at' - 'profile_id'), '[]'::jsonb)
+            FROM government_ids gi
+            WHERE gi.profile_id = up.id
+        ),
+        'user_socials', (
+            SELECT COALESCE(jsonb_agg(to_jsonb(us)), '[]'::jsonb)
+            FROM user_socials us
+            WHERE us.id = up.id
+        )
+    ) AS response
+    FROM user_profiles up
+    WHERE up.id = ${id};
+    `;
 
-    if (!result) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
-    }
+    return NextResponse.json(result[0].response, { status: 200 });
+  } catch (err) {
+    console.error(err);
 
-    return NextResponse.json(result);
-  } catch (error) {
-    console.error("Failed to fetch profile:", error);
     return NextResponse.json(
-      { error: "Failed to fetch profile details" },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }
