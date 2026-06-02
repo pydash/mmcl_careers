@@ -1,4 +1,8 @@
-function toTitleCase(str: string): string {
+function toTitleCase(str: string | null | undefined): string {
+  if (!str) {
+    return "N/A";
+  }
+
   return str
     .toLowerCase()
     .split(" ")
