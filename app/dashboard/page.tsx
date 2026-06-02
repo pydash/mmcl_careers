@@ -7,9 +7,12 @@ import AdminDashboardPage from "@/components/admin/dashboard/dashboard-page";
 
 export default async function DashboardPage() {
   const user = await getUserFromRequest();
-  const role = await getUserRole();
 
-  if (!user) redirect("/login");
+  if (!user) {
+    redirect("/login");
+  }
+
+  const role = await getUserRole();
 
   if (role === "APPLICANT") {
     return <ApplicantDashboardPage />;
