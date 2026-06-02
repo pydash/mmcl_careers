@@ -9,15 +9,30 @@ import { useJobs } from "@/hooks/public/useJobs";
 import { getDate } from "@/lib/datetime.helpers";
 
 export default function PublicJobsPage() {
-  const { data, loading, error } = useJobs();
-  const jobs = data;
+  const { jobs, loading, error } = useJobs();
 
   if (loading) {
-    return <h3>Loading...</h3>;
+    return (
+      <>
+        <PublicNavbar />
+        <div className="max-w-5xl mx-auto px-4 py-10">
+          <p className="text-sm text-gray-500">Loading job...</p>
+        </div>
+        <PublicFooter />
+      </>
+    );
   }
 
   if (error) {
-    return <h3>{error}</h3>;
+    return (
+      <>
+        <PublicNavbar />
+        <div className="max-w-5xl mx-auto px-4 py-10">
+          <p className="text-sm text-gray-500">Loading job...</p>
+        </div>
+        <PublicFooter />
+      </>
+    );
   }
   return (
     <>

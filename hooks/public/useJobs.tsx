@@ -5,7 +5,7 @@ import { getJobs } from "@/services/public/jobs.service";
 import type { PublicJobs } from "@/types/job";
 
 export function useJobs() {
-  const [data, setData] = useState<PublicJobs[] | null>(null);
+  const [jobs, setJobs] = useState<PublicJobs[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,7 +16,7 @@ export function useJobs() {
 
         const result = await getJobs();
 
-        setData(result);
+        setJobs(result);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong.");
       } finally {
@@ -27,5 +27,5 @@ export function useJobs() {
     loadJobs();
   }, []);
 
-  return { data, loading, error };
+  return { jobs, loading, error };
 }
