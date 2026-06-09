@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { getProfile } from "@/services/applicant/profile.service";
-import { UserProfileResponse } from "@/types/user";
+import { ProfileDetails } from "@/types/user";
 
 export function useProfile() {
-  const [data, setData] = useState<UserProfileResponse | null>(null);
+  const [profile, setProfile] = useState<ProfileDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,7 +14,7 @@ export function useProfile() {
 
         const result = await getProfile();
 
-        setData(result);
+        setProfile(result);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
@@ -26,7 +26,7 @@ export function useProfile() {
   }, []);
 
   return {
-    data,
+    profile,
     loading,
     error,
   };
