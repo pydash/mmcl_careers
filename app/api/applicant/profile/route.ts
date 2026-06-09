@@ -1,54 +1,89 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
-import { getUserId, getUserRole } from "@/lib/auth";
+import { getUserRole, getUserId } from "@/lib/auth";
 
 export async function GET() {
   try {
-    const id = await getUserId();
+    const userId = await getUserId();
     const role = await getUserRole();
 
-    if (!id || role !== "APPLICANT")
+    if (!role || role !== "APPLICANT") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-    const result = await sql`
+    const profileRecord = await sql`
+    SELECT id
+    FROM user_profiles
+    WHERE id = ${userId}
+    `;
+
+    if (profileRecord.length === 0) {
+      return NextResponse.json(
+        { message: "No profile record" },
+        { status: 200 },
+      );
+    }
+
+    const profileDetails = await sql`
     SELECT jsonb_build_object(
-        'profile', to_jsonb(up) - 'created_at' - 'updated_at' - 'id',
-        'educational_backgrounds', (
-            SELECT COALESCE(jsonb_agg(to_jsonb(eb) - 'created_at' - 'profile_id'), '[]'::jsonb)
+        'profile', to_jsonb(up) - 'created_at' - 'updated_at',
+
+        'social', COALESCE(
+        (
+            SELECT jsonb_agg(to_jsonb(us))
+            FROM user_socials us
+            WHERE us.id = up.id
+        ),
+        '[]'::jsonb
+        ),
+
+        'education', COALESCE(
+        (
+            SELECT jsonb_agg(to_jsonb(eb) - 'created_at')
             FROM educational_backgrounds eb
             WHERE eb.profile_id = up.id
         ),
-        'employment_histories', (
-            SELECT COALESCE(jsonb_agg(to_jsonb(eh) - 'created_at' - 'profile_id'), '[]'::jsonb)
+        '[]'::jsonb
+        ),
+
+        'employment', COALESCE(
+        (
+            SELECT jsonb_agg(to_jsonb(eh) - 'created_at')
             FROM employment_histories eh
             WHERE eh.profile_id = up.id
         ),
-        'credentials', (
-            SELECT COALESCE(jsonb_agg(to_jsonb(cr) - 'created_at' - 'profile_id'), '[]'::jsonb)
-            FROM credentials cr
-            WHERE cr.profile_id = up.id
+        '[]'::jsonb
         ),
-        'government_ids', (
-            SELECT COALESCE(jsonb_agg(to_jsonb(gi) - 'created_at' - 'profile_id'), '[]'::jsonb)
+
+        'credentials', COALESCE(
+        (
+            SELECT jsonb_agg(to_jsonb(cred) - 'created_at')
+            FROM credentials cred
+            WHERE cred.profile_id = up.id
+        ),
+        '[]'::jsonb
+        ),
+        
+        'govids', COALESCE(
+        (
+            SELECT jsonb_agg(to_jsonb(gi) - 'created_at')
             FROM government_ids gi
             WHERE gi.profile_id = up.id
         ),
-        'user_socials', (
-            SELECT COALESCE(jsonb_agg(to_jsonb(us)), '[]'::jsonb)
-            FROM user_socials us
-            WHERE us.id = up.id
+        '[]'::jsonb
         )
-    ) AS response
+    ) AS result
     FROM user_profiles up
-    WHERE up.id = ${id};
+    WHERE up.id = ${userId};
     `;
 
-    return NextResponse.json(result[0].response, { status: 200 });
-  } catch (err) {
-    console.error(err);
-
+    return NextResponse.json(profileDetails[0].result, {
+      status: 200,
+    });
+  } catch (error) {
+    console.log(error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { message: "Failed to fetch profile" },
       { status: 500 },
     );
   }
