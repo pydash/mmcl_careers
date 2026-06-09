@@ -78,14 +78,11 @@ export type UserSocial = {
   url: string;
 };
 
-export type UserProfileResponse = {
+export type ProfileDetails = {
   profile: Omit<UserProfile, "created_at" | "updated_at" | "id">;
-  educational_backgrounds: Omit<
-    EducationalBackground[],
-    "created_at" | "profile_id"
-  >;
-  employment_histories: Omit<EmploymentHistory[], "created_at" | "profile_id">;
-  credentials: Omit<Credential[], "created_at" | "profile_id">;
-  government_ids: Omit<GovernmentID[], "created_at" | "profile_id">;
-  user_socials: UserSocial[];
+  education: Omit<EducationalBackground, "created_at" | "profile_id">[];
+  employment: Omit<EmploymentHistory, "created_at" | "profile_id">[];
+  credentials: Omit<Credential, "created_at" | "profile_id">[];
+  govids: Omit<GovernmentID, "created_at" | "profile_id">[];
+  social: UserSocial[];
 };
