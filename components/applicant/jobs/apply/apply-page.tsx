@@ -1,19 +1,28 @@
 "use client";
 
+// Next.js
 import Link from "next/link";
+import { useParams } from "next/navigation";
+
+// Hooks
 import { useProfile } from "@/hooks/applicant/useProfile";
 import { useApplyJob } from "@/hooks/applicant/useApplyJob";
-import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components/ui/tabs";
-import { ChevronLeft, ExternalLink } from "lucide-react";
-import { getDate } from "@/lib/datetime.helpers";
-import { toTitleCase } from "@/lib/text.helpers";
-import { useParams } from "next/navigation";
+
+// Components
 import UserInfoTabs from "./user-info-tabs";
 
+// Icons
+import { ChevronLeft } from "lucide-react";
+
 export default function ApplicantJobApplyPage() {
-  const params = useParams();
-  const id = params.id as string;
-  const { data, loading: profileLoading, error: profileError } = useProfile();
+  const { id } = useParams() as { id: string };
+
+  const {
+    profile,
+    loading: profileLoading,
+    error: profileError,
+  } = useProfile();
+
   const {
     pitch,
     setPitch,
@@ -26,7 +35,7 @@ export default function ApplicantJobApplyPage() {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-6 md:py-10">
-      {/* Back */}
+      {/* Navigation */}
       <Link
         href="/jobs"
         className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-950 hover:underline mb-6"
@@ -35,7 +44,7 @@ export default function ApplicantJobApplyPage() {
         Back
       </Link>
 
-      {/* Header */}
+      {/* Page Header */}
       <div className="border border-gray-300 bg-white p-4 md:p-6 mb-6">
         <div className="bg-red-600 text-white text-xs px-2 py-1 inline-block mb-4">
           APPLICATION
@@ -50,6 +59,7 @@ export default function ApplicantJobApplyPage() {
         </p>
       </div>
 
+      {/* Applicant Information */}
       <section className="border border-gray-300 bg-white p-4 md:p-6">
         <h2 className="text-lg font-semibold mb-4">Applicant Information</h2>
 
@@ -58,12 +68,13 @@ export default function ApplicantJobApplyPage() {
         ) : profileError ? (
           <h3>{profileError}</h3>
         ) : (
-          <UserInfoTabs data={data} />
+          <UserInfoTabs data={profile} />
         )}
       </section>
 
+      {/* Application Form */}
       <form onSubmit={submitApplication} className="space-y-6 mt-6">
-        {/* APPLICATION FORM */}
+        {/* Application Pitch */}
         <section className="border border-gray-300 bg-white p-4 md:p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-2">
             Application Pitch
@@ -85,13 +96,13 @@ export default function ApplicantJobApplyPage() {
           />
         </section>
 
-        {/* DECLARATION */}
+        {/* Applicant Declaration */}
         <section className="border border-gray-300 bg-white p-4 md:p-6">
           <label className="flex items-start gap-3">
             <input
+              type="checkbox"
               checked={confirmed}
               onChange={(e) => setConfirmed(e.target.checked)}
-              type="checkbox"
               className="mt-1 h-4 w-4 accent-red-600"
               required
             />
@@ -106,7 +117,7 @@ export default function ApplicantJobApplyPage() {
           </label>
         </section>
 
-        {/* ACTIONS */}
+        {/* Form Actions */}
         <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
           <Link href="/jobs">
             <button
@@ -125,6 +136,9 @@ export default function ApplicantJobApplyPage() {
             {loading ? "Loading..." : "Send Application"}
           </button>
         </div>
+
+        {/* Submission Error */}
+        {error && <p className="text-sm text-red-600">{error}</p>}
       </form>
     </main>
   );

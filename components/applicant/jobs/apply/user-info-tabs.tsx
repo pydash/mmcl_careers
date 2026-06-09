@@ -3,19 +3,14 @@ import { getDate } from "@/lib/datetime.helpers";
 import { toTitleCase } from "@/lib/text.helpers";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { UserProfileResponse } from "@/types/user";
 
-export default function UserInfoTabs(data: any) {
-  const userData = data;
+import { ProfileDetails } from "@/types/user";
 
-  const profile = userData?.data.profile;
-  const education = userData?.data.educational_backgrounds ?? [];
-  const employment = userData?.data.employment_histories ?? [];
-  const credentials = userData?.data.credentials ?? [];
-  const govids = userData?.data.government_ids ?? [];
-  const socials = userData?.data.user_socials ?? [];
+export default function UserInfoTabs(data: ProfileDetails) {
+  const { profile, education, employment, credentials, govids, social } = data;
 
-  console.log(userData);
+  console.log(profile);
+
   return (
     <>
       <Tabs defaultValue="profile">
@@ -102,8 +97,8 @@ export default function UserInfoTabs(data: any) {
             <div className="space-y-2">
               <p className="text-gray-500">Social</p>
               <div className="flex flex-wrap gap-2">
-                {socials.length > 0 ? (
-                  socials.map((social, index) => (
+                {social?.length > 0 ? (
+                  social.map((social, index) => (
                     <a
                       key={index}
                       href={`//${social.url}`}
@@ -123,9 +118,7 @@ export default function UserInfoTabs(data: any) {
         {/* EDUCATION */}
         <TabsContent value="education">
           <div className="border border-gray-300 p-6 space-y-3 grid grid-cols-1 md:grid-cols-2 gap-2">
-            {education.length === 0 ? (
-              <p className="text-sm text-gray-500">No education records</p>
-            ) : (
+            {education?.length > 0 ? (
               education.map((edu, index) => (
                 <div
                   key={index}
@@ -171,6 +164,8 @@ export default function UserInfoTabs(data: any) {
                   </div>
                 </div>
               ))
+            ) : (
+              <p className="text-sm text-gray-500">No education records</p>
             )}
           </div>
         </TabsContent>
@@ -178,50 +173,48 @@ export default function UserInfoTabs(data: any) {
         {/* EMPLOYMENT */}
         <TabsContent value="employment">
           <div className="border border-gray-300 p-6 space-y-3 grid grid-cols-1 md:grid-cols-2 gap-2">
-            {employment.length === 0 ? (
-              <p className="text-sm text-gray-500">No employment history</p>
-            ) : (
-              employment.map((e) => (
+            {employment?.length > 0 ? (
+              employment.map((emp) => (
                 <div
-                  key={e.id}
+                  key={emp.id}
                   className="border border-gray-300 p-4 flex flex-col md:flex-row gap-4 hover:bg-gray-50 md:justify-between"
                 >
                   <div className="space-y-2">
                     <div className="justify-start">
                       <p className="text-xs">Position</p>
-                      <p className="font-medium">{e.position}</p>
+                      <p className="font-medium">{emp.position}</p>
                     </div>
                     <div className="justify-start">
                       <p className="text-xs">Company</p>
-                      <p className="font-medium">{e.company}</p>
+                      <p className="font-medium">{emp.company}</p>
                     </div>
                     <div className="justify-start">
                       <p className="text-xs">Industry</p>
-                      <p className="font-medium">{e.industry}</p>
+                      <p className="font-medium">{emp.industry}</p>
                     </div>
                     <div className="justify-start">
                       <p className="text-xs">Specialization</p>
-                      <p className="font-medium">{e.specialization}</p>
+                      <p className="font-medium">{emp.specialization}</p>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div className="justify-start">
                       <p className="text-xs">Period</p>
                       <p className="font-medium">
-                        {e.date_started} to {e.date_ended || "Present"}
+                        {emp.date_started} to {emp.date_ended || "Present"}
                       </p>
                     </div>
                     <div className="justify-start">
                       <p className="text-xs">Salary</p>
                       <p className="font-medium">
-                        &#8369;{e.monthly_salary || "-"}
+                        &#8369;{emp.monthly_salary || "-"}
                       </p>
                     </div>
                     <div className="justify-start">
                       <p className="text-sm">Courses Handled</p>
-                      {e.courses_handled && e.courses_handled.length > 0 ? (
+                      {emp.courses_handled ? (
                         <div className="flex flex-wrap gap-2 mt-1">
-                          {e.courses_handled.map((course, index) => (
+                          {emp.courses_handled.map((course, index) => (
                             <span
                               key={index}
                               className="px-2 py-1 text-xs border border-gray-300 bg-gray-50"
@@ -237,6 +230,8 @@ export default function UserInfoTabs(data: any) {
                   </div>
                 </div>
               ))
+            ) : (
+              <p className="text-sm text-gray-500">No employment history</p>
             )}
           </div>
         </TabsContent>
@@ -244,9 +239,7 @@ export default function UserInfoTabs(data: any) {
         {/* CREDENTIALS */}
         <TabsContent value="credentials">
           <div className="border border-gray-300 p-6 space-y-3 grid grid-cols-1 md:grid-cols-3 gap-2">
-            {credentials.length === 0 ? (
-              <p className="text-sm text-gray-500">No credentials</p>
-            ) : (
+            {credentials?.length > 0 ? (
               credentials.map((cred, index) => (
                 <div
                   key={index}
@@ -273,6 +266,8 @@ export default function UserInfoTabs(data: any) {
                   </div>
                 </div>
               ))
+            ) : (
+              <p className="text-sm text-gray-500">No credentials</p>
             )}
           </div>
         </TabsContent>
@@ -280,9 +275,7 @@ export default function UserInfoTabs(data: any) {
         {/* GOV IDS */}
         <TabsContent value="govids">
           <div className="border border-gray-300 p-4 md:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {govids.length === 0 ? (
-              <p className="text-sm text-gray-500">No government IDs</p>
-            ) : (
+            {govids?.length > 0 ? (
               govids.map((id, index) => (
                 <div
                   key={index}
@@ -298,6 +291,8 @@ export default function UserInfoTabs(data: any) {
                   </div>
                 </div>
               ))
+            ) : (
+              <p className="text-sm text-gray-500">No government IDs</p>
             )}
           </div>
         </TabsContent>
